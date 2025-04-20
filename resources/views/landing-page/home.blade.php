@@ -80,7 +80,7 @@
 			<div class="row align-items-center">
 				<div class="col-lg-7">
 					<div class="intro-wrap">
-						<h1 class="mb-5"><span class="d-block">Let's Enjoy Your</span> Trip In <span class="typed-words"></span></h1>
+						<h1 class="mb-5"><span class="d-block">Nikmati waktu Anda</span> di <span class="typed-words"></span></h1>
 
 						<div class="row">
 							<div class="col-12">
@@ -88,15 +88,10 @@
 									<div class="row mb-2">
 										<div class="col-sm-12 col-md-6 mb-3 mb-lg-0 col-lg-4">
 											<select name="" id="" class="form-control custom-select">
-												<option value="">Destination</option>
-												<option value="">Peru</option>
-												<option value="">Japan</option>
-												<option value="">Thailand</option>
-												<option value="">Brazil</option>
-												<option value="">United States</option>
-												<option value="">Israel</option>
-												<option value="">China</option>
-												<option value="">Russia</option>
+												<option value="">Kalianget</option>
+												<option value="">Telaga Menjer</option>
+												<option value="">Gelanggang Renang Mangli</option>
+												<option value="">Kawasan Dieng</option>
 											</select>
 										</div>
 										<div class="col-sm-12 col-md-6 mb-3 mb-lg-0 col-lg-5">
@@ -148,7 +143,7 @@
 			</div>
 			<div class="row align-items-stretch">
 				<div class="col-lg-4 order-lg-1">
-					<div class="h-100"><div class="frame h-100"><div class="feature-img-bg h-100" style="background-image: url('images/hero-slider-1.jpg');"></div></div></div>
+					<div class="h-100"><div class="frame h-100"><div class="feature-img-bg h-100" style="background-image: url('{{ asset('landing-page') }}/images/hero-slider-1.jpg');"></div></div></div>
 				</div>
 
 				<div class="col-6 col-sm-6 col-lg-4 feature-1-wrap d-md-flex flex-md-column order-lg-1" >
@@ -601,7 +596,7 @@
 			})
 
 			var typed = new Typed('.typed-words', {
-				strings: ["San Francisco."," Paris."," New Zealand.", " Maui.", " London."],
+				strings: [" Kalianget."," Telaga Menjer"," Gelanggang Renang Mangli", " Kawasan Dieng."],
 				typeSpeed: 80,
 				backSpeed: 80,
 				backDelay: 4000,
