@@ -15,7 +15,7 @@ return new class extends Migration
             $table->string('address', 255)->nullable();
             $table->boolean('is_publish')->default(false);
             $table->boolean('available')->default(false);
-            $table->point('latlon');
+            $table->geometry('latlon');
             $table->timestamps();
             $table->softDeletes();
         });
