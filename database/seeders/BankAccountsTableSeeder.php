@@ -16,56 +16,72 @@ class BankAccountsTableSeeder extends Seeder
                 'account_name' => 'Dinas terkait di Kabupaten setempat',
                 'account_number' => $this->generateAccountNumber(),
                 'account_status' => 1,
-                'is_public' => 1
+                'is_public' => 1,
+                'created_at' => now(),
+                'created_by' => 1,
             ],
             [
                 'bank_name' => 'Bank BRI',
                 'account_name' => 'Dinas terkait di Kabupaten setempat',
                 'account_number' => $this->generateAccountNumber(),
                 'account_status' => 1,
-                'is_public' => 1
+                'is_public' => 1,
+                'created_at' => now(),
+                'created_by' => 1,
             ],
             [
                 'bank_name' => 'Bank BCA',
                 'account_name' => 'Dinas terkait di Kabupaten setempat',
                 'account_number' => $this->generateAccountNumber(),
                 'account_status' => 1,
-                'is_public' => 1
+                'is_public' => 1,
+                'created_at' => now(),
+                'created_by' => 1,
             ],
             [
                 'bank_name' => 'Bank BNI',
                 'account_name' => 'Dinas terkait di Kabupaten setempat',
                 'account_number' => $this->generateAccountNumber(),
                 'account_status' => 1,
-                'is_public' => 1
+                'is_public' => 1,
+                'created_at' => now(),
+                'created_by' => 1,
             ],
             [
                 'bank_name' => 'Bank Danamon',
                 'account_name' => 'Dinas terkait di Kabupaten setempat',
                 'account_number' => $this->generateAccountNumber(),
                 'account_status' => 1,
-                'is_public' => 1
+                'is_public' => 1,
+                'created_at' => now(),
+                'created_by' => 1,
             ],
             [
                 'bank_name' => 'Bank CIMB Niaga',
                 'account_name' => 'Dinas terkait di Kabupaten setempat',
                 'account_number' => $this->generateAccountNumber(),
                 'account_status' => 1,
-                'is_public' => 1
+                'is_public' => 1,
+                'created_at' => now(),
+                'created_by' => 1,
             ],
             [
                 'bank_name' => 'Bank Permata',
                 'account_name' => 'Dinas terkait di Kabupaten setempat',
                 'account_number' => $this->generateAccountNumber(),
                 'account_status' => 1,
-                'is_public' => 1
+                'is_public' => 1,
+                'created_at' => now(),
+                'created_by' => 1,
             ],
             [
                 'bank_name' => 'Bank BTN',
                 'account_name' => 'Dinas terkait di Kabupaten setempat',
                 'account_number' => $this->generateAccountNumber(),
                 'account_status' => 1,
-                'is_public' => 1
+                'is_public' => 1,
+                'created_at' => now(),
+                'created_by' => 1,
             ]
         ];
 

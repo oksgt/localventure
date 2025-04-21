@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->foreignId('parent_id')->nullable()->constrained('users')->nullOnDelete();
+            $table->string('username')->unique();
             $table->string('name');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
@@ -23,6 +24,12 @@ return new class extends Migration
             $table->rememberToken();
             $table->softDeletes();
             $table->timestamps();
+        });
+
+        Schema::table('users', function (Blueprint $table) {
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete()->after('id');
+            $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete()->after('created_by');
+            $table->foreignId('deleted_by')->nullable()->constrained('users')->nullOnDelete()->after('updated_by');
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {

@@ -20,6 +20,9 @@ return new class extends Migration
             $table->foreignId('transfer_approval_user')->nullable()->constrained('user_mapping')->onDelete('set null');
             $table->timestamps();
             $table->softDeletes();
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('deleted_by')->nullable()->constrained('users')->nullOnDelete();
         });
     }
 
