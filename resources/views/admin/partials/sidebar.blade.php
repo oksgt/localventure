@@ -40,10 +40,13 @@
         </li>
 
         <li class="nav-item">
-            <a class="nav-link" href="index.html">
-                <i class="ti-power-off menu-icon"></i>
-                <span class="menu-title">Logout</span>
-            </a>
+            <form method="POST" action="{{ route('logout.process') }}">
+                @csrf
+                <button type="submit" class="nav-link border-0 bg-transparent">
+                    <i class="ti-power-off menu-icon"></i>
+                    <span class="menu-title">Logout</span>
+                </button>
+            </form>
         </li>
 
     </ul>
