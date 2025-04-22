@@ -37,7 +37,11 @@
                             Add class <code>.table-striped</code>
                         </p>
 
-                        <div class="table-responsive">
+                        @if(session('role_id') !== 3)
+                            <button type="button" class="btn btn-sm btn-primary">Add New User</button>
+                        @endif
+
+                        <div class="table-responsive mt-2">
                             <table class="table table-striped" id="users-table">
                                 <thead>
                                     <tr>
