@@ -40,6 +40,8 @@
     <script src="{{ asset('admin-page') }}/js/todolist.js"></script>
     <script src="{{ asset('admin-page') }}/js/dashboard.js"></script>
     <script src="{{ asset('admin-page') }}/js/Chart.roundedBarCharts.js"></script>
+
+    @stack('scripts')
 </body>
 
 </html>

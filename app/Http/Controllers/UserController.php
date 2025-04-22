@@ -7,9 +7,53 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use Yajra\DataTables\Facades\DataTables;
 
 class UserController extends Controller
 {
+
+    public function index(){
+        return view('admin.users.index');
+    }
+
+    public function getUsers(Request $request)
+{
+    $currentUser = Auth::user();
+
+    try {
+        // Super Admin: Get all user data
+        if ($currentUser->role_id == 1) {
+            $users = User::with('role')->select(['id', 'username', 'name', 'email', 'phone', 'profile_picture', 'role_id']);
+        }
+        // Admin: Get users where parent_id equals the current admin's id
+        elseif ($currentUser->role_id == 2) {
+            $users = User::with('role')->where('parent_id', $currentUser->id)->select(['id', 'username', 'name', 'email', 'phone', 'profile_picture', 'role_id']);
+        }
+        // Operator: Return empty collection for no access
+        elseif ($currentUser->role_id == 3) {
+            $users = collect(); // Empty collection
+        }
+
+        return DataTables::of($users)
+            ->addIndexColumn() // Add row numbering
+            ->addColumn('role_name', function ($user) {
+                return $user->role ? $user->role->name : 'N/A'; // Role name from roles table
+            })
+            ->addColumn('action', function ($user) {
+                return '<a href="user/edit/' . $user->id . '" class="btn btn-sm btn-primary">Edit</a>
+                        <form method="POST" action="user/delete/' . $user->id . '" style="display:inline;">
+                            ' . csrf_field() . '
+                            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                        </form>';
+            })
+            ->rawColumns(['action']) // Ensure HTML actions render properly
+            ->make(true);
+
+    } catch (\Exception $e) {
+        return response()->json(['error' => $e->getMessage()], 500); // Handle server-side errors
+    }
+}
+
 
     public function showUsers(Request $request)
     {
