@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -12,14 +13,43 @@ use Yajra\DataTables\Facades\DataTables;
 class UserController extends Controller
 {
 
-    public function index(){
-        if(session('role_id') !== 3){
+    public function index()
+    {
+        if (session('role_id') !== 3) {
             return view('admin.users.index');
         } else {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
-
     }
+
+    public function addUser(Request $request)
+    {
+        return view('admin.users.add');
+    }
+
+    public function getRoles()
+    {
+        try {
+            $roles = Role::select('id', 'name')
+                ->where('id', '!=', 1) // Exclude superadmin (assuming superadmin has id = 1)
+                ->get();
+
+            return response()->json($roles, 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to load roles'], 500);
+        }
+    }
+
+    public function getAdmins()
+    {
+        try {
+            $admins = User::where('role_id', 2)->select('id', 'name')->get();
+            return response()->json($admins, 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to load admins'], 500);
+        }
+    }
+
 
     public function getUsers(Request $request)
     {
@@ -53,7 +83,6 @@ class UserController extends Controller
                 })
                 ->rawColumns(['action']) // Ensure HTML actions render properly
                 ->make(true);
-
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500); // Handle server-side errors
         }

@@ -16,6 +16,9 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/admin/users', [UserController::class, 'index'])->name('admin.users.index');
     Route::get('/admin/users/data', [UserController::class, 'getUsers'])->name('admin.users.data');
+    Route::get('/admin/users/add', [UserController::class, 'addUser'])->name('admin.users.add');
+    Route::get('/roles', [UserController::class, 'getRoles'])->name('roles.list');
+    Route::get('/admins', [UserController::class, 'getAdmins'])->name('admins.list');
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout.process');
 });

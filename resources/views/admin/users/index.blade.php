@@ -37,8 +37,8 @@
                             Add class <code>.table-striped</code>
                         </p>
 
-                        @if(session('role_id') !== 3)
-                            <button type="button" class="btn btn-sm btn-primary">Add New User</button>
+                        @if (session('role_id') !== 3)
+                            <a type="button" class="btn btn-sm btn-primary" id="add-user-btn">Add New User</a>
                         @endif
 
                         <div class="table-responsive mt-2">
@@ -62,12 +62,138 @@
         </div>
 
     </div>
+
+    <div class="modal fade" id="formModal" tabindex="-1" aria-labelledby="formModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="formModalLabel">Form Add New User</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body p-0">
+                    <div class="row">
+                        <div class="col-md-12 grid-margin stretch-card">
+                            <div class="card">
+                                <div class="card-body">
+                                    <form class="forms-sample" id="userForm">
+                                        @csrf
+
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="role_id">Select Role</label>
+                                                    <select class="form-control" id="role_id" name="role_id">
+                                                        <option value="">Loading...</option> <!-- Populated via AJAX -->
+                                                    </select>
+                                                </div>
+
+                                                <!-- Parent selection (hidden by default) -->
+                                                <div class="form-group" id="parent_list_container" style="display:none;">
+                                                    <label for="parent_list">Select Parent</label>
+                                                    <select class="form-control" id="parent_list" name="parent_list">
+                                                        <option value="">Loading...</option> <!-- AJAX will populate this -->
+                                                    </select>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="username">Username</label>
+                                                    <input type="text" class="form-control" id="username" name="username" placeholder="Username">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="name">Name</label>
+                                                    <input type="text" class="form-control" id="name" name="name" placeholder="Name">
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="email">Email address</label>
+                                                    <input type="email" class="form-control" id="email" name="email" placeholder="Email">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="phone">Phone</label>
+                                                    <input type="text" class="form-control" id="phone" name="phone" placeholder="Phone">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="password">Password</label>
+                                                    <input type="password" class="form-control" id="password" name="password" placeholder="Password">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="confirm_password">Confirm Password</label>
+                                                    <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="Confirm Password">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @push('scripts')
     <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap4.min.js"></script>
     <script>
+        $(document).ready(function() {
+            // Fetch roles via AJAX
+            $.ajax({
+                url: "{{ route('roles.list') }}",
+                type: "GET",
+                success: function(data) {
+                    let roleDropdown = $("#role_id");
+                    roleDropdown.empty();
+                    roleDropdown.append('<option value="">Select Role</option>'); // Default option
+
+                    data.forEach(role => {
+                        roleDropdown.append(`<option value="${role.id}">${role.name}</option>`);
+                    });
+                }
+            });
+
+            // Fetch admins via AJAX
+            $.ajax({
+                url: "{{ route('admins.list') }}",
+                type: "GET",
+                success: function(data) {
+                    let adminDropdown = $("#parent_list"); // Ensure this targets parent_list
+                    adminDropdown.empty();
+                    adminDropdown.append('<option value="">None</option>'); // Default option
+
+                    data.forEach(admin => {
+                        adminDropdown.append(`<option value="${admin.id}">${admin.name}</option>`);
+                    });
+                }
+            });
+
+            // Show/hide parent_list based on selected role
+            $('#role_id').change(function() {
+                let selectedRole = $(this).val();
+
+                // Assuming "Operator" has role_id = 3
+                if (selectedRole == 3) {
+                    $('#parent_list_container').show();
+                } else {
+                    $('#parent_list_container').hide();
+                    $('#parent_list').val(''); // Reset value when hidden
+                }
+            });
+
+            $('#add-user-btn').click(function() {
+                $('#formModal').modal('show'); // Show the modal
+            });
+        });
+
+
         $(function() {
             $('#users-table').DataTable({
                 processing: true,
