@@ -296,6 +296,8 @@
                     name: $('#name').val(),
                     email: $('#email').val(),
                     phone: $('#phone').val(),
+                    password: password,
+                    password_confirmation: confirmPassword,
                 };
 
                 // If updating an existing user, include method override
