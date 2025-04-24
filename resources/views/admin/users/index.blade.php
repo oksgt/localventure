@@ -85,7 +85,8 @@
                                                 <div class="form-group">
                                                     <label for="role_id">Select Role</label>
                                                     <select class="form-control " id="role_id" name="role_id">
-                                                        <option value="">Loading...</option> <!-- Populated via AJAX -->
+                                                        <option value="">Loading...</option>
+                                                        <!-- Populated via AJAX -->
                                                     </select>
                                                     <small class="form-text text-danger" id="role_id_error"></small>
                                                 </div>
@@ -94,18 +95,21 @@
                                                 <div class="form-group" id="parent_list_container" style="display:none;">
                                                     <label for="parent_list">Select Parent</label>
                                                     <select class="form-control" id="parent_list" name="parent_list">
-                                                        <option value="">Loading...</option> <!-- AJAX will populate this -->
+                                                        <option value="">Loading...</option>
+                                                        <!-- AJAX will populate this -->
                                                     </select>
                                                     <small class="form-text text-danger" id="parent_list_error"></small>
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="username">Username</label>
-                                                    <input type="text" class="form-control" id="username" name="username" placeholder="Username">
+                                                    <input type="text" class="form-control" id="username"
+                                                        name="username" placeholder="Username">
                                                     <small class="form-text text-danger" id="username_error"></small>
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="name">Name</label>
-                                                    <input type="text" class="form-control" id="name" name="name" placeholder="Name">
+                                                    <input type="text" class="form-control" id="name" name="name"
+                                                        placeholder="Name">
                                                     <small class="form-text text-danger" id="name_error"></small>
                                                 </div>
                                             </div>
@@ -113,20 +117,25 @@
                                             <div class="col-md-6">
                                                 <div class="form-group">
                                                     <label for="email">Email address</label>
-                                                    <input type="email" class="form-control" id="email" name="email" placeholder="Email">
+                                                    <input type="email" class="form-control" id="email"
+                                                        name="email" placeholder="Email">
                                                     <small class="form-text text-danger" id="email_error"></small>
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="phone">Phone</label>
-                                                    <input type="text" class="form-control" id="phone" name="phone" placeholder="Phone">
+                                                    <input type="text" class="form-control" id="phone"
+                                                        name="phone" placeholder="Phone">
                                                     <small class="form-text text-danger" id="phone_error"></small>
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="password">Password</label>
                                                     <div class="input-group">
-                                                        <input type="password" class="form-control" id="password" name="password" placeholder="Password">
+                                                        <input type="password" class="form-control" id="password"
+                                                            name="password" placeholder="Password">
                                                         <div class="input-group-append">
-                                                            <button type="button" class="btn btn-outline-secondary toggle-password" data-target="password">
+                                                            <button type="button"
+                                                                class="btn btn-outline-secondary toggle-password"
+                                                                data-target="password">
                                                                 <i class="fas fa-eye"></i>
                                                             </button>
                                                         </div>
@@ -137,14 +146,18 @@
                                                 <div class="form-group">
                                                     <label for="confirm_password">Confirm Password</label>
                                                     <div class="input-group">
-                                                        <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="Confirm Password">
+                                                        <input type="password" class="form-control" id="confirm_password"
+                                                            name="confirm_password" placeholder="Confirm Password">
                                                         <div class="input-group-append">
-                                                            <button type="button" class="btn btn-outline-secondary toggle-password" data-target="confirm_password">
+                                                            <button type="button"
+                                                                class="btn btn-outline-secondary toggle-password"
+                                                                data-target="confirm_password">
                                                                 <i class="fas fa-eye"></i>
                                                             </button>
                                                         </div>
                                                     </div>
-                                                    <small class="form-text text-danger" id="confirm_password_error"></small>
+                                                    <small class="form-text text-danger"
+                                                        id="confirm_password_error"></small>
                                                 </div>
                                             </div>
                                         </div>
@@ -208,7 +221,8 @@
                     adminDropdown.append('<option value="">None</option>'); // Default option
 
                     data.forEach(admin => {
-                        adminDropdown.append(`<option value="${admin.id}">${admin.name}</option>`);
+                        adminDropdown.append(
+                            `<option value="${admin.id}">${admin.name}</option>`);
                     });
                 }
             });
@@ -236,8 +250,11 @@
 
                 // Check if passwords match
                 if (password !== confirmPassword) {
-                    alert("Password and Confirm Password must match!");
-                    return; // Stop execution if passwords don't match
+                    toastr.error("Password and Confirm Password must match!", "Error", {
+                        timeOut: 3000,
+                        progressBar: true
+                    });
+                    return;
                 }
 
                 let formData = {
@@ -265,9 +282,17 @@
                     data: formData,
                     success: function(response) {
                         if (response.success) {
+                            toastr.success("User created successfully!", "Success", {
+                                timeOut: 3000,
+                                progressBar: true
+                            });
                             $('#formModal').modal('hide'); // Close modal on success
                             $('#users-table').DataTable().ajax.reload(); // Refresh DataTable
                         } else {
+                            toastr.error("Insert failed: " + response.message, "Error", {
+                                timeOut: 3000,
+                                progressBar: true
+                            });
                             console.log("Insert failed:", response.message);
                         }
                     },
@@ -277,11 +302,22 @@
 
                             // Loop through errors and update UI
                             $.each(errors, function(field, messages) {
-                                $('#' + field).addClass('is-invalid'); // Highlight input field
-                                $('#' + field + '_error').text(messages[0]); // Show error message
+                                $('#' + field).addClass(
+                                'is-invalid'); // Highlight input field
+                                $('#' + field + '_error').text(messages[
+                                0]); // Show error message
                             });
+                            toastr.error("Validation error! Please check the form.", "Error", {
+                                timeOut: 3000,
+                                progressBar: true
+                            });
+
                         } else {
                             console.log("Insert error:", xhr.responseJSON);
+                            toastr.error("Insert error: " + xhr.responseJSON.message, "Error", {
+                                timeOut: 3000,
+                                progressBar: true
+                            });
                         }
                     },
                     complete: function() {
