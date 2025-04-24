@@ -67,9 +67,10 @@ class UserController extends Controller
                 'regex:/^[a-zA-Z0-9]+$/', // Ensure only alphanumeric characters
             ],
             'password_confirmation' => 'required|same:password',
-            'parent_list'       => 'nullable|exists:users,id',
+            'parent_list'           => $request->role_id == 3 ? 'required|exists:users,id' : 'nullable',
         ], [
             'password.regex'    => 'Password must contain only letters and numbers (no special characters).',
+            'parent_list.required' => 'Parent selection is required for Operator role.',
         ]);
 
         try {
@@ -82,7 +83,7 @@ class UserController extends Controller
                 'email'     => $request->email,
                 'phone'     => $request->phone,
                 'password'  => Hash::make($request->password),
-                'parent_id' => $request->role_id == 3 && !empty($request->parent_list) ? $request->parent_list : null,
+                'parent_id' => $request->role_id == 3 ? $request->parent_list : null,
                 'created_by' => Auth::user()->id,
                 'remember_token' => Str::random(10),
             ]);
