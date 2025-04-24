@@ -270,13 +270,13 @@ class UserController extends Controller
                 $user->delete(); // Soft delete
 
                 DB::commit();
-                return response()->json(['success' => true, 'message' => 'User soft-deleted successfully'], 200);
+                return response()->json(['success' => true, 'message' => 'User deleted successfully'], 200);
             }
 
             return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
         } catch (\Exception $e) {
             DB::rollBack(); // Roll back if an error occurs
-            \Log::error("Soft delete failed: " . $e->getMessage());
+            Log::error("Soft delete failed: " . $e->getMessage());
             return response()->json(['success' => false, 'message' => 'Failed to delete user', 'error' => $e->getMessage()], 500);
         }
     }
