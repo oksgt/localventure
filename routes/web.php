@@ -19,8 +19,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin/users/add', [UserController::class, 'addUser'])->name('admin.users.add');
     Route::get('/roles', [UserController::class, 'getRoles'])->name('roles.list');
     Route::get('/admins', [UserController::class, 'getAdmins'])->name('admins.list');
-
     Route::post('/admin/users/store', [UserController::class, 'store'])->name('users.store');
+    Route::get('/admin/users/{id}/edit', [UserController::class, 'edit'])->name('users.edit');
+    Route::put('/admin/users/{id}/update', [UserController::class, 'update'])->name('users.update');
 
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout.process');

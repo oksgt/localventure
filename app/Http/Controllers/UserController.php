@@ -52,6 +52,24 @@ class UserController extends Controller
         }
     }
 
+    public function edit($id)
+    {
+        try {
+            $user = User::with('role')->findOrFail($id); // Find user or return 404
+
+            return response()->json([
+                'success' => true,
+                'data' => $user
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User not found',
+                'error' => $e->getMessage()
+            ], 404);
+        }
+    }
+
     public function store(Request $request)
     {
         $request->validate([
@@ -117,19 +135,26 @@ class UserController extends Controller
             }
 
             return DataTables::of($users)
-                ->addIndexColumn() // Add row numbering
-                ->addColumn('role_name', function ($user) {
-                    return $user->role ? $user->role->name : 'N/A'; // Role name from roles table
-                })
-                ->addColumn('action', function ($user) {
-                    return '<a href="user/edit/' . $user->id . '" class="btn btn-sm btn-primary">Edit</a>
-                            <form method="POST" action="user/delete/' . $user->id . '" style="display:inline;">
-                                ' . csrf_field() . '
-                                <button type="submit" class="btn btn-sm btn-danger">Delete</button>
-                            </form>';
-                })
-                ->rawColumns(['action']) // Ensure HTML actions render properly
-                ->make(true);
+            ->addIndexColumn()
+            ->addColumn('role_name', function ($user) {
+                return $user->role ? $user->role->name : 'N/A';
+            })
+            ->addColumn('action', function ($user) {
+                $currentUserId = Auth::id(); // Get logged-in user ID
+
+                // Hide Edit and Delete buttons for current user
+                if ($user->id == $currentUserId) {
+                    return '<span class="text-muted">No actions available</span>'; // Placeholder for UI consistency
+                }
+
+                return '<button type="button" class="btn btn-sm btn-primary" onclick="editUser(' . $user->id . ')">Edit</button>
+                        <form method="POST" action="user/delete/' . $user->id . '" style="display:inline;">
+                            ' . csrf_field() . '
+                            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                        </form>';
+            })
+            ->rawColumns(['action'])
+            ->make(true);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500); // Handle server-side errors
         }
@@ -209,37 +234,6 @@ class UserController extends Controller
         }
     }
 
-    public function edit(Request $request, $id)
-    {
-        $request->validate([
-            'username' => 'sometimes|unique:users,username|max:255',
-            'email' => 'sometimes|unique:users,email|email|max:255',
-            'name' => 'required|max:255',
-            'phone' => 'nullable|max:255',
-        ]);
-
-        $currentUser = Auth::user();
-        $user = User::findOrFail($id);
-
-        if ($currentUser->role_id == 1 || ($currentUser->role_id == 2 && $user->parent_id == $currentUser->id && $user->role_id == 3)) {
-            try {
-                $user->update([
-                    'username' => $request->username,
-                    'email' => $request->email,
-                    'name' => $request->name,
-                    'phone' => $request->phone,
-                    'updated_by' => $currentUser->id,
-                ]);
-
-                return response()->json(['message' => 'User updated successfully', 'user' => $user], 200);
-            } catch (\Exception $e) {
-                return response()->json(['error' => $e->getMessage()], 500);
-            }
-        }
-
-        return response()->json(['error' => 'Unauthorized to edit user'], 403);
-    }
-
     public function updatePassword(Request $request, $id)
     {
         $request->validate([
@@ -283,5 +277,39 @@ class UserController extends Controller
         }
 
         return response()->json(['error' => 'Unauthorized'], 403);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $user = User::findOrFail($id); // Fetch current user data
+
+        $request->validate([
+            'role_id'    => 'required|exists:roles,id',
+            'username'   => $request->username !== $user->username ? 'required|max:255|unique:users,username,' . $id : 'required|max:255',
+            'name'       => 'required|max:255',
+            'email'      => $request->email !== $user->email ? 'required|email|max:255|unique:users,email,' . $id : 'required|email|max:255',
+            'phone'      => 'nullable|max:255',
+            'parent_list'=> $request->role_id == 3 ? 'required|exists:users,id' : 'nullable',
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            $user->update([
+                'role_id'   => $request->role_id,
+                'username'  => $request->username,
+                'name'      => $request->name,
+                'email'     => $request->email,
+                'phone'     => $request->phone,
+                'parent_id' => $request->role_id == 3 ? $request->parent_list : null,
+            ]);
+
+            DB::commit();
+
+            return response()->json(['success' => true, 'message' => 'User updated successfully'], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['success' => false, 'message' => 'Failed to update user', 'error' => $e->getMessage()], 500);
+        }
     }
 }

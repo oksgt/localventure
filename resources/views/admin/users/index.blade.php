@@ -274,6 +274,8 @@
             });
 
             $('#btn-save').click(function() {
+                let userId = $(this).data('user-id'); // Get user ID if updating
+
                 let password = $('#password').val();
                 let confirmPassword = $('#confirm_password').val();
 
@@ -294,64 +296,57 @@
                     name: $('#name').val(),
                     email: $('#email').val(),
                     phone: $('#phone').val(),
-                    password: password,
-                    password_confirmation: confirmPassword,
                 };
 
-                // Clear previous validation errors
+                // If updating an existing user, include method override
+                if (userId) {
+                    formData._method = "PUT";
+                }
+
                 $('.form-control').removeClass('is-invalid');
                 $('.form-text.text-danger').text('');
 
-                // Disable button and show "Processing..." text
                 $('#btn-save').prop('disabled', true).text('Processing...');
 
                 $.ajax({
-                    url: "{{ route('users.store') }}",
+                    url: userId ? "{{ route('users.update', ':id') }}".replace(':id', userId) : "{{ route('users.store') }}",
                     type: "POST",
                     data: formData,
                     success: function(response) {
                         if (response.success) {
-                            toastr.success("User created successfully!", "Success", {
+                            toastr.success(userId ? "User updated successfully!" : "User created successfully!", "Success", {
                                 timeOut: 3000,
                                 progressBar: true
                             });
-                            $('#formModal').modal('hide'); // Close modal on success
-                            $('#users-table').DataTable().ajax.reload(); // Refresh DataTable
+                            $('#formModal').modal('hide');
+                            $('#users-table').DataTable().ajax.reload();
                         } else {
-                            toastr.error("Insert failed: " + response.message, "Error", {
+                            toastr.error("Operation failed: " + response.message, "Error", {
                                 timeOut: 3000,
                                 progressBar: true
                             });
-                            console.log("Insert failed:", response.message);
                         }
                     },
                     error: function(xhr) {
                         if (xhr.status === 422) { // Laravel validation error
                             let errors = xhr.responseJSON.errors;
-
-                            // Loop through errors and update UI
                             $.each(errors, function(field, messages) {
-                                $('#' + field).addClass(
-                                'is-invalid'); // Highlight input field
-                                $('#' + field + '_error').text(messages[
-                                0]); // Show error message
+                                $('#' + field).addClass('is-invalid');
+                                $('#' + field + '_error').text(messages[0]);
                             });
                             toastr.error("Validation error! Please check the form.", "Error", {
                                 timeOut: 3000,
                                 progressBar: true
                             });
-
                         } else {
-                            console.log("Insert error:", xhr.responseJSON);
-                            toastr.error("Insert error: " + xhr.responseJSON.message, "Error", {
+                            toastr.error("Error: " + xhr.responseJSON.message, "Error", {
                                 timeOut: 3000,
                                 progressBar: true
                             });
                         }
                     },
                     complete: function() {
-                        // Enable button and reset text
-                        $('#btn-save').prop('disabled', false).text('Simpan');
+                        $('#btn-save').prop('disabled', false).text(userId ? "Update" : "Simpan");
                     }
                 });
             });
@@ -402,5 +397,73 @@
                 }
             });
         });
+
+        function editUser(userId) {
+            $.ajax({
+                url: "{{ route('users.edit', ':id') }}".replace(':id', userId),
+                type: "GET",
+                success: function(response) {
+                    if (response.success) {
+                        let user = response.data;
+
+                        $('#role_id').val(user.role_id).trigger('change');
+                        $('#username').val(user.username);
+                        $('#name').val(user.name);
+                        $('#email').val(user.email);
+                        $('#phone').val(user.phone);
+                        $('#parent_list').val(user.parent_id).trigger('change');
+
+                        $('#password').closest('.form-group').hide();
+                        $('#confirm_password').closest('.form-group').hide();
+
+                        $('#formModalLabel').text("Update User");
+                        $('#btn-save').data('user-id', user.id).text("Update"); // Set user ID for update
+
+                        $('#formModal').modal('show');
+                    } else {
+                        toastr.error("Failed to fetch user data");
+                    }
+                },
+                error: function(xhr) {
+                    toastr.error("Error fetching user data");
+                }
+            });
+        }
+
+        function updateUser(userId) {
+            let formData = {
+                _token: $('input[name="_token"]').val(),
+                _method: "PUT", // Laravel requires PUT for updates
+                role_id: $('#role_id').val(),
+                parent_list: $('#parent_list').val(),
+                username: $('#username').val(),
+                name: $('#name').val(),
+                email: $('#email').val(),
+                phone: $('#phone').val(),
+            };
+
+            $('#btn-save').prop('disabled', true).text('Processing...');
+
+            $.ajax({
+                url: "{{ route('users.update', ':id') }}".replace(':id', userId),
+                type: "POST", // Laravel requires POST with "_method: PUT"
+                data: formData,
+                success: function(response) {
+                    if (response.success) {
+                        toastr.success("User updated successfully!");
+                        $('#formModal').modal('hide');
+                        $('#users-table').DataTable().ajax.reload();
+                    } else {
+                        toastr.error("Update failed: " + response.message);
+                    }
+                },
+                error: function(xhr) {
+                    toastr.error("Update error: " + xhr.responseJSON.message);
+                },
+                complete: function() {
+                    $('#btn-save').prop('disabled', false).text('Update');
+                }
+            });
+        }
     </script>
 @endpush
