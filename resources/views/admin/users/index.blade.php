@@ -181,6 +181,10 @@
     <script src="https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap4.min.js"></script>
     <script>
         $(document).ready(function() {
+
+            let currentRole = "{{ session('role_id') }}"; // Logged-in user's role
+            let currentUserId = "{{ session('user_id') }}"; // Logged-in user's ID
+
             $('.toggle-password').click(function() {
                 let target = $(this).data('target'); // Get target input ID
                 let input = $('#' + target); // Get input element
@@ -195,7 +199,6 @@
                 }
             });
 
-
             // Fetch roles via AJAX
             $.ajax({
                 url: "{{ route('roles.list') }}",
@@ -203,13 +206,21 @@
                 success: function(data) {
                     let roleDropdown = $("#role_id");
                     roleDropdown.empty();
+
                     roleDropdown.append('<option value="">Select Role</option>'); // Default option
 
-                    data.forEach(role => {
+                    // Superadmin (role_id = 1) gets Admin & Operator
+                    // Admin (role_id = 2) gets only Operator
+                    let filteredRoles = data.filter(role => {
+                        return currentRole == 1 ? [2, 3].includes(role.id) : role.id == 3;
+                    });
+
+                    filteredRoles.forEach(role => {
                         roleDropdown.append(`<option value="${role.id}">${role.name}</option>`);
                     });
                 }
             });
+
 
             // Fetch admins via AJAX
             $.ajax({
@@ -227,18 +238,36 @@
                 }
             });
 
-            // Show/hide parent_list based on selected role
             $('#role_id').change(function() {
                 let selectedRole = $(this).val();
 
-                // Assuming "Operator" has role_id = 3
-                if (selectedRole == 3) {
+                if (selectedRole == 3) { // If role is Operator
                     $('#parent_list_container').show();
+                    let parentDropdown = $('#parent_list');
+                    parentDropdown.empty();
+
+                    if (currentRole == 1) {
+                        // Superadmin sees all Admins as possible parents
+                        $.ajax({
+                            url: "{{ route('admins.list') }}",
+                            type: "GET",
+                            success: function(data) {
+                                parentDropdown.append('<option value="">Select Parent</option>'); // Default option
+                                data.forEach(admin => {
+                                    parentDropdown.append(`<option value="${admin.id}">${admin.name}</option>`);
+                                });
+                            }
+                        });
+                    } else if (currentRole == 2) {
+                        // Admin sets itself as the only parent option
+                        parentDropdown.append(`<option value="${currentUserId}" selected>${"{{ session('name') }}"}</option>`);
+                    }
                 } else {
                     $('#parent_list_container').hide();
-                    $('#parent_list').val(''); // Reset value when hidden
+                    $('#parent_list').val('');
                 }
             });
+
 
             $('#add-user-btn').click(function() {
                 $('#formModal').modal('show'); // Show the modal
