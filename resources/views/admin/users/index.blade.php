@@ -465,5 +465,32 @@
                 }
             });
         }
+
+        function deleteUser(userId) {
+            if (!confirm("Are you sure you want to delete this user?")) {
+                return; // Cancel deletion if user chooses "No"
+            }
+
+            $.ajax({
+                url: "{{ route('users.delete', ':id') }}".replace(':id', userId), // Dynamic delete URL
+                type: "DELETE",
+                data: { _token: $('input[name="_token"]').val() }, // CSRF token for security
+                beforeSend: function() {
+                    toastr.info("Deleting user...", { timeOut: 2000, progressBar: true });
+                },
+                success: function(response) {
+                    if (response.success) {
+                        toastr.success(response.message, "Success", { timeOut: 3000, progressBar: true });
+                        $('#users-table').DataTable().ajax.reload(); // Refresh DataTable
+                    } else {
+                        toastr.error(response.message, "Error", { timeOut: 3000, progressBar: true });
+                    }
+                },
+                error: function(xhr) {
+                    toastr.error("Failed to delete user!", "Error", { timeOut: 3000, progressBar: true });
+                    console.log("Delete error:", xhr.responseJSON);
+                }
+            });
+        }
     </script>
 @endpush

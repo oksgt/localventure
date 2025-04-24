@@ -148,10 +148,7 @@ class UserController extends Controller
                 }
 
                 return '<button type="button" class="btn btn-sm btn-primary" onclick="editUser(' . $user->id . ')">Edit</button>
-                        <form method="POST" action="user/delete/' . $user->id . '" style="display:inline;">
-                            ' . csrf_field() . '
-                            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
-                        </form>';
+                        <button type="button" class="btn btn-sm btn-danger" onclick="deleteUser(' . $user->id . ')">Delete</button>';
             })
             ->rawColumns(['action'])
             ->make(true);
@@ -261,22 +258,27 @@ class UserController extends Controller
 
     public function softDelete($id)
     {
-        $currentUser = Auth::user();
-        $user = User::findOrFail($id);
+        try {
+            $currentUser = Auth::user();
+            $user = User::findOrFail($id);
 
-        if ($currentUser->role_id == 1 || ($currentUser->role_id == 2 && $user->parent_id == $currentUser->id && $user->role_id == 3)) {
-            try {
-                $user->deleted_by = $currentUser->id;
-                $user->save();
-                $user->delete();
+            // Check if the logged-in user has permission to delete
+            if ($currentUser->role_id == 1 || ($currentUser->role_id == 2 && $user->parent_id == $currentUser->id && $user->role_id == 3)) {
+                DB::beginTransaction(); // Start transaction for reliability
 
-                return response()->json(['message' => 'User soft-deleted successfully'], 200);
-            } catch (\Exception $e) {
-                return response()->json(['error' => $e->getMessage()], 500);
+                $user->update(['deleted_by' => $currentUser->id]); // Record who deleted the user
+                $user->delete(); // Soft delete
+
+                DB::commit();
+                return response()->json(['success' => true, 'message' => 'User soft-deleted successfully'], 200);
             }
-        }
 
-        return response()->json(['error' => 'Unauthorized'], 403);
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+        } catch (\Exception $e) {
+            DB::rollBack(); // Roll back if an error occurs
+            \Log::error("Soft delete failed: " . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Failed to delete user', 'error' => $e->getMessage()], 500);
+        }
     }
 
     public function update(Request $request, $id)
