@@ -8,7 +8,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
@@ -50,6 +52,50 @@ class UserController extends Controller
         }
     }
 
+    public function store(Request $request)
+    {
+        $request->validate([
+            'role_id'           => 'required|exists:roles,id',
+            'username'          => 'required|unique:users,username|max:255',
+            'name'              => 'required|max:255',
+            'email'             => 'required|unique:users,email|email|max:255',
+            'phone'             => 'nullable|max:255',
+            'password'          => [
+                'required',
+                'min:8',
+                'confirmed',
+                'regex:/^[a-zA-Z0-9]+$/', // Ensure only alphanumeric characters
+            ],
+            'password_confirmation' => 'required|same:password',
+            'parent_list'       => 'nullable|exists:users,id',
+        ], [
+            'password.regex'    => 'Password must contain only letters and numbers (no special characters).',
+        ]);
+
+        try {
+            DB::beginTransaction(); // Start transaction
+
+            $newUser = User::create([
+                'role_id'   => $request->role_id,
+                'username'  => $request->username,
+                'name'      => $request->name,
+                'email'     => $request->email,
+                'phone'     => $request->phone,
+                'password'  => Hash::make($request->password),
+                'parent_id' => $request->role_id == 3 && !empty($request->parent_list) ? $request->parent_list : null,
+                'created_by' => Auth::user()->id,
+                'remember_token' => Str::random(10),
+            ]);
+
+            DB::commit(); // Commit transaction
+
+            return response()->json(['success' => true, 'message' => 'User created successfully!'], 201);
+        } catch (\Exception $e) {
+            DB::rollBack(); // Rollback transaction on error
+            Log::error("User creation failed: " . $e->getMessage()); // Log error for debugging
+            return response()->json(['success' => false, 'message' => 'Failed to create user', 'error' => $e->getMessage()], 500);
+        }
+    }
 
     public function getUsers(Request $request)
     {

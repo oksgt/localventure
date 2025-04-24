@@ -84,9 +84,10 @@
                                             <div class="col-md-6">
                                                 <div class="form-group">
                                                     <label for="role_id">Select Role</label>
-                                                    <select class="form-control" id="role_id" name="role_id">
+                                                    <select class="form-control " id="role_id" name="role_id">
                                                         <option value="">Loading...</option> <!-- Populated via AJAX -->
                                                     </select>
+                                                    <small class="form-text text-danger" id="role_id_error"></small>
                                                 </div>
 
                                                 <!-- Parent selection (hidden by default) -->
@@ -95,14 +96,17 @@
                                                     <select class="form-control" id="parent_list" name="parent_list">
                                                         <option value="">Loading...</option> <!-- AJAX will populate this -->
                                                     </select>
+                                                    <small class="form-text text-danger" id="parent_list_error"></small>
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="username">Username</label>
                                                     <input type="text" class="form-control" id="username" name="username" placeholder="Username">
+                                                    <small class="form-text text-danger" id="username_error"></small>
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="name">Name</label>
                                                     <input type="text" class="form-control" id="name" name="name" placeholder="Name">
+                                                    <small class="form-text text-danger" id="name_error"></small>
                                                 </div>
                                             </div>
 
@@ -110,18 +114,37 @@
                                                 <div class="form-group">
                                                     <label for="email">Email address</label>
                                                     <input type="email" class="form-control" id="email" name="email" placeholder="Email">
+                                                    <small class="form-text text-danger" id="email_error"></small>
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="phone">Phone</label>
                                                     <input type="text" class="form-control" id="phone" name="phone" placeholder="Phone">
+                                                    <small class="form-text text-danger" id="phone_error"></small>
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="password">Password</label>
-                                                    <input type="password" class="form-control" id="password" name="password" placeholder="Password">
+                                                    <div class="input-group">
+                                                        <input type="password" class="form-control" id="password" name="password" placeholder="Password">
+                                                        <div class="input-group-append">
+                                                            <button type="button" class="btn btn-outline-secondary toggle-password" data-target="password">
+                                                                <i class="fas fa-eye"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                    <small class="form-text text-danger" id="password_error"></small>
                                                 </div>
+
                                                 <div class="form-group">
                                                     <label for="confirm_password">Confirm Password</label>
-                                                    <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="Confirm Password">
+                                                    <div class="input-group">
+                                                        <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="Confirm Password">
+                                                        <div class="input-group-append">
+                                                            <button type="button" class="btn btn-outline-secondary toggle-password" data-target="confirm_password">
+                                                                <i class="fas fa-eye"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                    <small class="form-text text-danger" id="confirm_password_error"></small>
                                                 </div>
                                             </div>
                                         </div>
@@ -133,7 +156,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-light" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
+                    <button type="button" class="btn btn-primary" id="btn-save">Simpan</button>
                 </div>
             </div>
         </div>
@@ -145,6 +168,21 @@
     <script src="https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap4.min.js"></script>
     <script>
         $(document).ready(function() {
+            $('.toggle-password').click(function() {
+                let target = $(this).data('target'); // Get target input ID
+                let input = $('#' + target); // Get input element
+                let icon = $(this).find('i'); // Get icon
+
+                if (input.attr('type') === 'password') {
+                    input.attr('type', 'text'); // Show password
+                    icon.removeClass('fa-eye').addClass('fa-eye-slash'); // Change icon
+                } else {
+                    input.attr('type', 'password'); // Hide password
+                    icon.removeClass('fa-eye-slash').addClass('fa-eye'); // Change icon back
+                }
+            });
+
+
             // Fetch roles via AJAX
             $.ajax({
                 url: "{{ route('roles.list') }}",
@@ -191,6 +229,68 @@
             $('#add-user-btn').click(function() {
                 $('#formModal').modal('show'); // Show the modal
             });
+
+            $('#btn-save').click(function() {
+                let password = $('#password').val();
+                let confirmPassword = $('#confirm_password').val();
+
+                // Check if passwords match
+                if (password !== confirmPassword) {
+                    alert("Password and Confirm Password must match!");
+                    return; // Stop execution if passwords don't match
+                }
+
+                let formData = {
+                    _token: $('input[name="_token"]').val(),
+                    role_id: $('#role_id').val(),
+                    parent_list: $('#parent_list').val(),
+                    username: $('#username').val(),
+                    name: $('#name').val(),
+                    email: $('#email').val(),
+                    phone: $('#phone').val(),
+                    password: password,
+                    password_confirmation: confirmPassword,
+                };
+
+                // Clear previous validation errors
+                $('.form-control').removeClass('is-invalid');
+                $('.form-text.text-danger').text('');
+
+                // Disable button and show "Processing..." text
+                $('#btn-save').prop('disabled', true).text('Processing...');
+
+                $.ajax({
+                    url: "{{ route('users.store') }}",
+                    type: "POST",
+                    data: formData,
+                    success: function(response) {
+                        if (response.success) {
+                            $('#formModal').modal('hide'); // Close modal on success
+                            $('#users-table').DataTable().ajax.reload(); // Refresh DataTable
+                        } else {
+                            console.log("Insert failed:", response.message);
+                        }
+                    },
+                    error: function(xhr) {
+                        if (xhr.status === 422) { // Laravel validation error
+                            let errors = xhr.responseJSON.errors;
+
+                            // Loop through errors and update UI
+                            $.each(errors, function(field, messages) {
+                                $('#' + field).addClass('is-invalid'); // Highlight input field
+                                $('#' + field + '_error').text(messages[0]); // Show error message
+                            });
+                        } else {
+                            console.log("Insert error:", xhr.responseJSON);
+                        }
+                    },
+                    complete: function() {
+                        // Enable button and reset text
+                        $('#btn-save').prop('disabled', false).text('Simpan');
+                    }
+                });
+            });
+
         });
 
 
