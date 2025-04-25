@@ -13,7 +13,6 @@ return new class extends Migration
             $table->string('name', 255);
             $table->text('description');
             $table->string('address', 255)->nullable();
-            $table->boolean('is_publish')->default(false);
             $table->boolean('available')->default(false);
             $table->geometry('latlon');
             $table->timestamps();
