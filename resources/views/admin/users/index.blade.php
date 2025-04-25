@@ -265,6 +265,7 @@
 
 
             $('#add-user-btn').click(function() {
+                $('#userForm').trigger('reset');
                 $('#formModal').modal('show'); // Show the modal
             });
 

@@ -28,10 +28,10 @@
                 </a>
                 <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">
 
-                    <a class="dropdown-item">
+                    <button class="dropdown-item" id="btn-profile">
                         <i class="ti-user text-primary"></i>
                         Update Profile
-                    </a>
+                    </button>
                     <a class="dropdown-item">
                         <i class="ti-key text-primary"></i>
                         Update Password
@@ -52,3 +52,132 @@
         </button>
     </div>
 </nav>
+
+<div class="modal fade" id="formProfile" tabindex="-1" aria-labelledby="formProfileLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="formProfileLabel">Update Profile</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body p-0">
+                <div class="row">
+                    <div class="col-md-12 grid-margin stretch-card">
+                        <div class="card">
+                            <div class="card-body">
+                                <form class="forms-sample" id="profileForm">
+                                    @csrf
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="username">Username</label>
+                                                <input type="text" class="form-control" id="username_profile"
+                                                    name="username_profile" placeholder="Username">
+                                                <small class="form-text text-danger" id="username_error"></small>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="name">Name</label>
+                                                <input type="text" class="form-control" id="name_profile" name="name_profile"
+                                                    placeholder="Name">
+                                                <small class="form-text text-danger" id="name_error"></small>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="email">Email address</label>
+                                                <input type="email" class="form-control" id="email_profile"
+                                                    name="email_profile" placeholder="Email">
+                                                <small class="form-text text-danger" id="email_error"></small>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="phone">Phone</label>
+                                                <input type="text" class="form-control" id="phone_profile"
+                                                    name="phone_profile" placeholder="Phone">
+                                                <small class="form-text text-danger" id="phone_error"></small>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="btn-save-update-profile">Update</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@push('scripts')
+    <script>
+        $(document).ready(function() {
+            $('#btn-profile').click(function() {
+                $.ajax({
+                    url: "{{ route('profile.get') }}",
+                    type: "GET",
+                    success: function(response) {
+                        if (response.success) {
+                            let user = response.data;
+
+                            // Fill form with existing user data
+                            $('#username_profile').val(user.username);
+                            $('#name_profile').val(user.name);
+                            $('#email_profile').val(user.email);
+                            $('#phone_profile').val(user.phone);
+
+                            $('#formProfile').modal('show'); // Open modal
+                        } else {
+                            toastr.error("Failed to retrieve profile data", "Error", { timeOut: 3000, progressBar: true });
+                        }
+                    },
+                    error: function(xhr) {
+                        toastr.error("Error fetching profile data", "Error", { timeOut: 3000, progressBar: true });
+                    }
+                });
+            });
+
+            $('#btn-save-update-profile').click(function() {
+                let formData = {
+                    _token: $('input[name="_token"]').val(),
+                    _method: "PUT", // Laravel expects PUT for updates
+                    username_profile: $('#username_profile').val(),
+                    name_profile: $('#name_profile').val(),
+                    email_profile: $('#email_profile').val(),
+                    phone_profile: $('#phone_profile').val(),
+                };
+
+                $('#btn-save-update-profile').prop('disabled', true).text('Processing...');
+
+                $.ajax({
+                    url: "{{ route('profile.update') }}",
+                    type: "POST", // Laravel requires POST with "_method: PUT"
+                    data: formData,
+                    success: function(response) {
+                        if (response.success) {
+                            toastr.success(response.message, "Success", { timeOut: 3000, progressBar: true });
+                            $('#formProfile').modal('hide'); // Close modal
+                            //reload current page to reflect changes
+                            location.reload();
+                        } else {
+                            toastr.error(response.message, "Error", { timeOut: 3000, progressBar: true });
+                        }
+                    },
+                    error: function(xhr) {
+                        toastr.error("Failed to update profile", "Error", { timeOut: 3000, progressBar: true });
+                    },
+                    complete: function() {
+                        $('#btn-save-update-profile').prop('disabled', false).text('Update');
+                    }
+                });
+            });
+        });
+    </script>
+@endpush

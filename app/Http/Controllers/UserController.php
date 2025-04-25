@@ -314,4 +314,49 @@ class UserController extends Controller
             return response()->json(['success' => false, 'message' => 'Failed to update user', 'error' => $e->getMessage()], 500);
         }
     }
+
+    public function getProfile()
+    {
+        try {
+            $user = Auth::user(); // Get current user
+
+            return response()->json([
+                'success' => true,
+                'data' => $user
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to retrieve profile data',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $user = Auth::user(); // Get current user
+
+        $request->validate([
+            'username_profile' => $request->username_profile !== $user->username ? 'required|max:255|unique:users,username,' . $user->id : 'required|max:255',
+            'name_profile'     => 'required|max:255',
+            'email_profile'    => $request->email_profile !== $user->email ? 'required|email|max:255|unique:users,email,' . $user->id : 'required|email|max:255',
+            'phone_profile'    => 'nullable|max:255',
+        ]);
+
+        try {
+            $user->update([
+                'username' => $request->username_profile,
+                'name'     => $request->name_profile,
+                'email'    => $request->email_profile,
+                'phone'    => $request->phone_profile,
+                'updated_by' => $user->id,
+                'updated_at' => now()
+            ]);
+
+            return response()->json(['success' => true, 'message' => 'Profile updated successfully'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Failed to update profile', 'error' => $e->getMessage()], 500);
+        }
+    }
 }

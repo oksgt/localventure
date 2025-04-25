@@ -24,6 +24,8 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/admin/users/{id}/update', [UserController::class, 'update'])->name('users.update');
     Route::delete('/users/{id}/delete', [UserController::class, 'softDelete'])->name('users.delete');
 
+    Route::get('/profile', [UserController::class, 'getProfile'])->name('profile.get');
+    Route::put('/profile/update', [UserController::class, 'updateProfile'])->name('profile.update');
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout.process');
 });
