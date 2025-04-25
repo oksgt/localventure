@@ -36,6 +36,8 @@
                             <a type="button" class="btn btn-sm btn-primary" id="add-user-btn">Add New User</a>
                         @endif
 
+                        <button type="button" class="btn btn-sm btn-light" id="refresh-user-btn">Refresh</button>
+
                         <div class="table-responsive mt-2">
                             <table class="table table-striped" id="users-table">
                                 <thead>
@@ -180,7 +182,10 @@
             let currentRole = "{{ session('role_id') }}"; // Logged-in user's role
             let currentUserId = "{{ session('user_id') }}"; // Logged-in user's ID
 
-
+            $('#refresh-user-btn').click(function() {
+                $('#users-table').DataTable().ajax.reload(); // Reload DataTable
+                toastr.success("User list refreshed!", "Success", { timeOut: 2000, progressBar: true });
+            });
 
             // Fetch roles via AJAX
             $.ajax({
