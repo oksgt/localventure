@@ -180,19 +180,7 @@
             let currentRole = "{{ session('role_id') }}"; // Logged-in user's role
             let currentUserId = "{{ session('user_id') }}"; // Logged-in user's ID
 
-            $('.toggle-password').click(function() {
-                let target = $(this).data('target'); // Get target input ID
-                let input = $('#' + target); // Get input element
-                let icon = $(this).find('i'); // Get icon
 
-                if (input.attr('type') === 'password') {
-                    input.attr('type', 'text'); // Show password
-                    icon.removeClass('fa-eye').addClass('fa-eye-slash'); // Change icon
-                } else {
-                    input.attr('type', 'password'); // Hide password
-                    icon.removeClass('fa-eye-slash').addClass('fa-eye'); // Change icon back
-                }
-            });
 
             // Fetch roles via AJAX
             $.ajax({

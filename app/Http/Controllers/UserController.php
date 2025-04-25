@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Session;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Str;
 
@@ -231,31 +232,6 @@ class UserController extends Controller
         }
     }
 
-    public function updatePassword(Request $request, $id)
-    {
-        $request->validate([
-            'password' => 'required|min:8|confirmed',
-        ]);
-
-        $currentUser = Auth::user();
-        $user = User::findOrFail($id);
-
-        if ($currentUser->role_id == 1 || $user->id == $currentUser->id) { // Super Admin can update any password, others can update their own
-            try {
-                $user->update([
-                    'password' => Hash::make($request->password),
-                    'updated_by' => $currentUser->id,
-                ]);
-
-                return response()->json(['message' => 'Password updated successfully'], 200);
-            } catch (\Exception $e) {
-                return response()->json(['error' => $e->getMessage()], 500);
-            }
-        }
-
-        return response()->json(['error' => 'Unauthorized'], 403);
-    }
-
     public function softDelete($id)
     {
         try {
@@ -357,6 +333,39 @@ class UserController extends Controller
             return response()->json(['success' => true, 'message' => 'Profile updated successfully'], 200);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => 'Failed to update profile', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+
+    public function updatePassword(Request $request)
+    {
+        $user = Auth::user(); // Get current user
+
+        $request->validate([
+            'old_password'        => 'required',
+            'new_password'        => 'required|min:8|regex:/^[a-zA-Z0-9]+$/|confirmed',
+            'new_password_confirmation' => 'required|same:new_password',
+        ], [
+            'new_password.regex'  => 'Password must contain only letters and numbers (no special characters).',
+        ]);
+
+        // Check if old password matches
+        if (!Hash::check($request->old_password, $user->password)) {
+            return response()->json(['success' => false, 'message' => 'Old password is incorrect'], 400);
+        }
+
+        try {
+            $user->update([
+                'password' => Hash::make($request->new_password),
+            ]);
+
+            Auth::logout(); // Log out the user
+            Session::flash('success', 'Password updated successfully. Please log in again.');
+
+            return response()->json(['success' => true, 'redirect' => route('login')], 200);
+
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Failed to update password', 'error' => $e->getMessage()], 500);
         }
     }
 }

@@ -48,7 +48,21 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        $('.toggle-password').click(function() {
+                let target = $(this).data('target'); // Get target input ID
+                let input = $('#' + target); // Get input element
+                let icon = $(this).find('i'); // Get icon
 
+                if (input.attr('type') === 'password') {
+                    input.attr('type', 'text'); // Show password
+                    icon.removeClass('fa-eye').addClass('fa-eye-slash'); // Change icon
+                } else {
+                    input.attr('type', 'password'); // Hide password
+                    icon.removeClass('fa-eye-slash').addClass('fa-eye'); // Change icon back
+                }
+            });
+    </script>
     @stack('scripts')
 </body>
 
