@@ -14,7 +14,7 @@ return new class extends Migration
             $table->text('description');
             $table->string('address', 255)->nullable();
             $table->boolean('available')->default(false);
-            $table->geometry('latlon');
+            $table->string('latlon', 255)->nullable();
             $table->timestamps();
             $table->softDeletes();
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
