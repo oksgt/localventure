@@ -23,7 +23,7 @@
                                 User</a></li>
                         <li class="nav-item"> <a class="nav-link" href="pages/ui-features/typography.html">Master
                                 Tiket</a></li>
-                        <li class="nav-item"> <a class="nav-link" href="pages/ui-features/typography.html">Master
+                        <li class="nav-item"> <a class="nav-link" href="{{ route('admin.destinations.index') }}">Master
                                 Wisata</a></li>
                     </ul>
                 </div>

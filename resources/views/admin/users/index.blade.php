@@ -33,7 +33,7 @@
                         </p>
 
                         @if (session('role_id') !== 3)
-                            <a type="button" class="btn btn-sm btn-primary" id="add-user-btn">Add New User</a>
+                            <a type="button" class="btn btn-sm btn-primary" id="add-user-btn">Add New</a>
                         @endif
 
                         <button type="button" class="btn btn-sm btn-light" id="refresh-user-btn">Refresh</button>

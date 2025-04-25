@@ -4,11 +4,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Grimzy\LaravelMysqlSpatial\Eloquent\SpatialTrait;
 
 class Destination extends Model
 {
-    use HasFactory, SoftDeletes, SpatialTrait;
+    use HasFactory, SoftDeletes;
 
     protected $table = 'destinations';
 
@@ -16,17 +15,14 @@ class Destination extends Model
         'name',
         'description',
         'address',
-        'is_publish',
-        'available',
         'latlon',
+        'available',
         'created_by',
         'updated_by',
         'deleted_by',
     ];
 
     protected $dates = ['created_at', 'updated_at', 'deleted_at'];
-
-    protected $spatialFields = ['latlon']; // Enable spatial field handling
 
     /**
      * Relationships

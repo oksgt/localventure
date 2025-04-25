@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DestinationController;
 use App\Http\Controllers\HomeController as AdminHomeController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -28,6 +29,10 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/profile/update', [UserController::class, 'updateProfile'])->name('profile.update');
 
     Route::put('/profile/update-password', [UserController::class, 'updatePassword'])->name('profile.updatePassword');
+
+
+    Route::get('/admin/destinations', [DestinationController::class, 'index'])->name('admin.destinations.index');
+    Route::get('/admin/destinations/data', [DestinationController::class, 'getDestinations'])->name('admin.destinations.data');
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout.process');
 });
