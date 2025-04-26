@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Destination;
 use Illuminate\Http\Request;
 use App\Models\Wisata;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Yajra\DataTables\Facades\DataTables;
 
 class DestinationController extends Controller
@@ -48,11 +50,45 @@ class DestinationController extends Controller
             return $dataTable;
         } catch (\Exception $e) {
             DB::rollBack(); // Rollback transaction in case of failure
-            \Log::error("Error loading destinations: " . $e->getMessage());
+            Log::error("Error loading destinations: " . $e->getMessage());
 
             return response()->json(['success' => false, 'message' => 'Failed to load destinations', 'error' => $e->getMessage()], 500);
         }
     }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name'        => 'required|max:255',
+            'description' => 'required',
+            'address'     => 'nullable|max:255',
+            'latlon'      => 'required|max:255',
+            'available'   => 'required|boolean',
+        ]);
+
+        try {
+            DB::beginTransaction(); // Start transaction
+
+            $destination = Destination::create([
+                'name'        => $request->name,
+                'description' => $request->description,
+                'address'     => $request->address,
+                'latlon'      => $request->latlon,
+                'available'   => $request->available,
+                'created_by'  => Auth::id(), // Get the logged-in user ID
+            ]);
+
+            DB::commit(); // Commit transaction
+
+            return response()->json(['success' => true, 'message' => 'Destination added successfully'], 200);
+        } catch (\Exception $e) {
+            DB::rollBack(); // Rollback transaction in case of failure
+            Log::error("Error inserting destination: " . $e->getMessage());
+
+            return response()->json(['success' => false, 'message' => 'Failed to add destination', 'error' => $e->getMessage()], 500);
+        }
+    }
+
 
 }
 
