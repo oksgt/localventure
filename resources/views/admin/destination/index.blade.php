@@ -140,10 +140,11 @@
     <script src="https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap4.min.js"></script>
     <script>
         $(document).ready(function() {
+            let map = L.map('map').setView([-2.5, 117.5], 5); // Default view centered on Indonesia
+            let marker = L.marker([-2.5, 117.5], { draggable: true }).addTo(map); // Default marker
+
 
             $('#add-destination-btn').click(function() {
-                let map = L.map('map').setView([-2.5, 117.5], 5); // Default view centered on Indonesia
-                let marker = L.marker([-2.5, 117.5], { draggable: true }).addTo(map); // Default marker
 
                 // Load map tiles
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
