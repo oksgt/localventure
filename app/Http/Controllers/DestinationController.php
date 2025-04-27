@@ -89,6 +89,50 @@ class DestinationController extends Controller
         }
     }
 
+    public function edit($id)
+    {
+        try {
+            $destination = Destination::findOrFail($id);
+            return response()->json(['success' => true, 'data' => $destination], 200);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Failed to fetch destination data', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'name'        => 'required|max:255',
+            'description' => 'required',
+            'address'     => 'nullable|max:255',
+            'latlon'      => 'required|max:255',
+            'available'   => 'required|boolean',
+        ]);
+
+        try {
+            DB::beginTransaction(); // Start transaction
+
+            $destination = Destination::findOrFail($id);
+            $destination->update([
+                'name'        => $request->name,
+                'description' => $request->description,
+                'address'     => $request->address,
+                'latlon'      => $request->latlon,
+                'available'   => $request->available,
+                'updated_by'  => Auth::id(),
+            ]);
+
+            DB::commit(); // Commit transaction
+
+            return response()->json(['success' => true, 'message' => 'Destination updated successfully'], 200);
+        } catch (\Exception $e) {
+            DB::rollBack(); // Rollback transaction
+            Log::error("Error updating destination: " . $e->getMessage());
+
+            return response()->json(['success' => false, 'message' => 'Failed to update destination', 'error' => $e->getMessage()], 500);
+        }
+    }
+
 
 }
 

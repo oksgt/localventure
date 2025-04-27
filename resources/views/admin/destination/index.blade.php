@@ -141,7 +141,9 @@
     <script>
         $(document).ready(function() {
             let map = L.map('map').setView([-2.5, 117.5], 5); // Default view centered on Indonesia
-            let marker = L.marker([-2.5, 117.5], { draggable: true }).addTo(map); // Default marker
+            let marker = L.marker([-2.5, 117.5], {
+                draggable: true
+            }).addTo(map); // Default marker
 
 
             $('#add-destination-btn').click(function() {
@@ -155,7 +157,10 @@
                 $('#latlon').val('-2.5, 117.5');
 
                 // Geolocation function to update marker
-                map.locate({ setView: true, maxZoom: 13 });
+                map.locate({
+                    setView: true,
+                    maxZoom: 13
+                });
 
                 map.on('locationfound', function(e) {
                     let lat = e.latitude;
@@ -168,7 +173,10 @@
 
                 // Handle errors if geolocation fails
                 map.on('locationerror', function() {
-                    toastr.error("Failed to get your location", "Error", { timeOut: 3000, progressBar: true });
+                    toastr.error("Failed to get your location", "Error", {
+                        timeOut: 3000,
+                        progressBar: true
+                    });
                 });
 
                 // Update input field when marker is dragged
@@ -182,6 +190,39 @@
 
                 $('#formDestination').modal('show');
             });
+
+            $(document).on('click', '.edit-destination', function() {
+                let id = $(this).data('id');
+
+                $.ajax({
+                    url: "{{ url('/destinations') }}/" + id + "/edit",
+                    type: "GET",
+                    success: function(response) {
+                        if (response.success) {
+                            $('#formDestination').modal('show'); // Open modal
+                            $('#name').val(response.data.name);
+                            $('#description').val(response.data.description);
+                            $('#address').val(response.data.address);
+                            $('#latlon').val(response.data.latlon);
+                            $('#available').val(response.data.available);
+                            $('#btn-save-destination').attr('data-id',
+                            id); // Store ID for update
+                        } else {
+                            toastr.error("Failed to load destination data", "Error", {
+                                timeOut: 3000,
+                                progressBar: true
+                            });
+                        }
+                    },
+                    error: function() {
+                        toastr.error("Failed to fetch destination details", "Error", {
+                            timeOut: 3000,
+                            progressBar: true
+                        });
+                    }
+                });
+            });
+
 
             $('#destinations-table').DataTable({
                 processing: true,
@@ -227,8 +268,10 @@
             });
 
             $('#btn-save-destination').click(function() {
+                let id = $(this).attr('data-id'); // Check if an ID exists (for update)
                 let formData = {
                     _token: $('input[name="_token"]').val(),
+                    _method: id ? "PUT" : "POST", // Change method dynamically
                     name: $('#name').val(),
                     description: $('#description').val(),
                     address: $('#address').val(),
@@ -236,10 +279,13 @@
                     available: $('#available').val(),
                 };
 
+                let url = id ? "{{ url('/destinations') }}/" + id + "/update" :
+                    "{{ route('admin.destinations.store') }}";
+
                 $('#btn-save-destination').prop('disabled', true).text('Processing...');
 
                 $.ajax({
-                    url: "{{ route('admin.destinations.store') }}",
+                    url: url,
                     type: "POST",
                     data: formData,
                     success: function(response) {
@@ -259,13 +305,56 @@
                         }
                     },
                     error: function(xhr) {
-                        toastr.error("Failed to add destination", "Error", {
+                        toastr.error("Failed to process destination", "Error", {
                             timeOut: 3000,
                             progressBar: true
                         });
                     },
                     complete: function() {
                         $('#btn-save-destination').prop('disabled', false).text('Save');
+                    }
+                });
+            });
+            $(document).on('click', '.delete-destination', function() {
+                let id = $(this).data('id');
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: "{{ url('/destinations') }}/" + id,
+                            type: "DELETE",
+                            data: {
+                                _token: $('input[name="_token"]').val()
+                            },
+                            success: function(response) {
+                                if (response.success) {
+                                    toastr.success(response.message, "Success", {
+                                        timeOut: 3000,
+                                        progressBar: true
+                                    });
+                                    $('#destinations-table').DataTable().ajax.reload();
+                                } else {
+                                    toastr.error(response.message, "Error", {
+                                        timeOut: 3000,
+                                        progressBar: true
+                                    });
+                                }
+                            },
+                            error: function() {
+                                toastr.error("Failed to delete destination", "Error", {
+                                    timeOut: 3000,
+                                    progressBar: true
+                                });
+                            }
+                        });
                     }
                 });
             });

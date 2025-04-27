@@ -34,6 +34,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin/destinations', [DestinationController::class, 'index'])->name('admin.destinations.index');
     Route::get('/admin/destinations/data', [DestinationController::class, 'getDestinations'])->name('admin.destinations.data');
     Route::post('/admin/destinations/store', [DestinationController::class, 'store'])->name('admin.destinations.store');
+    Route::get('/destinations/{id}/edit', [DestinationController::class, 'edit'])->name('destinations.edit');
+    Route::put('/destinations/{id}/update', [DestinationController::class, 'update'])->name('destinations.update');
+
 
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout.process');
