@@ -19,7 +19,7 @@
                     <ul class="nav flex-column sub-menu">
                         <li class="nav-item"> <a class="nav-link" href="{{ route('admin.users.index') }}">Data User</a>
                         </li>
-                        <li class="nav-item"> <a class="nav-link" href="pages/ui-features/dropdowns.html">Mapping
+                        <li class="nav-item"> <a class="nav-link" href="{{ route('admin.mapping-user.index') }}">Mapping
                                 User</a></li>
                         <li class="nav-item"> <a class="nav-link" href="pages/ui-features/typography.html">Master
                                 Tiket</a></li>

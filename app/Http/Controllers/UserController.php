@@ -368,4 +368,15 @@ class UserController extends Controller
             return response()->json(['success' => false, 'message' => 'Failed to update password', 'error' => $e->getMessage()], 500);
         }
     }
+
+    public function list()
+    {
+        $users = User::select('users.id', 'users.name', 'roles.name as role')
+            ->join('roles', 'users.role_id', '=', 'roles.id')
+            ->where('users.role_id', '!=', Auth::user()->role_id)
+            ->where('users.deleted_at', null) // Exclude soft-deleted users
+            ->get();
+
+        return response()->json(['success' => true, 'data' => $users]);
+    }
 }

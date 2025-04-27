@@ -68,4 +68,8 @@ class User extends Authenticatable
         return $this->belongsTo(Role::class, 'role_id');
     }
 
+    public function mappedDestinations()
+    {
+        return $this->belongsToMany(Destination::class, 'user_mapping', 'user_id', 'destination_id');
+    }
 }

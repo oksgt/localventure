@@ -265,5 +265,11 @@ class DestinationController extends Controller
         }
     }
 
+    public function list()
+    {
+        $destinations = Destination::select('id', 'name')->get();
+        return response()->json(['success' => true, 'data' => $destinations]);
+    }
+
 }
 

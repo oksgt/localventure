@@ -3,7 +3,9 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DestinationController;
 use App\Http\Controllers\HomeController as AdminHomeController;
+use App\Http\Controllers\MappingUserController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\UserMappingController;
 use Illuminate\Support\Facades\Route;
 
 // Public Routes (Accessible Without Login)
@@ -41,6 +43,14 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin/destination-gallery/{destinationId}', [DestinationController::class, 'fetchGallery'])->name('admin.destination-gallery.fetch');
     Route::post('/admin/destination-gallery/upload', [DestinationController::class, 'upload'])->name('admin.destination-gallery.upload');
     Route::delete('/admin/destination-gallery/{id}/remove', [DestinationController::class, 'remove'])->name('admin.destination-gallery.remove');
+
+    Route::get('/admin/mapping-user', [UserMappingController::class, 'index'])->name('admin.mapping-user.index');
+    Route::get('/admin/mapping-user/data', [UserMappingController::class, 'getData'])->name('admin.mapping-user.data');
+    Route::post('/admin/mapping-users/store', [UserMappingController::class, 'store'])->name('admin.mapping-users.store');
+    Route::delete('/admin/mapping-users/{id}', [UserMappingController::class, 'destroy'])->name('admin.mapping-users.destroy');
+
+    Route::get('/users/list', [UserController::class, 'list'])->name('users.list');
+    Route::get('/destinations/list', [DestinationController::class, 'list'])->name('destinations.list');
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout.process');
 });

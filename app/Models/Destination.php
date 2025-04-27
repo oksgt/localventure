@@ -45,4 +45,9 @@ class Destination extends Model
     {
         return $this->belongsTo(User::class, 'deleted_by');
     }
+
+    public function assignedUsers()
+    {
+        return $this->belongsToMany(User::class, 'user_mapping', 'destination_id', 'user_id');
+    }
 }
