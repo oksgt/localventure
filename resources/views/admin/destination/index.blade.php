@@ -175,53 +175,14 @@
     <script src="https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap4.min.js"></script>
     <script>
         $(document).ready(function() {
-            let map = L.map('map').setView([-2.5, 117.5], 5); // Default view centered on Indonesia
-            let marker = L.marker([-2.5, 117.5], {
-                draggable: true
-            }).addTo(map); // Default marker
 
+            let map;
 
             $('#add-destination-btn').click(function() {
 
-                // Load map tiles
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '&copy; OpenStreetMap contributors'
-                }).addTo(map);
-
-                // Update input field with default position
-                $('#latlon').val('-2.5, 117.5');
-
-                // Geolocation function to update marker
-                map.locate({
-                    setView: true,
-                    maxZoom: 13
-                });
-
-                map.on('locationfound', function(e) {
-                    let lat = e.latitude;
-                    let lon = e.longitude;
-
-                    map.setView([lat, lon], 13); // Center map
-                    marker.setLatLng([lat, lon]); // Move marker to user's location
-                    $('#latlon').val(lat + ', ' + lon); // Update input value
-                });
-
-                // Handle errors if geolocation fails
-                map.on('locationerror', function() {
-                    toastr.error("Failed to get your location", "Error", {
-                        timeOut: 3000,
-                        progressBar: true
-                    });
-                });
-
-                // Update input field when marker is dragged
-                marker.on('dragend', function(event) {
-                    let newLatLng = event.target.getLatLng();
-                    $('#latlon').val(newLatLng.lat + ', ' + newLatLng.lng);
-
-                    // Ensure the map centers on the dragged marker
-                    map.setView(newLatLng);
-                });
+                initializeMap();
+                $('#destinationForm')[0].reset();
+                $('#formDestinationLabel').text("Add New Destination");
 
                 $('#formDestination').modal('show');
             });
@@ -234,14 +195,20 @@
                     type: "GET",
                     success: function(response) {
                         if (response.success) {
+                            if (response.success && response.data.latlon) {
+                                initializeMap(response.data.latlon.split(',')[0], response.data.latlon.split(',')[1]); // Pass lat/lon
+                            } else {
+                                initializeMap(); // Default to Indonesia if no data is found
+                            }
+
+                            $('#formDestinationLabel').text("Edit Destination");
                             $('#formDestination').modal('show'); // Open modal
                             $('#name').val(response.data.name);
                             $('#description').val(response.data.description);
                             $('#address').val(response.data.address);
                             $('#latlon').val(response.data.latlon);
                             $('#available').val(response.data.available);
-                            $('#btn-save-destination').attr('data-id',
-                            id); // Store ID for update
+                            $('#btn-save-destination').attr('data-id',id); // Store ID for update
                         } else {
                             toastr.error("Failed to load destination data", "Error", {
                                 timeOut: 3000,
@@ -482,5 +449,52 @@
 
 
         });
+
+        function initializeMap(lat = -2.5, lon = 117.5) {
+
+            if (map && map instanceof L.Map) {
+                map.setView([lat, lon], 5); // If map exists, just update view
+                return;
+            }
+
+
+            // Initialize map only if it does not exist
+            map = L.map('map').setView([lat, lon], 5);
+
+
+            let marker = L.marker([lat, lon], { draggable: true }).addTo(map);
+
+            // Load map tiles
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(map);
+
+            // Set initial input field value
+            $('#latlon').val(lat + ', ' + lon);
+
+            // Try to locate user's position
+            map.locate({ setView: true, maxZoom: 13 });
+
+            map.on('locationfound', function(e) {
+                let userLat = e.latitude;
+                let userLon = e.longitude;
+
+                map.setView([userLat, userLon], 13); // Center map on user's location
+                marker.setLatLng([userLat, userLon]); // Move marker
+                $('#latlon').val(userLat + ', ' + userLon);
+            });
+
+            // Handle geolocation errors
+            map.on('locationerror', function() {
+                toastr.error("Failed to get your location", "Error", { timeOut: 3000, progressBar: true });
+            });
+
+            // Update input field when marker is dragged
+            marker.on('dragend', function(event) {
+                let newLatLng = event.target.getLatLng();
+                $('#latlon').val(newLatLng.lat + ', ' + newLatLng.lng);
+                map.setView(newLatLng);
+            });
+        }
     </script>
 @endpush
