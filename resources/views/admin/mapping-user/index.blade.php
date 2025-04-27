@@ -136,36 +136,61 @@
             });
 
             $('#btn-save-mapping-user').click(function() {
+                let mappingId = $('#mapping_id').val();
                 let formData = {
                     user_id: $('#user_id').val(),
                     destination_id: $('#destination_id').val(),
-                    role_id: $('#user_id option:selected').data('role'), // Assuming role comes from user selection
                     _token: $('input[name="_token"]').val()
                 };
 
+                let url = mappingId ? "{{ route('admin.mapping-users.update', ':id') }}".replace(':id', mappingId) : "{{ route('admin.mapping-users.store') }}";
+                let type = mappingId ? "PUT" : "POST";
+
                 $.ajax({
-                    url: "{{ route('admin.mapping-users.store') }}",
-                    type: "POST",
+                    url: url,
+                    type: type,
                     data: formData,
                     success: function(response) {
                         if (response.success) {
                             toastr.success(response.message, "Success", { timeOut: 3000, progressBar: true });
 
-                            $('#mappingUserModal').modal('hide'); // Close modal
-                            $('#mappingUserForm')[0].reset(); // Reset form
-                            $('#mapping-users-table').DataTable().ajax.reload(); // Refresh table
+                            $('#mappingUserModal').modal('hide');
+                            $('#mappingUserForm')[0].reset();
+                            $('#mapping-users-table').DataTable().ajax.reload();
                         } else {
                             toastr.error(response.message, "Error", { timeOut: 3000, progressBar: true });
                         }
                     },
-                    error: function(xhr) {
+                    error: function() {
                         toastr.error("Failed to save mapping", "Error", { timeOut: 3000, progressBar: true });
                     }
                 });
             });
+
+            $(document).on('click', '.edit-mapping', function() {
+                let mappingId = $(this).data('id');
+                let userId = $(this).data('user');
+                let destinationId = $(this).data('destination');
+
+                console.log("Mapping ID:", mappingId, "User ID:", userId, "Destination ID:", destinationId); // Debugging
+
+                $('#mapping_id').val(mappingId); // Set mapping ID first
+
+                // Load users, then set the selected user after dropdown is populated
+                loadUsers(function() {
+                    $('#user_id').val(userId).trigger('change'); // Ensure selection updates
+                });
+
+                // Load destinations, then set the selected destination after dropdown is populated
+                loadDestinations(function() {
+                    $('#destination_id').val(destinationId).trigger('change'); // Ensure selection updates
+                });
+
+                $('#mappingUserModal').modal('show'); // Open modal after values are set
+            });
         });
 
-        function loadUsers() {
+        function loadUsers(callback) {
             $.ajax({
                 url: "{{ route('users.list') }}",
                 type: "GET",
@@ -174,14 +199,13 @@
                     response.data.forEach(user => {
                         $('#user_id').append(`<option value="${user.id}">${user.name} (${user.role})</option>`);
                     });
-                },
-                error: function() {
-                    toastr.error("Failed to load users", "Error", { timeOut: 3000, progressBar: true });
+
+                    if (callback) callback(); // Set selected user after loading completes
                 }
             });
         }
 
-        function loadDestinations() {
+        function loadDestinations(callback) {
             $.ajax({
                 url: "{{ route('destinations.list') }}",
                 type: "GET",
@@ -190,9 +214,8 @@
                     response.data.forEach(destination => {
                         $('#destination_id').append(`<option value="${destination.id}">${destination.name}</option>`);
                     });
-                },
-                error: function() {
-                    toastr.error("Failed to load destinations", "Error", { timeOut: 3000, progressBar: true });
+
+                    if (callback) callback(); // Set selected destination after loading completes
                 }
             });
         }

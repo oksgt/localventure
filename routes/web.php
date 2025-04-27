@@ -48,6 +48,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin/mapping-user/data', [UserMappingController::class, 'getData'])->name('admin.mapping-user.data');
     Route::post('/admin/mapping-users/store', [UserMappingController::class, 'store'])->name('admin.mapping-users.store');
     Route::delete('/admin/mapping-users/{id}', [UserMappingController::class, 'destroy'])->name('admin.mapping-users.destroy');
+    Route::put('/admin/mapping-users/{id}', [UserMappingController::class, 'update'])->name('admin.mapping-users.update');
 
     Route::get('/users/list', [UserController::class, 'list'])->name('users.list');
     Route::get('/destinations/list', [DestinationController::class, 'list'])->name('destinations.list');
