@@ -250,12 +250,6 @@
                         searchable: false
                     },
                     {
-                        data: 'location',
-                        name: 'location',
-                        orderable: false,
-                        searchable: false
-                    },
-                    {
                         data: 'action',
                         name: 'action',
                         orderable: false,
