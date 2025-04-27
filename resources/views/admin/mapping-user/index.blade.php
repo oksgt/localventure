@@ -188,6 +188,44 @@
 
                 $('#mappingUserModal').modal('show'); // Open modal after values are set
             });
+
+            $(document).on('click', '.delete-mapping', function() {
+                let mappingId = $(this).data('id'); // Ensure ID is retrieved
+
+                if (!mappingId) {
+                    toastr.error("Missing mapping ID", "Error", { timeOut: 3000, progressBar: true });
+                    return;
+                }
+
+                Swal.fire({
+                    title: "Are you sure?",
+                    text: "This action cannot be undone!",
+                    // icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#d33",
+                    cancelButtonColor: "#3085d6",
+                    confirmButtonText: "Yes, delete it!"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: "{{ route('admin.mapping-users.destroy', ':id') }}".replace(':id', mappingId),
+                            type: "DELETE",
+                            data: { _token: $('input[name="_token"]').val() },
+                            success: function(response) {
+                                if (response.success) {
+                                    toastr.success(response.message, "Success", { timeOut: 3000, progressBar: true });
+                                    $('#mapping-users-table').DataTable().ajax.reload(); // Refresh table
+                                } else {
+                                    toastr.error(response.message, "Error", { timeOut: 3000, progressBar: true });
+                                }
+                            },
+                            error: function() {
+                                Swal.fire("Failed!", "Unable to delete mapping", "error");
+                            }
+                        });
+                    }
+                });
+            });
         });
 
         function loadUsers(callback) {

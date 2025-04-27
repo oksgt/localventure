@@ -35,7 +35,9 @@ class UserMappingController extends Controller
                             data-destination="' . $mapping->destination_id . '">
                             Edit
                         </button>
-                        <button class="btn btn-sm btn-danger delete-mapping" data-id="' . $mapping->id . '">Delete</button>';
+                        <button class="btn btn-sm btn-danger delete-mapping" data-id="' . $mapping->id . '">
+                            Delete
+                        </button>';
             })
             ->rawColumns(['action'])
             ->make(true);
@@ -128,10 +130,19 @@ class UserMappingController extends Controller
     public function destroy($id)
     {
         try {
-            UserMapping::findOrFail($id)->delete();
-            return response()->json(['success' => true, 'message' => 'Mapping removed successfully']);
+            DB::beginTransaction();
+
+            $mapping = UserMapping::findOrFail($id); // Find mapping
+            $mapping->delete(); // Delete it
+
+            DB::commit();
+
+            return response()->json(['success' => true, 'message' => 'User mapping deleted successfully']);
         } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => 'Failed to remove mapping', 'error' => $e->getMessage()], 500);
+            DB::rollBack();
+            Log::error("Error deleting user mapping: " . $e->getMessage());
+
+            return response()->json(['success' => false, 'message' => 'Failed to delete mapping', 'error' => $e->getMessage()], 500);
         }
     }
 }
