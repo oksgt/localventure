@@ -133,6 +133,41 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="imageUploadModal" tabindex="-1" aria-labelledby="imageUploadModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="imageUploadModalLabel">Upload Image</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="imageUploadForm">
+                        @csrf
+                        <input type="hidden" name="destination_id" id="destination_id">
+
+                        <div class="form-group">
+                            <label for="image">Select Image</label>
+                            <input type="file" class="form-control" id="image" name="image" accept=".jpg, .jpeg, .png">
+                            <small class="form-text text-danger" id="image_error"></small>
+                        </div>
+
+                        <div class="form-group text-center">
+                            <img id="imagePreview" src="#" class="img-fluid rounded d-none" style="max-width: 100%; max-height: 300px;">
+                            <p id="noImageText" class="text-muted">No image available</p>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger d-none" id="btn-remove-image">Remove Image</button>
+                            <button type="button" class="btn btn-primary" id="btn-upload-image">Upload Image</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @push('scripts')
@@ -349,6 +384,102 @@
                     }
                 });
             });
+
+            $(document).on('click', '.upload-gallery-btn', function() {
+                let destinationId = $(this).data('id');
+
+                $('#destination_id').val(destinationId); // Set destination ID in hidden input
+
+                // Fetch existing gallery data
+                $.ajax({
+                    url: "{{ url('/admin/destination-gallery') }}/" + destinationId,
+                    type: "GET",
+                    success: function(response) {
+                        if (response.success && response.image_url) {
+                            $('#imagePreview').attr('src', response.image_url).removeClass('d-none');
+                            $('#noImageText').addClass('d-none');
+                            $('#btn-remove-image').attr('data-id', response.gallery_id).removeClass('d-none'); // Show remove button
+                        } else {
+                            $('#imagePreview').addClass('d-none').attr('src', '');
+                            $('#noImageText').removeClass('d-none');
+                            $('#btn-remove-image').addClass('d-none').attr('data-id', '');
+                        }
+
+                        $('#imageUploadModal').modal('show'); // Open modal after data is loaded
+                    },
+                    error: function() {
+                        $('#imagePreview').addClass('d-none').attr('src', '');
+                        $('#noImageText').removeClass('d-none');
+                        $('#btn-remove-image').addClass('d-none').attr('data-id', '');
+                        $('#imageUploadModal').modal('show'); // Open modal even if data fails to load
+                    }
+                });
+            });
+
+            // Preview selected image
+            $('#image').change(function() {
+                let file = this.files[0];
+                if (file) {
+                    let reader = new FileReader();
+                    reader.onload = function(event) {
+                        $('#imagePreview').attr('src', event.target.result).removeClass('d-none');
+                        $('#noImageText').addClass('d-none');
+                        $('#btn-remove-image').removeClass('d-none'); // Show remove button
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            // Upload image
+            $('#btn-upload-image').click(function() {
+                let formData = new FormData($('#imageUploadForm')[0]);
+
+                $.ajax({
+                    url: "{{ route('admin.destination-gallery.upload') }}",
+                    type: "POST",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        if (response.success) {
+                            toastr.success(response.message, "Success", { timeOut: 3000, progressBar: true });
+
+                            // Hide modal
+                            $('#imageUploadModal').modal('hide');
+
+                            // Reset form fields
+                            $('#imageUploadForm')[0].reset();
+
+                            // Reset preview and text
+                            $('#imagePreview').attr('src', '').addClass('d-none');
+                            $('#noImageText').removeClass('d-none');
+                            $('#btn-remove-image').addClass('d-none').attr('data-id', '');
+                        } else {
+                            toastr.error(response.message, "Error", { timeOut: 3000, progressBar: true });
+                        }
+                    }
+                });
+            });
+
+            // Remove image
+            $('#btn-remove-image').click(function() {
+                let id = $(this).data('id');
+
+                $.ajax({
+                    url: "{{ url('/admin/destination-gallery') }}/" + id + "/remove",
+                    type: "DELETE",
+                    data: { _token: $('input[name="_token"]').val() },
+                    success: function(response) {
+                        if (response.success) {
+                            toastr.success(response.message, "Success", { timeOut: 3000, progressBar: true });
+                            $('#imagePreview').addClass('d-none').attr('src', '');
+                            $('#noImageText').removeClass('d-none');
+                            $('#btn-remove-image').addClass('d-none');
+                        }
+                    }
+                });
+            });
+
 
         });
     </script>

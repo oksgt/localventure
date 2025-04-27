@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Destination;
+use App\Models\DestinationGallery;
 use Illuminate\Http\Request;
 use App\Models\Wisata;
 use Illuminate\Support\Facades\Auth;
@@ -33,7 +34,9 @@ class DestinationController extends Controller
                         : $destination->description;
                 })
                 ->addColumn('gallery', function ($destination) {
-                    return '<a href="#" class="btn btn-sm btn-info"><i class="ti-gallery"></i></a>'; // Set URL dynamically later
+                    return '<a href="#" class="btn btn-sm btn-info upload-gallery-btn" data-id="' . $destination->id . '">
+                                <i class="ti-gallery"></i>
+                            </a>';
                 })
                 ->addColumn('location', function ($destination) {
                     return '<a href="#" class="btn btn-sm btn-success"><i class="ti-location-pin"></i></a>'; // Set URL dynamically later
@@ -150,9 +153,118 @@ class DestinationController extends Controller
             return response()->json(['success' => true, 'message' => 'Destination deleted successfully'], 200);
         } catch (\Exception $e) {
             DB::rollBack(); // Rollback transaction in case of failure
-            \Log::error("Error deleting destination: " . $e->getMessage());
+            Log::error("Error deleting destination: " . $e->getMessage());
 
             return response()->json(['success' => false, 'message' => 'Failed to delete destination', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function fetchGallery($destinationId)
+    {
+        try {
+            $gallery = DestinationGallery::where('destination_id', $destinationId)->first();
+
+            if ($gallery) {
+                return response()->json([
+                    'success' => true,
+                    'image_url' => asset('storage/destination/' . $gallery->filename),
+                    'gallery_id' => $gallery->id
+                ], 200);
+            }
+
+            return response()->json(['success' => false, 'message' => 'No image found'], 404);
+        } catch (\Exception $e) {
+            Log::error("Error fetching gallery: " . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Failed to fetch image', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function upload(Request $request)
+    {
+        $request->validate([
+            'destination_id' => 'required|exists:destinations,id',
+            'image' => 'required|mimes:jpg,jpeg,png|max:5120', // Allow only JPG/PNG, max size 5MB
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            $file = $request->file('image');
+            $filename = time() . '.' . $file->getClientOriginalExtension();
+            $filePath = 'storage/destination/' . $filename;
+
+            // Check if a gallery record already exists for this destination
+            $existingGallery = DestinationGallery::where('destination_id', $request->destination_id)->first();
+
+            if ($existingGallery) {
+                // Delete existing file
+                $oldFilePath = storage_path('app/public/destination/' . $existingGallery->filename);
+                if (file_exists($oldFilePath)) {
+                    unlink($oldFilePath);
+                }
+
+                // Update existing record
+                $existingGallery->update([
+                    'original_file_name' => $file->getClientOriginalName(),
+                    'filename' => $filename,
+                    'file_ext' => $file->getClientOriginalExtension(),
+                    'file_size' => $file->getSize(),
+                    'updated_by' => Auth::id(),
+                ]);
+            } else {
+                // Store new record
+                DestinationGallery::create([
+                    'destination_id' => $request->destination_id,
+                    'original_file_name' => $file->getClientOriginalName(),
+                    'filename' => $filename,
+                    'file_ext' => $file->getClientOriginalExtension(),
+                    'file_size' => $file->getSize(),
+                    'created_by' => Auth::id(),
+                ]);
+            }
+
+            // Store file in the correct directory
+            $file->storeAs('destination', $filename, 'public');
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Image uploaded successfully',
+                'image_url' => asset('storage/destination/' . $filename)
+            ], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error("Error uploading image: " . $e->getMessage());
+
+            return response()->json(['success' => false, 'message' => 'Failed to upload image', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function remove($id)
+    {
+        try {
+            DB::beginTransaction();
+
+            $gallery = DestinationGallery::findOrFail($id);
+            $filePath = storage_path('app/public/destination/' . $gallery->filename);
+
+            // Delete file
+            if (file_exists($filePath)) {
+                unlink($filePath);
+            }
+
+            // Delete record
+            $gallery->delete();
+
+            DB::commit();
+
+            return response()->json(['success' => true, 'message' => 'Image removed successfully'], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error("Error removing image: " . $e->getMessage());
+
+            return response()->json(['success' => false, 'message' => 'Failed to remove image', 'error' => $e->getMessage()], 500);
         }
     }
 

@@ -38,5 +38,9 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/admin/destinations/{id}/update', [DestinationController::class, 'update'])->name('admin.destinations.update');
     Route::delete('/admin/destinations/{id}', [DestinationController::class, 'destroy'])->name('admin.destinations.destroy');
 
+    Route::get('/admin/destination-gallery/{destinationId}', [DestinationController::class, 'fetchGallery'])->name('admin.destination-gallery.fetch');
+    Route::post('/admin/destination-gallery/upload', [DestinationController::class, 'upload'])->name('admin.destination-gallery.upload');
+    Route::delete('/admin/destination-gallery/{id}/remove', [DestinationController::class, 'remove'])->name('admin.destination-gallery.remove');
+
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout.process');
 });
