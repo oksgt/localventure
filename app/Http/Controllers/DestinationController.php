@@ -38,9 +38,6 @@ class DestinationController extends Controller
                                 <i class="ti-gallery"></i>
                             </a>';
                 })
-                ->addColumn('location', function ($destination) {
-                    return '<a href="#" class="btn btn-sm btn-success"><i class="ti-location-pin"></i></a>'; // Set URL dynamically later
-                })
                 ->addColumn('action', function ($destination) {
                     return '<button class="btn btn-sm btn-primary edit-destination" data-id="' . $destination->id . '">Edit</button>
                             <button class="btn btn-sm btn-danger delete-destination" data-id="' . $destination->id . '">Delete</button>';

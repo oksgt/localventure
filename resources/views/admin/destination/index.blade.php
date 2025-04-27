@@ -47,7 +47,6 @@
                                         <th>Name</th>
                                         <th>Description</th>
                                         <th>Gallery</th>
-                                        <th>Location</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
