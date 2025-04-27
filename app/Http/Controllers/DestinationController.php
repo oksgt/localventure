@@ -134,5 +134,27 @@ class DestinationController extends Controller
     }
 
 
+    public function destroy($id)
+    {
+        try {
+            DB::beginTransaction(); // Start transaction
+
+            $destination = Destination::findOrFail($id);
+            $destination->update([
+                'deleted_by' => Auth::id(), // Track who deleted the record
+            ]);
+            $destination->delete(); // Soft delete
+
+            DB::commit(); // Commit transaction
+
+            return response()->json(['success' => true, 'message' => 'Destination deleted successfully'], 200);
+        } catch (\Exception $e) {
+            DB::rollBack(); // Rollback transaction in case of failure
+            \Log::error("Error deleting destination: " . $e->getMessage());
+
+            return response()->json(['success' => false, 'message' => 'Failed to delete destination', 'error' => $e->getMessage()], 500);
+        }
+    }
+
 }
 

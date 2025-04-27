@@ -195,7 +195,7 @@
                 let id = $(this).data('id');
 
                 $.ajax({
-                    url: "{{ url('/destinations') }}/" + id + "/edit",
+                    url: "{{ url('/admin/destinations') }}/" + id + "/edit",
                     type: "GET",
                     success: function(response) {
                         if (response.success) {
@@ -279,7 +279,7 @@
                     available: $('#available').val(),
                 };
 
-                let url = id ? "{{ url('/destinations') }}/" + id + "/update" :
+                let url = id ? "{{ url('/admin/destinations') }}/" + id + "/update" :
                     "{{ route('admin.destinations.store') }}";
 
                 $('#btn-save-destination').prop('disabled', true).text('Processing...');
@@ -315,44 +315,35 @@
                     }
                 });
             });
+
             $(document).on('click', '.delete-destination', function() {
                 let id = $(this).data('id');
 
                 Swal.fire({
-                    title: 'Are you sure?',
-                    text: "You won't be able to revert this!",
-                    icon: 'warning',
+                    title: "Are you sure?",
+                    text: "This destination will be deleted.",
+                    // icon: "warning",
                     showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Yes, delete it!'
+                    confirmButtonText: "Yes, delete it!",
+                    cancelButtonText: "Cancel"
                 }).then((result) => {
                     if (result.isConfirmed) {
                         $.ajax({
-                            url: "{{ url('/destinations') }}/" + id,
+                            url: "{{ url('/admin/destinations') }}/" + id,
                             type: "DELETE",
                             data: {
                                 _token: $('input[name="_token"]').val()
                             },
                             success: function(response) {
                                 if (response.success) {
-                                    toastr.success(response.message, "Success", {
-                                        timeOut: 3000,
-                                        progressBar: true
-                                    });
-                                    $('#destinations-table').DataTable().ajax.reload();
+                                    toastr.success(response.message, "Success", { timeOut: 3000, progressBar: true });
+                                    $('#destinations-table').DataTable().ajax.reload(); // Refresh DataTable
                                 } else {
-                                    toastr.error(response.message, "Error", {
-                                        timeOut: 3000,
-                                        progressBar: true
-                                    });
+                                    toastr.error(response.message, "Error", { timeOut: 3000, progressBar: true });
                                 }
                             },
-                            error: function() {
-                                toastr.error("Failed to delete destination", "Error", {
-                                    timeOut: 3000,
-                                    progressBar: true
-                                });
+                            error: function(xhr) {
+                                toastr.error("Failed to delete destination", "Error", { timeOut: 3000, progressBar: true });
                             }
                         });
                     }
