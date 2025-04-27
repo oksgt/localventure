@@ -23,7 +23,7 @@ class UserMappingController extends Controller
 
         return datatables()->of($mappings)
             ->addColumn('action', function ($mapping) {
-                return '<button class="btn btn-sm btn-warning edit-mapping" data-id="' . $mapping->id . '">Edit</button>
+                return '<button class="btn btn-sm btn-primary edit-mapping" data-id="' . $mapping->id . '">Edit</button>
                         <button class="btn btn-sm btn-danger delete-mapping" data-id="' . $mapping->id . '">Delete</button>';
             })
             ->rawColumns(['action'])
@@ -40,6 +40,15 @@ class UserMappingController extends Controller
         try {
             DB::beginTransaction();
 
+            // Check if the mapping already exists
+            $existingMapping = UserMapping::where('user_id', $request->user_id)
+                ->where('destination_id', $request->destination_id)
+                ->first();
+
+            if ($existingMapping) {
+                return response()->json(['success' => true, 'message' => 'User is already mapped to this destination']);
+            }
+
             // Get role_id from the users table
             $userRole = User::where('id', $request->user_id)->value('role_id');
 
@@ -47,16 +56,12 @@ class UserMappingController extends Controller
                 return response()->json(['success' => false, 'message' => 'User role not found'], 404);
             }
 
-            // Create or update mapping
-            $mapping = UserMapping::updateOrCreate(
-                [
-                    'user_id' => $request->user_id,
-                    'destination_id' => $request->destination_id,
-                ],
-                [
-                    'role_id' => $userRole, // Automatically set role_id
-                ]
-            );
+            // Create mapping
+            $mapping = UserMapping::create([
+                'user_id' => $request->user_id,
+                'destination_id' => $request->destination_id,
+                'role_id' => $userRole,
+            ]);
 
             DB::commit();
 
