@@ -88,8 +88,33 @@ class UserController extends Controller
             'password_confirmation' => 'required|same:password',
             'parent_list'           => $request->role_id == 3 ? 'required|exists:users,id' : 'nullable',
         ], [
-            'password.regex'    => 'Password must contain only letters and numbers (no special characters).',
-            'parent_list.required' => 'Parent selection is required for Operator role.',
+            'role_id.required'       => 'Role selection is required.',
+            'role_id.exists'         => 'Selected role does not exist.',
+
+            'username.required'      => 'Username is required.',
+            'username.unique'        => 'This username is already taken.',
+            'username.max'           => 'Username cannot exceed 255 characters.',
+
+            'name.required'          => 'Name is required.',
+            'name.max'               => 'Name cannot exceed 255 characters.',
+
+            'email.required'         => 'Email address is required.',
+            'email.unique'           => 'This email is already registered.',
+            'email.email'            => 'Please enter a valid email address.',
+            'email.max'              => 'Email cannot exceed 255 characters.',
+
+            'phone.max'              => 'Phone number cannot exceed 255 characters.',
+
+            'password.required'      => 'Password is required.',
+            'password.min'           => 'Password must be at least 8 characters long.',
+            'password.confirmed'     => 'Password confirmation does not match.',
+            'password.regex'         => 'Password must contain only letters and numbers (no special characters).',
+
+            'password_confirmation.required' => 'Password confirmation is required.',
+            'password_confirmation.same'     => 'Password confirmation must match the password.',
+
+            'parent_list.required'   => 'Parent selection is required for Operator role.',
+            'parent_list.exists'     => 'Selected parent does not exist.',
         ]);
 
         try {
@@ -148,8 +173,8 @@ class UserController extends Controller
                     return '<span class="text-muted">No actions available</span>'; // Placeholder for UI consistency
                 }
 
-                return '<button type="button" class="btn btn-sm btn-primary" onclick="editUser(' . $user->id . ')">Edit</button>
-                        <button type="button" class="btn btn-sm btn-danger" onclick="deleteUser(' . $user->id . ')">Delete</button>';
+                return '<button type="button" class="btn btn-sm btn-warning" onclick="editUser(' . $user->id . ')"><i class="fa fa-edit"></i>Edit</button>
+                        <button type="button" class="btn btn-sm btn-danger" onclick="deleteUser(' . $user->id . ')"><i class="fa fa-trash"></i>Delete</button>';
             })
             ->rawColumns(['action'])
             ->make(true);

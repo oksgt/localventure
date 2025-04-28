@@ -5,7 +5,7 @@
             <div class="col-md-12 grid-margin">
                 <div class="row">
                     <div class="col-12 col-xl-8 mb-4 mb-xl-0">
-                        <h3 class="font-weight-bold">Selamat datang, {{ Auth::user()->name }}</h3>
+                        <h3 class="font-weight-bold">Welcome, {{ Auth::user()->name }}</h3>
                         <h5 class="text-muted">( {{ Auth::user()->role->name }} )</h5>
                     </div>
                     <div class="col-12 col-xl-4">
@@ -85,7 +85,7 @@
                                                         <option value="">Loading...</option>
                                                         <!-- Populated via AJAX -->
                                                     </select>
-                                                    <small class="form-text text-danger" id="role_id_error"></small>
+                                                    <small class="form-text text-danger" id="role_id_error_label"></small>
                                                 </div>
 
                                                 <!-- Parent selection (hidden by default) -->
@@ -95,19 +95,19 @@
                                                         <option value="">Loading...</option>
                                                         <!-- AJAX will populate this -->
                                                     </select>
-                                                    <small class="form-text text-danger" id="parent_list_error"></small>
+                                                    <small class="form-text text-danger" id="parent_list_error_label"></small>
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="username">Username</label>
                                                     <input type="text" class="form-control" id="username"
                                                         name="username" placeholder="Username">
-                                                    <small class="form-text text-danger" id="username_error"></small>
+                                                    <small class="form-text text-danger" id="username_error_label"></small>
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="name">Name</label>
                                                     <input type="text" class="form-control" id="name" name="name"
                                                         placeholder="Name">
-                                                    <small class="form-text text-danger" id="name_error"></small>
+                                                    <small class="form-text text-danger" id="name_error_label"></small>
                                                 </div>
                                             </div>
 
@@ -116,13 +116,13 @@
                                                     <label for="email">Email address</label>
                                                     <input type="email" class="form-control" id="email"
                                                         name="email" placeholder="Email">
-                                                    <small class="form-text text-danger" id="email_error"></small>
+                                                    <small class="form-text text-danger" id="email_error_label"></small>
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="phone">Phone</label>
                                                     <input type="text" class="form-control" id="phone"
                                                         name="phone" placeholder="Phone">
-                                                    <small class="form-text text-danger" id="phone_error"></small>
+                                                    <small class="form-text text-danger" id="phone_error_label"></small>
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="password">Password</label>
@@ -137,7 +137,7 @@
                                                             </button>
                                                         </div>
                                                     </div>
-                                                    <small class="form-text text-danger" id="password_error"></small>
+                                                    <small class="form-text text-danger" id="password_error_label"></small>
                                                 </div>
 
                                                 <div class="form-group">
@@ -154,7 +154,7 @@
                                                         </div>
                                                     </div>
                                                     <small class="form-text text-danger"
-                                                        id="confirm_password_error"></small>
+                                                        id="confirm_password_error_label"></small>
                                                 </div>
                                             </div>
                                         </div>
@@ -166,7 +166,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-light" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="btn-save">Simpan</button>
+                    <button type="button" class="btn btn-primary" id="btn-save">Save</button>
                 </div>
             </div>
         </div>
@@ -259,6 +259,8 @@
 
             $('#add-user-btn').click(function() {
                 $('#userForm').trigger('reset');
+                $('#btn-save').text("Save");
+                $('#formModalLabel').text("Form Add New User");
                 $('#formModal').modal('show'); // Show the modal
             });
 
@@ -310,6 +312,7 @@
                                 progressBar: true
                             });
                             $('#formModal').modal('hide');
+                            $('#userForm').trigger('reset');
                             $('#users-table').DataTable().ajax.reload();
                         } else {
                             toastr.error("Operation failed: " + response.message, "Error", {
@@ -321,10 +324,25 @@
                     error: function(xhr) {
                         if (xhr.status === 422) { // Laravel validation error
                             let errors = xhr.responseJSON.errors;
+                            console.log('Validation errors:', errors); // Debugging step
+
+                            $('.form-control').removeClass('is-invalid'); // Clear old errors
+                            $('.form-text.text-danger').text(''); // Clear previous error messages
+
                             $.each(errors, function(field, messages) {
-                                $('#' + field).addClass('is-invalid');
-                                $('#' + field + '_error').text(messages[0]);
+                                console.log('Field:', field, 'Message:', messages[0]); // Debugging
+
+                                let fieldSelector = $('#' + field);
+                                let errorSelector = $('#' + field + '_error_label');
+
+                                if (errorSelector.length > 0) {
+                                    fieldSelector.addClass('is-invalid'); // Highlight input
+                                    errorSelector.text(messages[0]); // Show error message
+                                } else {
+                                    console.warn('Missing error element for:', field); // Debugging missing elements
+                                }
                             });
+
                             toastr.error("Validation error! Please check the form.", "Error", {
                                 timeOut: 3000,
                                 progressBar: true
@@ -337,7 +355,7 @@
                         }
                     },
                     complete: function() {
-                        $('#btn-save').prop('disabled', false).text(userId ? "Update" : "Simpan");
+                        $('#btn-save').prop('disabled', false).text(userId ? "Update" : "Save");
                     }
                 });
             });
@@ -491,6 +509,20 @@
                     });
                 }
             });
+        }
+
+        function applyValidationErrors(errors) {
+            clearValidationErrors(); // Remove previous errors
+
+            $.each(errors, function(key, value) {
+                $('#' + key).addClass('is-invalid'); // Highlight input
+                $('#' + key + '_error_label').text(value[0]); // Show error message
+            });
+        }
+
+        function clearValidationErrors() {
+            $('.form-control').removeClass('is-invalid'); // Remove red borders
+            $('.form-text.text-danger').text(''); // Clear error messages
         }
     </script>
 @endpush
