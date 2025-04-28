@@ -293,6 +293,26 @@ class UserController extends Controller
             'email'      => $request->email !== $user->email ? 'required|email|max:255|unique:users,email,' . $id : 'required|email|max:255',
             'phone'      => 'nullable|max:255',
             'parent_list'=> $request->role_id == 3 ? 'required|exists:users,id' : 'nullable',
+        ], [
+            'role_id.required'      => 'User role selection is required.',
+            'role_id.exists'        => 'Selected role does not exist in the system.',
+
+            'username.required'     => 'Username is required.',
+            'username.unique'       => 'This username is already taken. Choose another.',
+            'username.max'          => 'Username cannot exceed 255 characters.',
+
+            'name.required'         => 'Full name is required.',
+            'name.max'              => 'Name cannot exceed 255 characters.',
+
+            'email.required'        => 'Email address is required.',
+            'email.unique'          => 'This email is already registered.',
+            'email.email'           => 'Enter a valid email format.',
+            'email.max'             => 'Email cannot exceed 255 characters.',
+
+            'phone.max'             => 'Phone number cannot exceed 255 characters.',
+
+            'parent_list.required'  => 'Parent selection is required for an Operator role.',
+            'parent_list.exists'    => 'Selected parent user does not exist in the database.',
         ]);
 
         try {
