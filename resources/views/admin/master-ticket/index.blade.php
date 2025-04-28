@@ -286,6 +286,38 @@
                     }
                 });
             });
+
+            $(document).on('click', '.delete-pricing', function() {
+                let pricingId = $(this).data('id');
+
+                Swal.fire({
+                    title: "Are you sure?",
+                    text: "This action cannot be undone!",
+                    // icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonText: "Yes, delete it!",
+                    cancelButtonText: "Cancel"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: "{{ route('admin.master-ticket.destroy', ':id') }}".replace(':id', pricingId),
+                            type: "DELETE",
+                            data: { _token: "{{ csrf_token() }}" },
+                            success: function(response) {
+                                if (response.success) {
+                                    toastr.success(response.message, "Success");
+                                    $('#master-tickets-table').DataTable().ajax.reload(); // Refresh DataTable
+                                } else {
+                                    toastr.error(response.message, "Error");
+                                }
+                            },
+                            error: function() {
+                                toastr.error("Failed to delete pricing", "Error");
+                            }
+                        });
+                    }
+                });
+            });
         });
 
         function loadDestinations(callback) {

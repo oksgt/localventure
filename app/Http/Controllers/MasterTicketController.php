@@ -161,4 +161,21 @@ class MasterTicketController extends Controller
             return response()->json(['success' => false, 'message' => 'Failed to update pricing', 'error' => $e->getMessage()], 500);
         }
     }
+
+    public function destroy($id)
+    {
+        try {
+            DB::beginTransaction();
+
+            $pricing = Pricing::findOrFail($id);
+            $pricing->delete();
+
+            DB::commit();
+            return response()->json(['success' => true, 'message' => 'Pricing deleted successfully']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error("Error deleting pricing: " . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Failed to delete pricing', 'error' => $e->getMessage()], 500);
+        }
+    }
 }
