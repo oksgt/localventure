@@ -249,6 +249,43 @@
             });
 
             $('#base_price, #insurance_price').on('input', calculateFinalPrice);
+
+            $(document).on('click', '.edit-pricing', function() {
+                let pricingId = $(this).data('id');
+
+                $.ajax({
+                    url: "{{ route('admin.master-ticket.edit', ':id') }}".replace(':id', pricingId),
+                    type: "GET",
+                    success: function(response) {
+                        if (response.success) {
+                            $('#pricing_id').val(response.data.id);
+
+                            // Load dropdowns before setting values
+                            loadDestinations(function() {
+                                $('#destination_id').val(response.data.destination_id).trigger('change');
+
+                                loadGuestTypes(function() {
+                                    $('#guest_type_id').val(response.data.guest_type_id).trigger('change');
+                                });
+                            });
+
+                            $('#day_type').val(response.data.day_type);
+
+                            AutoNumeric.set('#base_price', response.data.base_price);
+                            AutoNumeric.set('#insurance_price', response.data.insurance_price);
+                            AutoNumeric.set('#final_price', response.data.final_price);
+
+                            $('#pricingModal').modal('show'); // Show modal after everything loads
+                        } else {
+                            toastr.error(response.message, "Error");
+                        }
+                    },
+                    error: function(xhr) {
+                        console.error(xhr.responseText); // Debugging step
+                        toastr.error("Failed to fetch pricing data", "Error");
+                    }
+                });
+            });
         });
 
         function loadDestinations(callback) {

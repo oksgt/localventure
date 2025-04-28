@@ -58,6 +58,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/admin/master-ticket/store', [MasterTicketController::class, 'store'])->name('admin.master-ticket.store');
     Route::put('/admin/master-ticket/{id}', [MasterTicketController::class, 'update'])->name('admin.master-ticket.update');
     Route::delete('/admin/master-ticket/{id}', [MasterTicketController::class, 'destroy'])->name('admin.master-ticket.destroy');
+    Route::get('/admin/master-ticket//edit/{id}', [MasterTicketController::class, 'edit'])->name('admin.master-ticket.edit');
 
     Route::get('/users/list', [UserController::class, 'list'])->name('users.list');
     Route::get('/destinations/list', [DestinationController::class, 'list'])->name('destinations.list');

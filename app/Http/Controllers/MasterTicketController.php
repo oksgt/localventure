@@ -90,6 +90,24 @@ class MasterTicketController extends Controller
         }
     }
 
+    public function edit($id)
+    {
+        $pricing = Pricing::findOrFail($id);
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'id' => $pricing->id,
+                'destination_id' => $pricing->destination_id,
+                'guest_type_id' => $pricing->guest_type_id,
+                'day_type' => $pricing->day_type,
+                'base_price' => $pricing->base_price,
+                'insurance_price' => $pricing->insurance_price,
+                'final_price' => $pricing->final_price,
+            ]
+        ]);
+    }
+
     public function update(Request $request, $id)
     {
         $request->validate([
