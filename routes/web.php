@@ -2,8 +2,10 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DestinationController;
+use App\Http\Controllers\GuestTypeController;
 use App\Http\Controllers\HomeController as AdminHomeController;
 use App\Http\Controllers\MappingUserController;
+use App\Http\Controllers\MasterTicketController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserMappingController;
 use Illuminate\Support\Facades\Route;
@@ -51,8 +53,15 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/admin/mapping-users/{id}', [UserMappingController::class, 'update'])->name('admin.mapping-users.update');
     Route::delete('/admin/mapping-users/{id}', [UserMappingController::class, 'destroy'])->name('admin.mapping-users.destroy');
 
+    Route::get('/admin/master-ticket', [MasterTicketController::class, 'index'])->name('admin.master-ticket.index');
+    Route::get('/admin/master-ticket/data', [MasterTicketController::class, 'getData'])->name('admin.master-ticket.data');
+    Route::post('/admin/master-ticket/store', [MasterTicketController::class, 'store'])->name('admin.master-ticket.store');
+    Route::put('/admin/master-ticket/{id}', [MasterTicketController::class, 'update'])->name('admin.master-ticket.update');
+    Route::delete('/admin/master-ticket/{id}', [MasterTicketController::class, 'destroy'])->name('admin.master-ticket.destroy');
+
     Route::get('/users/list', [UserController::class, 'list'])->name('users.list');
     Route::get('/destinations/list', [DestinationController::class, 'list'])->name('destinations.list');
+    Route::get('/guest-types/list', [GuestTypeController::class, 'list'])->name('guest-types.list');
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout.process');
 });

@@ -50,4 +50,9 @@ class Destination extends Model
     {
         return $this->belongsToMany(User::class, 'user_mapping', 'destination_id', 'user_id');
     }
+
+    public function pricing()
+    {
+        return $this->hasMany(Pricing::class);
+    }
 }

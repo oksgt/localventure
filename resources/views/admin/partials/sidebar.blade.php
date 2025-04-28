@@ -21,7 +21,7 @@
                         </li>
                         <li class="nav-item"> <a class="nav-link" href="{{ route('admin.mapping-user.index') }}">Mapping
                                 User</a></li>
-                        <li class="nav-item"> <a class="nav-link" href="pages/ui-features/typography.html">Master
+                        <li class="nav-item"> <a class="nav-link" href="{{ route('admin.master-ticket.index') }}">Master
                                 Tiket</a></li>
                         <li class="nav-item"> <a class="nav-link" href="{{ route('admin.destinations.index') }}">Master
                                 Wisata</a></li>

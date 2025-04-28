@@ -16,6 +16,7 @@ return new class extends Migration
             $table->decimal('base_price', 10, 2);
             $table->string('currency', 10)->default('IDR');
             $table->decimal('insurance_price', 10, 2)->nullable();
+            $table->decimal('final_price', 10, 2);
             $table->timestamps();
             $table->softDeletes();
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
