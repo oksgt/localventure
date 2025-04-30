@@ -99,6 +99,12 @@ class UserMappingController extends Controller
         $request->validate([
             'user_id' => 'required|exists:users,id',
             'destination_id' => 'required|exists:destinations,id',
+        ], [
+            'user_id.required'       => 'User selection is required.',
+            'user_id.exists'         => 'Selected user does not exist in the system.',
+
+            'destination_id.required' => 'Destination selection is required.',
+            'destination_id.exists'   => 'Selected destination is invalid or does not exist.',
         ]);
 
         try {

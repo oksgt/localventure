@@ -108,32 +108,15 @@
                 processing: true,
                 serverSide: true,
                 ajax: "{{ route('admin.mapping-user.data') }}",
-                order: [
-                    [1, 'asc']
-                ], // Ensures sorting starts from "Name" instead of row_number
-                columns: [{
-                        data: null,
-                        name: 'row_number',
-                        orderable: false,
-                        searchable: false,
-                        render: function(data, type, row, meta) {
-                            return meta.row + 1; // Generate row number dynamically
-                        }
-                    },
-                    {
-                        data: 'name',
-                        name: 'name'
-                    },
-                    {
-                        data: 'destination_name',
-                        name: 'destination_name'
-                    },
-                    {
-                        data: 'action',
-                        name: 'action',
-                        orderable: false,
-                        searchable: false
-                    }
+                order: [[1, 'asc']], // Ensures sorting starts from "Name"
+
+                columns: [
+                    { data: null, name: 'row_number', orderable: false, searchable: false, render: function(data, type, row, meta) {
+                        return meta.row + 1; // Generate row number dynamically
+                    }},
+                    { data: 'name', name: 'users.name' }, // Use `users.name` instead of `name`
+                    { data: 'destination_name', name: 'destinations.name' }, // Ensure correct reference
+                    { data: 'action', name: 'action', orderable: false, searchable: false }
                 ]
             });
         }
@@ -153,6 +136,7 @@
                 $('#btn-save-mapping-user').text('Save')
                 loadUsers();
                 loadDestinations();
+                clearValidationErrors(); // Clear previous validation errors
                 $('#mappingUserModal').modal('show'); // Open modal
             });
 
@@ -248,7 +232,7 @@
                     $('#destination_id').val(destinationId).trigger(
                     'change'); // Ensure selection updates
                 });
-
+                clearValidationErrors(); // Clear previous validation errors
                 $('#mappingUserModalLabel').text('Edit User Mapping');
                 $('#btn-save-mapping-user').text('Update');
                 $('#mappingUserModal').modal('show'); // Open modal after values are set
@@ -337,6 +321,11 @@
                     if (callback) callback(); // Set selected destination after loading completes
                 }
             });
+        }
+
+        function clearValidationErrors() {
+            $('.form-control').removeClass('is-invalid'); // Remove red borders
+            $('.form-text.text-danger').text(''); // Clear error messages
         }
     </script>
 @endpush
