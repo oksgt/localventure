@@ -45,7 +45,7 @@
                                     <tr>
                                         <th>#</th>
                                         <th>Name</th>
-                                        <th>Wisata</th>
+                                        <th>Destination</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
