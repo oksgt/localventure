@@ -56,7 +56,10 @@ class BankAccountController extends Controller
                 return '<button class="btn btn-sm btn-warning edit-account" data-id="' . $account->id . '"><i class="fa fa-edit"></i>Edit</button>
                         <button class="btn btn-sm btn-danger delete-account" data-id="' . $account->id . '"><i class="fa fa-trash"></i>Delete</button>';
             })
-            ->rawColumns(['action'])
+            ->addColumn('status', function ($account) {
+                return $account->is_public == 1 ? '<span class="badge badge-success">Available</span>' : '<span class="badge badge-secondary">Private</span>';
+            })
+            ->rawColumns(['action', 'status'])
             ->make(true);
     }
 

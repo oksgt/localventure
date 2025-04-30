@@ -184,7 +184,6 @@
 
             $('#refresh-user-btn').click(function() {
                 $('#users-table').DataTable().ajax.reload(); // Reload DataTable
-                toastr.success("User list refreshed!", "Success", { timeOut: 2000, progressBar: true });
             });
 
             // Fetch roles via AJAX

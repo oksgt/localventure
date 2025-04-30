@@ -126,17 +126,31 @@
                 serverSide: true,
                 ajax: "{{ route('admin.bank-accounts.data') }}",
                 columns: [
-                    { data: null, name: 'row_number', orderable: false, searchable: false, render: function(data, type, row, meta) {
-                        return meta.row + 1; // Auto-generate row number
-                    }},
+                    {
+                        data: null,
+                        name: 'row_number',
+                        orderable: false,
+                        searchable: false,
+                        render: function(data, type, row, meta) {
+                            return meta.row + 1; // Auto-generate row number
+                        }
+                    },
                     { data: 'bank_name', name: 'bank_name' },
                     { data: 'account_name', name: 'account_name' },
                     { data: 'account_number', name: 'account_number' },
-                    { data: 'account_status', name: 'account_status', render: function(data) {
-                        return data ? '<span class="badge badge-success">Active</span>' : '<span class="badge badge-danger">Inactive</span>';
-                    }},
+                    {
+                        data: 'is_public',
+                        name: 'is_public',
+                        render: function(data) {
+                            return data == 1 ? '<span class="badge badge-success">Available</span>' : '<span class="badge badge-secondary">Private</span>';
+                        }
+                    },
                     { data: 'action', name: 'action', orderable: false, searchable: false }
                 ]
+            });
+
+            $(document).on('click', '#refresh-bank-account-btn', function () {
+                $('#bank-accounts-table').DataTable().ajax.reload(); // Reload DataTable
             });
 
             $(document).on('click', '#add-bank-account-btn', function() {
@@ -226,6 +240,43 @@
                         $('#bankAccountSubmitBtn').prop('disabled', false).text(id ? 'Update' : 'Save');
                     }
                 });
+            });
+        });
+
+        $(document).on('click', '.delete-account', function () {
+            let accountId = $(this).data('id'); // Get the account ID
+            let url = "{{ route('admin.bank-accounts.destroy', ':id') }}".replace(':id', accountId);
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                // icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: url,
+                        type: "DELETE",
+                        data: {
+                            _token: "{{ csrf_token() }}" // Include CSRF token for security
+                        },
+                        success: function(response) {
+                            toastr.success(response.message, "Success", { timeOut: 3000, progressBar: true });
+                            $('#bank-accounts-table').DataTable().ajax.reload(); // Refresh table
+                        },
+                        error: function(xhr) {
+                            if (xhr.status === 422) {
+                                let errors = xhr.responseJSON.errors;
+                                toastr.error(errors[0], "Error", { timeOut: 3000, progressBar: true });
+                            } else {
+                                toastr.error("Failed to delete bank account.", "Error", { timeOut: 3000, progressBar: true });
+                            }
+                        }
+                    });
+                }
             });
         });
     </script>
