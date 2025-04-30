@@ -35,12 +35,12 @@ class DestinationController extends Controller
                 })
                 ->addColumn('gallery', function ($destination) {
                     return '<a href="#" class="btn btn-sm btn-info upload-gallery-btn" data-id="' . $destination->id . '">
-                                <i class="ti-gallery"></i>
+                                <i class="ti-gallery"></i>Images
                             </a>';
                 })
                 ->addColumn('action', function ($destination) {
-                    return '<button class="btn btn-sm btn-primary edit-destination" data-id="' . $destination->id . '">Edit</button>
-                            <button class="btn btn-sm btn-danger delete-destination" data-id="' . $destination->id . '">Delete</button>';
+                    return '<button class="btn btn-sm btn-warning edit-destination" data-id="' . $destination->id . '"><i class="fa fa-edit"></i>Edit</button>
+                            <button class="btn btn-sm btn-danger delete-destination" data-id="' . $destination->id . '"><i class="fa fa-trash"></i>Delete</button>';
                 })
                 ->rawColumns(['gallery', 'location', 'action'])
                 ->make(true);
@@ -64,6 +64,19 @@ class DestinationController extends Controller
             'address'     => 'nullable|max:255',
             'latlon'      => 'required|max:255',
             'available'   => 'required|boolean',
+        ], [
+            'name.required'        => 'The name field is required.',
+            'name.max'             => 'The name must not exceed 255 characters.',
+
+            'description.required' => 'Please provide a description.',
+
+            'address.max'          => 'The address must not exceed 255 characters.',
+
+            'latlon.required'      => 'Location coordinates are required.',
+            'latlon.max'           => 'Location data cannot exceed 255 characters.',
+
+            'available.required'   => 'Availability status is required.',
+            'available.boolean'    => 'Availability must be either true or false.',
         ]);
 
         try {
@@ -107,6 +120,19 @@ class DestinationController extends Controller
             'address'     => 'nullable|max:255',
             'latlon'      => 'required|max:255',
             'available'   => 'required|boolean',
+        ], [
+            'name.required'        => 'The name field is required.',
+            'name.max'             => 'The name must not exceed 255 characters.',
+
+            'description.required' => 'Please provide a description.',
+
+            'address.max'          => 'The address must not exceed 255 characters.',
+
+            'latlon.required'      => 'Location coordinates are required.',
+            'latlon.max'           => 'Location data cannot exceed 255 characters.',
+
+            'available.required'   => 'Availability status is required.',
+            'available.boolean'    => 'Availability must be either true or false.',
         ]);
 
         try {
@@ -181,6 +207,13 @@ class DestinationController extends Controller
         $request->validate([
             'destination_id' => 'required|exists:destinations,id',
             'image' => 'required|mimes:jpg,jpeg,png|max:5120', // Allow only JPG/PNG, max size 5MB
+        ], [
+            'destination_id.required' => 'Please select a destination.',
+            'destination_id.exists'   => 'Selected destination is invalid.',
+
+            'image.required'          => 'An image is required.',
+            'image.mimes'             => 'The image must be a file of type: JPG, JPEG, PNG.',
+            'image.max'               => 'The image must not exceed 5MB in size.',
         ]);
 
         try {

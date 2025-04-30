@@ -82,12 +82,12 @@
                                                     <label for="name">Destination Name</label>
                                                     <input type="text" class="form-control" id="name" name="name"
                                                         placeholder="Enter destination name">
-                                                    <small class="form-text text-danger" id="name_error"></small>
+                                                    <small class="form-text text-danger" id="name_error_label"></small>
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="description">Description</label>
                                                     <textarea class="form-control" id="description" name="description" placeholder="Describe the destination"></textarea>
-                                                    <small class="form-text text-danger" id="description_error"></small>
+                                                    <small class="form-text text-danger" id="description_error_label"></small>
                                                 </div>
 
                                                 <div class="form-group">
@@ -96,13 +96,13 @@
                                                         <option value="1">Yes</option>
                                                         <option value="0">No</option>
                                                     </select>
-                                                    <small class="form-text text-danger" id="available_error"></small>
+                                                    <small class="form-text text-danger" id="available_error_label"></small>
                                                 </div>
 
                                                 <div class="form-group">
                                                     <label for="address">Address</label>
                                                     <textarea class="form-control" id="address" name="address" placeholder="Enter address" rows="3"></textarea>
-                                                    <small class="form-text text-danger" id="address_error"></small>
+                                                    <small class="form-text text-danger" id="address_error_label"></small>
                                                 </div>
                                             </div>
 
@@ -111,7 +111,7 @@
                                                     <label for="latlon">Latitude, Longitude</label>
                                                     <input readonly type="text" class="form-control" id="latlon"
                                                         name="latlon" placeholder="Enter coordinates (lat, lon)">
-                                                    <small class="form-text text-danger" id="latlon_error"></small>
+                                                    <small class="form-text text-danger" id="latlon_error_label"></small>
                                                 </div>
                                                 <span class="text-muted" style="font-style: italic"><i
                                                         class="ti-info"></i>Drag the blue marker below to get the latitude
@@ -150,7 +150,7 @@
                         <div class="form-group">
                             <label for="image">Select Image</label>
                             <input type="file" class="form-control" id="image" name="image" accept=".jpg, .jpeg, .png">
-                            <small class="form-text text-danger" id="image_error"></small>
+                            <small class="form-text text-danger" id="image_error_label"></small>
                         </div>
 
                         <div class="form-group text-center">
@@ -159,6 +159,7 @@
                         </div>
 
                         <div class="modal-footer">
+                            <button type="button" class="btn btn-light" data-dismiss="modal">Cancel</button>
                             <button type="button" class="btn btn-danger d-none" id="btn-remove-image">Remove Image</button>
                             <button type="button" class="btn btn-primary" id="btn-upload-image">Upload Image</button>
                         </div>
@@ -178,12 +179,12 @@
             let map;
 
             $('#add-destination-btn').click(function() {
-
-                initializeMap();
                 $('#destinationForm')[0].reset();
                 $('#formDestinationLabel').text("Add New Destination");
-
+                clearValidationErrors(); // Clear previous errors
                 $('#formDestination').modal('show');
+                $('#btn-save-destination').text('Save'); // Reset button text
+                initializeMap();
             });
 
             $(document).on('click', '.edit-destination', function() {
@@ -200,6 +201,8 @@
                                 initializeMap(); // Default to Indonesia if no data is found
                             }
 
+                            clearValidationErrors(); // Clear previous errors
+                            $('#destinationForm')[0].reset(); // Reset form fields
                             $('#formDestinationLabel').text("Edit Destination");
                             $('#formDestination').modal('show'); // Open modal
                             $('#name').val(response.data.name);
@@ -208,6 +211,7 @@
                             $('#latlon').val(response.data.latlon);
                             $('#available').val(response.data.available);
                             $('#btn-save-destination').attr('data-id',id); // Store ID for update
+                            $('#btn-save-destination').text('Update'); // Change button text to Update
                         } else {
                             toastr.error("Failed to load destination data", "Error", {
                                 timeOut: 3000,
@@ -300,10 +304,34 @@
                         }
                     },
                     error: function(xhr) {
-                        toastr.error("Failed to process destination", "Error", {
-                            timeOut: 3000,
-                            progressBar: true
-                        });
+                        if (xhr.status === 422) { // Laravel validation errors
+                            let errors = xhr.responseJSON.errors;
+                            console.log('Validation errors:', errors); // Debugging step
+
+                            clearValidationErrors(); // Clear previous errors
+
+                            $.each(errors, function(field, messages) {
+                                let fieldSelector = $('#' + field);
+                                let errorSelector = $('#' + field + '_error_label');
+
+                                if (fieldSelector.length > 0 && errorSelector.length > 0) {
+                                    fieldSelector.addClass('is-invalid'); // Highlight invalid input
+                                    errorSelector.text(messages[0]); // Show error message
+                                } else {
+                                    console.warn('Missing error element for:', field); // Debugging
+                                }
+                            });
+
+                            toastr.error("Validation error! Please check the form.", "Error", {
+                                timeOut: 3000,
+                                progressBar: true
+                            });
+                        } else {
+                            toastr.error("Error: " + xhr.responseJSON.message, "Error", {
+                                timeOut: 3000,
+                                progressBar: true
+                            });
+                        }
                     },
                     complete: function() {
                         $('#btn-save-destination').prop('disabled', false).text('Save');
@@ -393,7 +421,7 @@
             // Upload image
             $('#btn-upload-image').click(function() {
                 let formData = new FormData($('#imageUploadForm')[0]);
-
+                $('#btn-upload-image').prop('disabled', true).text('Uploading...');
                 $.ajax({
                     url: "{{ route('admin.destination-gallery.upload') }}",
                     type: "POST",
@@ -417,6 +445,39 @@
                         } else {
                             toastr.error(response.message, "Error", { timeOut: 3000, progressBar: true });
                         }
+                    },
+                    error: function(xhr) {
+                        if (xhr.status === 422) { // Laravel validation errors
+                            let errors = xhr.responseJSON.errors;
+                            console.log('Validation errors:', errors); // Debugging step
+
+                            clearValidationErrors(); // Clear previous errors
+
+                            $.each(errors, function(field, messages) {
+                                let fieldSelector = $('#' + field);
+                                let errorSelector = $('#' + field + '_error_label');
+
+                                if (fieldSelector.length > 0 && errorSelector.length > 0) {
+                                    fieldSelector.addClass('is-invalid'); // Highlight invalid input
+                                    errorSelector.text(messages[0]); // Show error message
+                                } else {
+                                    console.warn('Missing error element for:', field); // Debugging
+                                }
+                            });
+
+                            toastr.error("Validation error! Please check the form.", "Error", {
+                                timeOut: 3000,
+                                progressBar: true
+                            });
+                        } else {
+                            toastr.error("Error: " + xhr.responseJSON.message, "Error", {
+                                timeOut: 3000,
+                                progressBar: true
+                            });
+                        }
+                    },
+                    complete: function() {
+                        $('#btn-upload-image').prop('disabled', false).text('Upload Image');
                     }
                 });
             });
@@ -488,6 +549,11 @@
                 $('#latlon').val(newLatLng.lat + ', ' + newLatLng.lng);
                 map.setView(newLatLng);
             });
+        }
+
+        function clearValidationErrors() {
+            $('.form-control').removeClass('is-invalid'); // Remove red borders
+            $('.form-text.text-danger').text(''); // Clear error messages
         }
     </script>
 @endpush
