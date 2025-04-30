@@ -12,6 +12,7 @@ return new class extends Migration
             $table->id();
             $table->string('payment_type_name', 255);
             $table->string('payment_image', 255)->nullable();
+            $table->boolean('status')->default(false);
             $table->timestamps();
             $table->softDeletes();
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();

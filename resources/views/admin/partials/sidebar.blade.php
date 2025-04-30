@@ -25,6 +25,7 @@
                                 Ticket</a></li>
                         <li class="nav-item"> <a class="nav-link" href="{{ route('admin.destinations.index') }}">Master
                                 Destination</a></li>
+                        <li class="nav-item"> <a class="nav-link" href="{{ route('admin.destinations.index') }}">Bank Accounts</a></li>
                     </ul>
                 </div>
             </li>
