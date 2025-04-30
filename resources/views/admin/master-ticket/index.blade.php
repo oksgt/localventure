@@ -118,7 +118,7 @@
                         </div>
 
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-light" data-dismiss="modal">Close</button>
                             <button type="button" class="btn btn-primary" id="btn-save-pricing">Save</button>
                         </div>
                     </form>
@@ -242,6 +242,7 @@
                 loadDestinations(function() {
                     loadGuestTypes(function() {
                         //reset form
+                        $('#btn-save-pricing').text('Save');
                         $('#pricingForm')[0].reset();
                         $('#pricingModal').modal('show'); // Open modal after data is set
                     });
@@ -274,7 +275,7 @@
                             AutoNumeric.set('#base_price', response.data.base_price);
                             AutoNumeric.set('#insurance_price', response.data.insurance_price);
                             AutoNumeric.set('#final_price', response.data.final_price);
-
+                            $('#btn-save-pricing').text('Update'); // Change button text
                             $('#pricingModal').modal('show'); // Show modal after everything loads
                         } else {
                             toastr.error(response.message, "Error");
