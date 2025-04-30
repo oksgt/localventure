@@ -28,10 +28,16 @@ class MasterTicketController extends Controller
             ->join('destinations', 'destinations.id', '=', 'pricing.destination_id')
             ->join('guest_types', 'guest_types.id', '=', 'pricing.guest_type_id');
 
-        return datatables()->of($pricing)
+            return datatables()->of($pricing)
+            ->filterColumn('destination_name', function ($query, $keyword) {
+                $query->whereRaw("LOWER(destinations.name) LIKE ?", ["%{$keyword}%"]);
+            })
+            ->filterColumn('category', function ($query, $keyword) {
+                $query->whereRaw("LOWER(guest_types.name) LIKE ?", ["%{$keyword}%"]);
+            })
             ->addColumn('action', function ($row) {
-                return '<button class="btn btn-sm btn-warning edit-pricing" data-id="' . $row->id . '">Edit</button>
-                        <button class="btn btn-sm btn-danger delete-pricing" data-id="' . $row->id . '">Delete</button>';
+                return '<button class="btn btn-sm btn-warning edit-pricing" data-id="' . $row->id . '"><i class="fa fa-edit"></i>Edit</button>
+                        <button class="btn btn-sm btn-danger delete-pricing" data-id="' . $row->id . '"><i class="fa fa-trash"></i>Delete</button>';
             })
             ->rawColumns(['action'])
             ->make(true);

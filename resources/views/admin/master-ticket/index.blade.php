@@ -144,17 +144,17 @@
                     { data: null, name: 'row_number', orderable: false, searchable: false, render: function(data, type, row, meta) {
                         return meta.row + 1; // Generate row number dynamically
                     }},
-                    { data: 'destination_name', name: 'destination_name' },
-                    { data: 'category', name: 'category' },
-                    { data: 'day_type', name: 'day_type' },
-                    { data: 'base_price', name: 'base_price', render: function(data) {
-                        return formatCurrency(data); // Format base price
+                    { data: 'destination_name', name: 'destinations.name' }, // Fix reference
+                    { data: 'category', name: 'guest_types.name' }, // Fix reference
+                    { data: 'day_type', name: 'pricing.day_type' },
+                    { data: 'base_price', name: 'pricing.base_price', render: function(data) {
+                        return formatCurrency(data);
                     }},
-                    { data: 'insurance_price', name: 'insurance_price', render: function(data) {
-                        return formatCurrency(data); // Format insurance price
+                    { data: 'insurance_price', name: 'pricing.insurance_price', render: function(data) {
+                        return formatCurrency(data);
                     }},
-                    { data: 'final_price', name: 'final_price', render: function(data) {
-                        return formatCurrency(data); // Format final price
+                    { data: 'final_price', name: 'pricing.final_price', render: function(data) {
+                        return formatCurrency(data);
                     }},
                     { data: 'action', name: 'action', orderable: false, searchable: false }
                 ]
