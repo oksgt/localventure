@@ -29,14 +29,14 @@ class UserMappingController extends Controller
 
         return datatables()->of($mappings)
             ->addColumn('action', function ($mapping) {
-                return '<button class="btn btn-sm btn-primary edit-mapping"
+                return '<button class="btn btn-sm btn-warning edit-mapping"
                             data-id="' . $mapping->id . '"
                             data-user="' . $mapping->user_id . '"
                             data-destination="' . $mapping->destination_id . '">
-                            Edit
+                            <i class="fa fa-edit"></i>Edit
                         </button>
                         <button class="btn btn-sm btn-danger delete-mapping" data-id="' . $mapping->id . '">
-                            Delete
+                            <i class="fa fa-trash"></i>Delete
                         </button>';
             })
             ->rawColumns(['action'])
@@ -48,6 +48,12 @@ class UserMappingController extends Controller
         $request->validate([
             'user_id' => 'required|exists:users,id',
             'destination_id' => 'required|exists:destinations,id',
+        ], [
+            'user_id.required'       => 'User selection is required.',
+            'user_id.exists'         => 'Selected user does not exist in the system.',
+
+            'destination_id.required' => 'Destination selection is required.',
+            'destination_id.exists'   => 'Selected destination is invalid or does not exist.',
         ]);
 
         try {

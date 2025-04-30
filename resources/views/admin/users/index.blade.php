@@ -261,6 +261,7 @@
                 $('#userForm').trigger('reset');
                 $('#btn-save').text("Save");
                 $('#formModalLabel').text("Form Add New User");
+                clearValidationErrors();
                 $('#formModal').modal('show'); // Show the modal
             });
 
@@ -314,6 +315,7 @@
                             $('#formModal').modal('hide');
                             $('#userForm').trigger('reset');
                             $('#users-table').DataTable().ajax.reload();
+                            clearValidationErrors();
                         } else {
                             toastr.error("Operation failed: " + response.message, "Error", {
                                 timeOut: 3000,
@@ -424,7 +426,7 @@
 
                         $('#password').closest('.form-group').hide();
                         $('#confirm_password').closest('.form-group').hide();
-
+                        clearValidationErrors();
                         $('#formModalLabel').text("Update User");
                         $('#btn-save').data('user-id', user.id).text("Update"); // Set user ID for update
 
