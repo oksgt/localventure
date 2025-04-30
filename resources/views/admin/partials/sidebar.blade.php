@@ -22,9 +22,9 @@
                         <li class="nav-item"> <a class="nav-link" href="{{ route('admin.mapping-user.index') }}">Mapping
                                 User</a></li>
                         <li class="nav-item"> <a class="nav-link" href="{{ route('admin.master-ticket.index') }}">Master
-                                Tiket</a></li>
+                                Ticket</a></li>
                         <li class="nav-item"> <a class="nav-link" href="{{ route('admin.destinations.index') }}">Master
-                                Wisata</a></li>
+                                Destination</a></li>
                     </ul>
                 </div>
             </li>
@@ -32,7 +32,7 @@
                 <a class="nav-link" data-toggle="collapse" href="#ui-basic" aria-expanded="false"
                     aria-controls="ui-basic">
                     <i class="ti-wallet menu-icon"></i>
-                    <span class="menu-title">Data Transaksi</span>
+                    <span class="menu-title">Transaction</span>
                     <i class="menu-arrow"></i>
                 </a>
                 <div class="collapse" id="ui-basic">
