@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BankAccountController;
 use App\Http\Controllers\DestinationController;
 use App\Http\Controllers\GuestTypeController;
 use App\Http\Controllers\HomeController as AdminHomeController;
@@ -59,6 +60,15 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/admin/master-ticket/{id}', [MasterTicketController::class, 'update'])->name('admin.master-ticket.update');
     Route::delete('/admin/master-ticket/{id}', [MasterTicketController::class, 'destroy'])->name('admin.master-ticket.destroy');
     Route::get('/admin/master-ticket//edit/{id}', [MasterTicketController::class, 'edit'])->name('admin.master-ticket.edit');
+
+    Route::prefix('admin/bank-accounts')->group(function () {
+        Route::get('/', [BankAccountController::class, 'index'])->name('admin.bank-accounts.index');
+        Route::get('/data', [BankAccountController::class, 'getData'])->name('admin.bank-accounts.data');
+        Route::post('/store', [BankAccountController::class, 'store'])->name('admin.bank-accounts.store');
+        Route::put('/update/{id}', [BankAccountController::class, 'update'])->name('admin.bank-accounts.update');
+        Route::delete('/delete/{id}', [BankAccountController::class, 'destroy'])->name('admin.bank-accounts.destroy');
+        Route::get('/edit/{id}', [BankAccountController::class, 'edit'])->name('admin.bank-accounts.edit');
+    });
 
     Route::get('/users/list', [UserController::class, 'list'])->name('users.list');
     Route::get('/destinations/list', [DestinationController::class, 'list'])->name('destinations.list');
