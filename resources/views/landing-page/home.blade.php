@@ -43,7 +43,7 @@
 			<div class="site-navigation">
 				<a href="index.html" class="logo m-0">LocalVenture <span class="text-primary">.</span></a>
 
-				<ul class="js-clone-nav d-none d-lg-inline-block text-left site-menu float-right">
+				{{-- <ul class="js-clone-nav d-none d-lg-inline-block text-left site-menu float-right">
 					<li class="active"><a href="index.html">Home</a></li>
 					<li class="has-children">
 						<a href="#">Dropdown</a>
@@ -68,7 +68,7 @@
 
 				<a href="#" class="burger ml-auto float-right site-menu-toggle js-menu-toggle d-inline-block d-lg-none light" data-toggle="collapse" data-target="#main-navbar">
 					<span></span>
-				</a>
+				</a> --}}
 
 			</div>
 		</div>
@@ -87,31 +87,24 @@
 								<form class="form">
 									<div class="row mb-2">
 										<div class="col-sm-12 col-md-6 mb-3 mb-lg-0 col-lg-4">
-											<select name="" id="" class="form-control custom-select">
-												<option value="">Kalianget</option>
-												<option value="">Telaga Menjer</option>
-												<option value="">Gelanggang Renang Mangli</option>
-												<option value="">Kawasan Dieng</option>
-											</select>
+											<select name="destination_id" id="destination-select" class="form-control custom-select">
+                                                <option value="">-- Pilih Destinasi --</option>
+                                                @foreach ($destinations as $destination)
+                                                    <option value="{{ $destination->id }}">{{ $destination->name }}</option>
+                                                @endforeach
+                                            </select>
 										</div>
 										<div class="col-sm-12 col-md-6 mb-3 mb-lg-0 col-lg-5">
 											<input type="text" class="form-control" name="daterange">
 										</div>
 										<div class="col-sm-12 col-md-6 mb-3 mb-lg-0 col-lg-3">
-											<input type="text" class="form-control" placeholder="# of People">
+											<input type="text" class="form-control" placeholder="# orang">
 										</div>
 
 									</div>
 									<div class="row align-items-center">
 										<div class="col-sm-12 col-md-6 mb-3 mb-lg-0 col-lg-4">
-											<input type="submit" class="btn btn-primary btn-block" value="Search">
-										</div>
-										<div class="col-lg-8">
-											<label class="control control--checkbox mt-3">
-												<span class="caption">Save this search</span>
-												<input type="checkbox" checked="checked" />
-												<div class="control__indicator"></div>
-											</label>
+											<input type="submit" class="btn btn-primary btn-block mt-3" value="Cari tiket">
 										</div>
 									</div>
 								</form>
@@ -120,231 +113,13 @@
 					</div>
 				</div>
 				<div class="col-lg-5">
-					<div class="slides">
-						<img src="{{ asset('landing-page') }}/images/hero-slider-1.jpg" alt="Image" class="img-fluid active">
-						<img src="{{ asset('landing-page') }}/images/hero-slider-2.jpg" alt="Image" class="img-fluid">
-						<img src="{{ asset('landing-page') }}/images/hero-slider-3.jpg" alt="Image" class="img-fluid">
-						<img src="{{ asset('landing-page') }}/images/hero-slider-4.jpg" alt="Image" class="img-fluid">
-						<img src="{{ asset('landing-page') }}/images/hero-slider-5.jpg" alt="Image" class="img-fluid">
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-
-
-	<div class="untree_co-section">
-		<div class="container">
-			<div class="row mb-5 justify-content-center">
-				<div class="col-lg-6 text-center">
-					<h2 class="section-title text-center mb-3">Our Services</h2>
-					<p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean.</p>
-				</div>
-			</div>
-			<div class="row align-items-stretch">
-				<div class="col-lg-4 order-lg-1">
-					<div class="h-100"><div class="frame h-100"><div class="feature-img-bg h-100" style="background-image: url('{{ asset('landing-page') }}/images/hero-slider-1.jpg');"></div></div></div>
-				</div>
-
-				<div class="col-6 col-sm-6 col-lg-4 feature-1-wrap d-md-flex flex-md-column order-lg-1" >
-
-					<div class="feature-1 d-md-flex">
-						<div class="align-self-center">
-							<span class="flaticon-house display-4 text-primary"></span>
-							<h3>Beautiful Condo</h3>
-							<p class="mb-0">Even the all-powerful Pointing has no control about the blind texts.</p>
-						</div>
-					</div>
-
-					<div class="feature-1 ">
-						<div class="align-self-center">
-							<span class="flaticon-restaurant display-4 text-primary"></span>
-							<h3>Restaurants & Cafe</h3>
-							<p class="mb-0">Even the all-powerful Pointing has no control about the blind texts.</p>
-						</div>
-					</div>
-
-				</div>
-
-				<div class="col-6 col-sm-6 col-lg-4 feature-1-wrap d-md-flex flex-md-column order-lg-3" >
-
-					<div class="feature-1 d-md-flex">
-						<div class="align-self-center">
-							<span class="flaticon-mail display-4 text-primary"></span>
-							<h3>Easy to Connect</h3>
-							<p class="mb-0">Even the all-powerful Pointing has no control about the blind texts.</p>
-						</div>
-					</div>
-
-					<div class="feature-1 d-md-flex">
-						<div class="align-self-center">
-							<span class="flaticon-phone-call display-4 text-primary"></span>
-							<h3>24/7 Support</h3>
-							<p class="mb-0">Even the all-powerful Pointing has no control about the blind texts.</p>
-						</div>
-					</div>
-
-				</div>
-
-			</div>
-		</div>
-	</div>
-
-	<div class="untree_co-section count-numbers py-5">
-		<div class="container">
-			<div class="row">
-				<div class="col-6 col-sm-6 col-md-6 col-lg-3">
-					<div class="counter-wrap">
-						<div class="counter">
-							<span class="" data-number="9313">0</span>
-						</div>
-						<span class="caption">No. of Travels</span>
-					</div>
-				</div>
-				<div class="col-6 col-sm-6 col-md-6 col-lg-3">
-					<div class="counter-wrap">
-						<div class="counter">
-							<span class="" data-number="8492">0</span>
-						</div>
-						<span class="caption">No. of Clients</span>
-					</div>
-				</div>
-				<div class="col-6 col-sm-6 col-md-6 col-lg-3">
-					<div class="counter-wrap">
-						<div class="counter">
-							<span class="" data-number="100">0</span>
-						</div>
-						<span class="caption">No. of Employees</span>
-					</div>
-				</div>
-				<div class="col-6 col-sm-6 col-md-6 col-lg-3">
-					<div class="counter-wrap">
-						<div class="counter">
-							<span class="" data-number="120">0</span>
-						</div>
-						<span class="caption">No. of Countries</span>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-
-
-
-	<div class="untree_co-section">
-		<div class="container">
-			<div class="row text-center justify-content-center mb-5">
-				<div class="col-lg-7"><h2 class="section-title text-center">Popular Destination</h2></div>
-			</div>
-
-			<div class="owl-carousel owl-3-slider">
-
-				<div class="item">
-					<a class="media-thumb" href="{{ asset('landing-page') }}/images/hero-slider-1.jpg" data-fancybox="gallery">
-						<div class="media-text">
-							<h3>Pragser Wildsee</h3>
-							<span class="location">Italy</span>
-						</div>
-						<img src="{{ asset('landing-page') }}/images/hero-slider-1.jpg" alt="Image" class="img-fluid">
-					</a>
-				</div>
-
-				<div class="item">
-					<a class="media-thumb" href="{{ asset('landing-page') }}/images/hero-slider-2.jpg" data-fancybox="gallery">
-						<div class="media-text">
-							<h3>Oia</h3>
-							<span class="location">Greece</span>
-						</div>
-						<img src="{{ asset('landing-page') }}/images/hero-slider-2.jpg" alt="Image" class="img-fluid">
-					</a>
-				</div>
-
-				<div class="item">
-					<a class="media-thumb" href="{{ asset('landing-page') }}/images/hero-slider-3.jpg" data-fancybox="gallery">
-						<div class="media-text">
-							<h3>Perhentian Islands</h3>
-							<span class="location">Malaysia</span>
-						</div>
-						<img src="{{ asset('landing-page') }}/images/hero-slider-3.jpg" alt="Image" class="img-fluid">
-					</a>
-				</div>
-
-
-				<div class="item">
-					<a class="media-thumb" href="{{ asset('landing-page') }}/images/hero-slider-4.jpg" data-fancybox="gallery">
-						<div class="media-text">
-							<h3>Rialto Bridge</h3>
-							<span class="location">Italy</span>
-						</div>
-						<img src="{{ asset('landing-page') }}/images/hero-slider-4.jpg" alt="Image" class="img-fluid">
-					</a>
-				</div>
-
-				<div class="item">
-					<a class="media-thumb" href="{{ asset('landing-page') }}/images/hero-slider-5.jpg" data-fancybox="gallery">
-						<div class="media-text">
-							<h3>San Francisco, United States</h3>
-							<span class="location">United States</span>
-						</div>
-						<img src="{{ asset('landing-page') }}/images/hero-slider-5.jpg" alt="Image" class="img-fluid">
-					</a>
-				</div>
-
-				<div class="item">
-					<a class="media-thumb" href="{{ asset('landing-page') }}/images/hero-slider-1.jpg" data-fancybox="gallery">
-						<div class="media-text">
-							<h3>Lake Thun</h3>
-							<span class="location">Switzerland</span>
-						</div>
-						<img src="{{ asset('landing-page') }}/images/hero-slider-2.jpg" alt="Image" class="img-fluid">
-					</a>
-				</div>
-
-			</div>
-
-		</div>
-	</div>
-
-
-	<div class="untree_co-section testimonial-section mt-5">
-		<div class="container">
-			<div class="row justify-content-center">
-				<div class="col-lg-7 text-center">
-					<h2 class="section-title text-center mb-5">Testimonials</h2>
-
-					<div class="owl-single owl-carousel no-nav">
-						<div class="testimonial mx-auto">
-							<figure class="img-wrap">
-								<img src="{{ asset('landing-page') }}/images/person_2.jpg" alt="Image" class="img-fluid">
-							</figure>
-							<h3 class="name">Adam Aderson</h3>
-							<blockquote>
-								<p>&ldquo;There live the blind texts. Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean.&rdquo;</p>
-							</blockquote>
-						</div>
-
-						<div class="testimonial mx-auto">
-							<figure class="img-wrap">
-								<img src="{{ asset('landing-page') }}/images/person_3.jpg" alt="Image" class="img-fluid">
-							</figure>
-							<h3 class="name">Lukas Devlin</h3>
-							<blockquote>
-								<p>&ldquo;There live the blind texts. Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean.&rdquo;</p>
-							</blockquote>
-						</div>
-
-						<div class="testimonial mx-auto">
-							<figure class="img-wrap">
-								<img src="{{ asset('landing-page') }}/images/person_4.jpg" alt="Image" class="img-fluid">
-							</figure>
-							<h3 class="name">Kayla Bryant</h3>
-							<blockquote>
-								<p>&ldquo;There live the blind texts. Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean.&rdquo;</p>
-							</blockquote>
-						</div>
-
-					</div>
-
+                    <div class="slides">
+                        @foreach ($destinations as $destination)
+                            @foreach ($destination->images as $image)
+                                <img src="{{ asset('storage/destination/' . basename($image->image_url)) }}" alt="Image" class="img-fluid {{ $loop->first ? 'active' : '' }}">
+                            @endforeach
+                        @endforeach
+                    </div>
 				</div>
 			</div>
 		</div>
@@ -355,143 +130,51 @@
 		<div class="container">
 			<div class="row justify-content-center text-center mb-5">
 				<div class="col-lg-6">
-					<h2 class="section-title text-center mb-3">Special Offers &amp; Discounts</h2>
-					<p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean.</p>
-				</div>
+                    <h2 class="section-title text-center mb-3">Destinasi Wisata Terbaik Untuk Anda</h2>
+                    <p>Kami menghadirkan berbagai pilihan destinasi wisata menarik untuk Anda jelajahi. Dari keindahan alam yang memukau hingga tempat bersejarah yang penuh cerita, ada banyak pengalaman seru menanti! Temukan tempat wisata favorit Anda dan mulailah petualangan yang tak terlupakan.</p>
+                </div>
 			</div>
-			<div class="row">
-				<div class="col-6 col-sm-6 col-md-6 col-lg-3 mb-4 mb-lg-0">
-					<div class="media-1">
-						<a href="#" class="d-block mb-3"><img src="{{ asset('landing-page') }}/images/hero-slider-1.jpg" alt="Image" class="img-fluid"></a>
-						<span class="d-flex align-items-center loc mb-2">
-							<span class="icon-room mr-3"></span>
-							<span>Italy</span>
-						</span>
-						<div class="d-flex align-items-center">
-							<div>
-								<h3><a href="#">Rialto Mountains</a></h3>
-								<div class="price ml-auto">
-									<span>$520.00</span>
-								</div>
-							</div>
+			<div class="row justify-content-center ">
+                @foreach ($destinations as $destination)
+                    @foreach ($destination->images as $image)
+                    <div class="col-6 col-sm-6 col-md-6 col-lg-3 mb-4 ">
+                        <div class="media-1">
+                            <a href="#" class="d-block mb-3"><img src="{{ asset('storage/destination/' . basename($image->image_url)) }}" alt="Image" class="img-fluid"></a>
+                            <span class="d-flex align-items-center loc mb-2">
+                                <span class="icon-room mr-3"></span>
+                                <span>{{ $destination->address }}</span>
+                            </span>
+                            <div class="d-flex align-items-center">
+                                <div>
+                                    <h3><a href="#">{{ $destination->name }}</a></h3>
+                                    <div class="price ml-auto">
+                                        {{-- <span>$520.00</span> --}}
+                                    </div>
+                                </div>
 
-						</div>
+                            </div>
 
-					</div>
-				</div>
-				<div class="col-6 col-sm-6 col-md-6 col-lg-3 mb-4 mb-lg-0">
-					<div class="media-1">
-						<a href="#" class="d-block mb-3"><img src="{{ asset('landing-page') }}/images/hero-slider-2.jpg" alt="Image" class="img-fluid"></a>
-						<span class="d-flex align-items-center loc mb-2">
-							<span class="icon-room mr-3"></span>
-							<span>United States</span>
-						</span>
-						<div class="d-flex align-items-center">
-							<div>
-								<h3><a href="#">San Francisco</a></h3>
-								<div class="price ml-auto">
-									<span>$520.00</span>
-								</div>
-							</div>
+                        </div>
+                    </div> @endforeach
+                @endforeach
 
-						</div>
-
-					</div>
-				</div>
-				<div class="col-6 col-sm-6 col-md-6 col-lg-3 mb-4 mb-lg-0">
-					<div class="media-1">
-						<a href="#" class="d-block mb-3"><img src="{{ asset('landing-page') }}/images/hero-slider-3.jpg" alt="Image" class="img-fluid"></a>
-						<span class="d-flex align-items-center loc mb-2">
-							<span class="icon-room mr-3"></span>
-							<span>Malaysia</span>
-						</span>
-						<div class="d-flex align-items-center">
-							<div>
-								<h3><a href="#">Perhentian Islands</a></h3>
-								<div class="price ml-auto">
-									<span>$750.00</span>
-								</div>
-							</div>
-
-						</div>
-
-					</div>
-				</div>
-				<div class="col-6 col-sm-6 col-md-6 col-lg-3 mb-4 mb-lg-0">
-					<div class="media-1">
-						<a href="#" class="d-block mb-3"><img src="{{ asset('landing-page') }}/images/hero-slider-4.jpg" alt="Image" class="img-fluid"></a>
-
-						<span class="d-flex align-items-center loc mb-2">
-							<span class="icon-room mr-3"></span>
-							<span>Switzerland</span>
-						</span>
-
-						<div class="d-flex align-items-center">
-							<div>
-								<h3><a href="#">Lake Thun</a></h3>
-								<div class="price ml-auto">
-									<span>$520.00</span>
-								</div>
-							</div>
-
-						</div>
-
-					</div>
-				</div>
 			</div>
 		</div>
 	</div>
-
-	<div class="untree_co-section">
-		<div class="container">
-			<div class="row justify-content-between align-items-center">
-
-				<div class="col-lg-6">
-					<figure class="img-play-video">
-						<a id="play-video" class="video-play-button" href="https://www.youtube.com/watch?v=mwtbEGNABWU" data-fancybox>
-							<span></span>
-						</a>
-						<img src="{{ asset('landing-page') }}/images/hero-slider-2.jpg" alt="Image" class="img-fluid rounded-20">
-					</figure>
-				</div>
-
-				<div class="col-lg-5">
-					<h2 class="section-title text-left mb-4">Take a look at Tour Video</h2>
-					<p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean.</p>
-
-					<p class="mb-4">A small river named Duden flows by their place and supplies it with the necessary regelialia. It is a paradisematic country, in which roasted parts of sentences fly into your mouth.</p>
-
-					<ul class="list-unstyled two-col clearfix">
-						<li>Outdoor recreation activities</li>
-						<li>Airlines</li>
-						<li>Car Rentals</li>
-						<li>Cruise Lines</li>
-						<li>Hotels</li>
-						<li>Railways</li>
-						<li>Travel Insurance</li>
-						<li>Package Tours</li>
-						<li>Insurance</li>
-						<li>Guide Books</li>
-					</ul>
-
-					<p><a href="#" class="btn btn-primary">Get Started</a></p>
-
-
-				</div>
-			</div>
-		</div>
-	</div>
-
 
 
 	<div class="py-5 cta-section">
 		<div class="container">
 			<div class="row text-center">
 				<div class="col-md-12">
-					<h2 class="mb-2 text-white">Lets you Explore the Best. Contact Us Now</h2>
-					<p class="mb-4 lead text-white text-white-opacity">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Excepturi, fugit?</p>
-					<p class="mb-0"><a href="booking.html" class="btn btn-outline-white text-white btn-md font-weight-bold">Get in touch</a></p>
-				</div>
+                    <h2 class="mb-2 text-white">Temukan Wisata Lokal Terbaik. Pesan Tiketmu Sekarang!</h2>
+                    <p class="mb-4 lead text-white text-white-opacity">Nikmati liburan tanpa ribet! Pesan tiket wisata dengan mudah dan mulailah petualangan seru ke berbagai destinasi menarik.</p>
+                    <p class="mb-0">
+                        <a href="#" onclick="scrollToTop()" class="btn btn-outline-white text-white btn-md font-weight-bold">
+                            Pesan Sekarang
+                        </a>
+                    </p>
+                </div>
 			</div>
 		</div>
 	</div>
@@ -558,7 +241,7 @@
 			<div class="container">
 				<div class="row text-center">
 					<div class="col-md-8 mb-3 mb-md-0 mx-auto">
-						<p>Copyright &copy;<script>document.write(new Date().getFullYear());</script>. All Rights Reserved. &mdash; Designed with love by <a href="https://untree.co" class="link-highlight">Untree.co</a> <!-- License information: https://untree.co/license/ -->Distributed By <a href="https://themewagon.com" target="_blank" >ThemeWagon</a>
+						<p>Copyright &copy;<script>document.write(new Date().getFullYear());</script>. All Rights Reserved.
 						</p>
 					</div>
 
@@ -595,8 +278,10 @@
 				$(this).attr('data-id', i + 1);
 			})
 
+            var destinationNames = @json($destinationNames);
+
 			var typed = new Typed('.typed-words', {
-				strings: [" Kalianget."," Telaga Menjer"," Gelanggang Renang Mangli", " Kawasan Dieng."],
+				strings: destinationNames.map(name => ` ${name}.`),
 				typeSpeed: 80,
 				backSpeed: 80,
 				backDelay: 4000,
@@ -616,6 +301,11 @@
 
 	<script src="{{ asset('landing-page') }}/js/custom.js"></script>
 
+    <script>
+        function scrollToTop() {
+            document.body.scrollIntoView({ behavior: "smooth", block: "start" }); // ✅ Ensures smooth scroll works across browsers
+        }
+    </script>
 </body>
 
 </html>

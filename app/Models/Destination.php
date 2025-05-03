@@ -55,4 +55,9 @@ class Destination extends Model
     {
         return $this->hasMany(Pricing::class);
     }
+
+    public function images()
+    {
+        return $this->hasMany(DestinationGallery::class, 'destination_id');
+    }
 }
