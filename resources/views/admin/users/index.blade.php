@@ -255,7 +255,6 @@
                 }
             });
 
-
             $('#add-user-btn').click(function() {
                 $('#userForm').trigger('reset');
                 $('#btn-save').text("Save");
@@ -415,6 +414,8 @@
                 success: function(response) {
                     if (response.success) {
                         let user = response.data;
+
+                        console.log('user.parent_id:', user.parent_id); // Debugging step
 
                         $('#role_id').val(user.role_id).trigger('change');
                         $('#username').val(user.username);

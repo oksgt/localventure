@@ -18,11 +18,7 @@ class UserController extends Controller
 
     public function index()
     {
-        if (session('role_id') !== 3) {
-            return view('admin.users.index');
-        } else {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
+        return view('admin.users.index');
     }
 
     public function addUser(Request $request)
