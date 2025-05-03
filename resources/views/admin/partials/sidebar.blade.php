@@ -19,13 +19,21 @@
                     <ul class="nav flex-column sub-menu">
                         <li class="nav-item"> <a class="nav-link" href="{{ route('admin.users.index') }}">Data User</a>
                         </li>
-                        <li class="nav-item"> <a class="nav-link" href="{{ route('admin.mapping-user.index') }}">Mapping
-                                User</a></li>
-                        <li class="nav-item"> <a class="nav-link" href="{{ route('admin.master-ticket.index') }}">Master
-                                Ticket</a></li>
-                        <li class="nav-item"> <a class="nav-link" href="{{ route('admin.destinations.index') }}">Master
-                                Destination</a></li>
-                        <li class="nav-item"> <a class="nav-link" href="{{ route('admin.bank-accounts.index') }}">Bank Accounts</a></li>
+
+                        @if (session('role_id') == 1)
+                            <li class="nav-item"> <a class="nav-link"
+                                    href="{{ route('admin.mapping-user.index') }}">Mapping
+                                    User</a></li>
+                            <li class="nav-item"> <a class="nav-link"
+                                    href="{{ route('admin.master-ticket.index') }}">Master
+                                    Ticket</a></li>
+                            <li class="nav-item"> <a class="nav-link"
+                                    href="{{ route('admin.destinations.index') }}">Master
+                                    Destination</a></li>
+                            <li class="nav-item"> <a class="nav-link"
+                                    href="{{ route('admin.bank-accounts.index') }}">Bank Accounts</a></li>
+                        @endif
+
                     </ul>
                 </div>
             </li>
@@ -38,8 +46,10 @@
                 </a>
                 <div class="collapse" id="ui-basic">
                     <ul class="nav flex-column sub-menu">
-                        <li class="nav-item"> <a class="nav-link" href="pages/ui-features/buttons.html">On The Spot</a></li>
-                        <li class="nav-item"> <a class="nav-link" href="pages/ui-features/dropdowns.html">Online</a></li>
+                        <li class="nav-item"> <a class="nav-link" href="pages/ui-features/buttons.html">On The Spot</a>
+                        </li>
+                        <li class="nav-item"> <a class="nav-link" href="pages/ui-features/dropdowns.html">Online</a>
+                        </li>
                     </ul>
                 </div>
             </li>

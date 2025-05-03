@@ -57,7 +57,7 @@ use App\Http\Middleware\RoleMiddleware;
         });
 
         // 🔹 Super Admin (role_id = 1) - Mapping Users
-        Route::middleware([RoleMiddleware::class . ':1,2'])->group(function () {
+        Route::middleware([RoleMiddleware::class . ':1'])->group(function () {
             Route::get('/admin/mapping-user', [UserMappingController::class, 'index'])->name('admin.mapping-user.index');
             Route::get('/admin/mapping-user/data', [UserMappingController::class, 'getData'])->name('admin.mapping-user.data');
             Route::post('/admin/mapping-users/store', [UserMappingController::class, 'store'])->name('admin.mapping-users.store');
@@ -66,7 +66,7 @@ use App\Http\Middleware\RoleMiddleware;
         });
 
         // 🔹 Super Admin & Admin (role_id = 1,2) - Destinations
-        Route::middleware([RoleMiddleware::class . ':1,2'])->group(function () {
+        Route::middleware([RoleMiddleware::class . ':1'])->group(function () {
             Route::get('/admin/destinations', [DestinationController::class, 'index'])->name('admin.destinations.index');
             Route::get('/admin/destinations/data', [DestinationController::class, 'getDestinations'])->name('admin.destinations.data');
             Route::post('/admin/destinations/store', [DestinationController::class, 'store'])->name('admin.destinations.store');
@@ -76,7 +76,7 @@ use App\Http\Middleware\RoleMiddleware;
         });
 
         // 🔹 Admin & Super Admin (role_id = 1,2) - Destination Gallery
-        Route::middleware([RoleMiddleware::class . ':1,2'])->group(function () {
+        Route::middleware([RoleMiddleware::class . ':1'])->group(function () {
             Route::get('/admin/destination-gallery/{destinationId}', [DestinationController::class, 'fetchGallery'])->name('admin.destination-gallery.fetch');
             Route::post('/admin/destination-gallery/upload', [DestinationController::class, 'upload'])->name('admin.destination-gallery.upload');
             Route::delete('/admin/destination-gallery/{id}/remove', [DestinationController::class, 'remove'])->name('admin.destination-gallery.remove');
