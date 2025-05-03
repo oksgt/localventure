@@ -19,7 +19,14 @@ return new class extends Migration
             $table->text('visitor_origin_description')->nullable();
             $table->string('visitor_email', 255)->nullable();
             $table->integer('visitor_age')->nullable();
-            $table->enum('visitor_gender', ['M', 'F']);
+
+            $table->integer('id_kecamatan');
+            $table->integer('id_kabupaten');
+            $table->integer('id_provinsi');
+
+            $table->integer('visitor_male_count')->default(0);
+            $table->integer('visitor_female_count')->default(0);
+
             $table->integer('total_visitor');
             $table->decimal('total_price', 10, 2);
             $table->string('billing_number', 50)->unique();
@@ -31,6 +38,8 @@ return new class extends Migration
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignId('deleted_by')->nullable()->constrained('users')->nullOnDelete();
+
+            $table->index('visit_date');
         });
     }
 
