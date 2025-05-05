@@ -5,6 +5,7 @@ use App\Http\Controllers\BankAccountController;
 use App\Http\Controllers\DestinationController;
 use App\Http\Controllers\GuestTypeController;
 use App\Http\Controllers\HomeController as AdminHomeController;
+use App\Http\Controllers\landingpage\BookingController;
 use App\Http\Controllers\landingpage\HomeController;
 use App\Http\Controllers\MappingUserController;
 use App\Http\Controllers\MasterTicketController;
@@ -19,6 +20,8 @@ use App\Http\Middleware\RoleMiddleware;
     Route::post('/login', [AuthController::class, 'login'])->name('login.process');
 
     Route::get('/', [HomeController::class, 'index'])->name('landing-page.home');
+    Route::post('/search-tickets', [BookingController::class, 'searchTickets'])->name('search.tickets');
+    Route::get('/tickets/results', [BookingController::class, 'showResults'])->name('tickets.results');
 
     Route::middleware(['auth'])->group(function () {
 

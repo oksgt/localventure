@@ -27,8 +27,6 @@
 </head>
 
 <body>
-
-
 	<div class="site-mobile-menu site-navbar-target">
 		<div class="site-mobile-menu-header">
 			<div class="site-mobile-menu-close">
@@ -84,30 +82,30 @@
 
 						<div class="row">
 							<div class="col-12">
-								<form class="form">
-									<div class="row mb-2">
-										<div class="col-sm-12 col-md-6 mb-3 mb-lg-0 col-lg-4">
-											<select name="destination_id" id="destination-select" class="form-control custom-select">
+								<form class="form" id="booking-form">
+                                    @csrf
+                                    <div class="row mb-2">
+                                        <div class="col-sm-12 col-md-6 mb-3 mb-lg-0 col-lg-4">
+                                            <select name="destination_id" id="destination-select" class="form-control custom-select">
                                                 <option value="">-- Pilih Destinasi --</option>
                                                 @foreach ($destinations as $destination)
                                                     <option value="{{ $destination->id }}">{{ $destination->name }}</option>
                                                 @endforeach
                                             </select>
-										</div>
-										<div class="col-sm-12 col-md-6 mb-3 mb-lg-0 col-lg-5">
-											<input type="text" class="form-control" name="daterange">
-										</div>
-										<div class="col-sm-12 col-md-6 mb-3 mb-lg-0 col-lg-3">
-											<input type="text" class="form-control" placeholder="# orang">
-										</div>
-
-									</div>
-									<div class="row align-items-center">
-										<div class="col-sm-12 col-md-6 mb-3 mb-lg-0 col-lg-4">
-											<input type="submit" class="btn btn-primary btn-block mt-3" value="Cari tiket">
-										</div>
-									</div>
-								</form>
+                                        </div>
+                                        <div class="col-sm-12 col-md-6 mb-3 mb-lg-0 col-lg-5">
+                                            <input type="text" class="form-control" name="daterange">
+                                        </div>
+                                        <div class="col-sm-12 col-md-6 mb-3 mb-lg-0 col-lg-3">
+                                            <input type="number" class="form-control" name="people_count" placeholder="# orang">
+                                        </div>
+                                    </div>
+                                    <div class="row align-items-center">
+                                        <div class="col-sm-12 col-md-6 mb-3 mb-lg-0 col-lg-4">
+                                            <input type="submit" class="btn btn-primary btn-block mt-3" value="Cari Tiket">
+                                        </div>
+                                    </div>
+                                </form>
 							</div>
 						</div>
 					</div>
@@ -305,6 +303,26 @@
         function scrollToTop() {
             document.body.scrollIntoView({ behavior: "smooth", block: "start" }); // ✅ Ensures smooth scroll works across browsers
         }
+    </script>
+    <script>
+        $(document).ready(function() {
+            $('#booking-form').on('submit', function(e) {
+                e.preventDefault(); // ✅ Prevent default form submission
+
+                $.ajax({
+                    url: "{{ route('search.tickets') }}",
+                    type: "POST",
+                    data: $('#booking-form').serialize(),
+                    success: function(response) {
+                        window.location.href = response.redirect; // ✅ Uses Laravel's response
+                    },
+                    error: function(xhr) {
+                        alert('Terjadi kesalahan, coba lagi!');
+                        console.error(xhr.responseText);
+                    }
+                });
+            });
+        });
     </script>
 </body>
 

@@ -15,4 +15,6 @@ class HomeController extends Controller
 
         return view('landing-page.home', compact('destinations', 'destinationNames'));
     }
+
+
 }
