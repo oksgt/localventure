@@ -9,7 +9,7 @@ $(function(){
 	'use strict';
 
 	$(".loader").delay(200).fadeOut("slow");
-	$("#overlayer").delay(200).fadeOut("slow");	
+	$("#overlayer").delay(200).fadeOut("slow");
 
 	var siteMenuClone = function() {
 
@@ -20,11 +20,11 @@ $(function(){
 
 
 		setTimeout(function() {
-			
+
 			var counter = 0;
 			$('.site-mobile-menu .has-children').each(function(){
 				var $this = $(this);
-				
+
 				$this.prepend('<span class="arrow-collapse collapsed">');
 
 				$this.find('.arrow-collapse').attr({
@@ -50,8 +50,8 @@ $(function(){
 			} else {
 				$this.addClass('active');
 			}
-			e.preventDefault();  
-			
+			e.preventDefault();
+
 		});
 
 		$(window).resize(function() {
@@ -76,7 +76,7 @@ $(function(){
 				$('body').addClass('offcanvas-menu');
 				$('body').find('.js-menu-toggle').addClass('active');
 			}
-		}) 
+		})
 
 		// click outisde offcanvas
 		$(document).mouseup(function(e) {
@@ -88,7 +88,7 @@ $(function(){
 				}
 			}
 		});
-	}; 
+	};
 	siteMenuClone();
 
 	var owlPlugin = function() {
@@ -190,7 +190,7 @@ $(function(){
 			function counter(event) {
 				$('.owl-total').text(event.item.count);
 			}
-			
+
 			$('.js-custom-owl-next').click(function(e) {
 				e.preventDefault();
 				owl.trigger('next.owl.carousel');
@@ -222,7 +222,7 @@ $(function(){
 	owlPlugin();
 
 	var counter = function() {
-		
+
 		$('.count-numbers').waypoint( function( direction ) {
 
 			if( direction === 'down' && !$(this.element).hasClass('ut-animated') ) {
@@ -238,15 +238,18 @@ $(function(){
 					}, 7000
 					);
 				});
-				
+
 			}
 
 		} , { offset: '95%' } );
 
 	}
 	counter();
-	
+
 	if($('input[name="daterange"]').length) {
-		$('input[name="daterange"]').daterangepicker();
+		$('input[name="daterange"]').daterangepicker({
+            singleDatePicker: true,
+
+        });
 	}
 })

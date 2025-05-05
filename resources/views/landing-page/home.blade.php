@@ -86,6 +86,7 @@
                                     @csrf
                                     <div class="row mb-2">
                                         <div class="col-sm-12 col-md-6 mb-3 mb-lg-0 col-lg-4">
+                                            <label class="form-text text-muted" for="destination-select">Destinasi Wisata</label>
                                             <select name="destination_id" id="destination-select" class="form-control custom-select">
                                                 <option value="">-- Pilih Destinasi --</option>
                                                 @foreach ($destinations as $destination)
@@ -94,10 +95,12 @@
                                             </select>
                                         </div>
                                         <div class="col-sm-12 col-md-6 mb-3 mb-lg-0 col-lg-5">
+                                            <label class="form-text text-muted" for="daterange">Tanggal Kunjungan</label>
                                             <input type="text" class="form-control" name="daterange">
                                         </div>
                                         <div class="col-sm-12 col-md-6 mb-3 mb-lg-0 col-lg-3">
-                                            <input type="number" class="form-control" name="people_count" placeholder="# orang">
+                                            <label class="form-text text-muted" for="people_count">Jumlah Orang</label>
+                                            <input type="text" class="form-control" name="people_count" placeholder="# orang">
                                         </div>
                                     </div>
                                     <div class="row align-items-center">
@@ -105,8 +108,18 @@
                                             <input type="submit" class="btn btn-primary btn-block mt-3" value="Cari Tiket">
                                         </div>
                                     </div>
+
+                                    <div id="error-message" class="row align-items-center d-none">
+                                        <div class="col-sm-12 col-md-12 mb-2 mt-3">
+                                            <small class="text-danger h6">* Pilih destinasi, tanggal, dan jumlah orang</small>
+                                        </div>
+                                    </div>
+
                                 </form>
 							</div>
+                            <div class="col-12">
+
+                            </div>
 						</div>
 					</div>
 				</div>
@@ -317,11 +330,17 @@
                         window.location.href = response.redirect; // ✅ Uses Laravel's response
                     },
                     error: function(xhr) {
-                        alert('Terjadi kesalahan, coba lagi!');
-                        console.error(xhr.responseText);
+                        $('#error-message').removeClass('d-none');
+                        $('#error-message').addClass('d-block');
                     }
                 });
             });
+        });
+    </script>
+    <script>
+        document.querySelector('input[name="people_count"]').addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9]/g, ''); // ✅ Removes non-numeric characters
+            if (this.value < 1) this.value = 1; // ✅ Forces minimum value of 1
         });
     </script>
 </body>

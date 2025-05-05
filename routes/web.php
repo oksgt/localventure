@@ -22,6 +22,9 @@ use App\Http\Middleware\RoleMiddleware;
     Route::get('/', [HomeController::class, 'index'])->name('landing-page.home');
     Route::post('/search-tickets', [BookingController::class, 'searchTickets'])->name('search.tickets');
     Route::get('/tickets/results', [BookingController::class, 'showResults'])->name('tickets.results');
+    Route::get('/get-provinces', [BookingController::class, 'getProvinces'])->name('get.provinces');
+    Route::get('/get-regencies', [BookingController::class, 'getRegencies'])->name('get.regencies');
+    Route::get('/get-districts', [BookingController::class, 'getDistricts'])->name('get.districts');
 
     Route::middleware(['auth'])->group(function () {
 
