@@ -122,4 +122,18 @@ class BookingController extends Controller
         return response()->json($districts);
     }
 
+    public function getPricing(Request $request)
+    {
+        $pricing = Pricing::where('destination_id', $request->destination_id)
+            ->join('guest_types as gt', 'gt.id', '=', 'pricing.guest_type_id')
+            ->select('pricing.*', 'gt.name as guest_name')
+            ->whereNull('pricing.deleted_at')
+            ->orderBy('pricing.day_type', 'asc')
+            ->orderBy('gt.name', 'asc')
+            ->get();
+
+        return response()->json($pricing);
+    }
+
+
 }

@@ -150,61 +150,157 @@
                 <h4>Ticket Option</h4>
                 <section>
 
-                    @if ($pricing->isNotEmpty())
-                        <div class="board-wrapper" style="margin-bottom: 30px;">
-                            @foreach (['weekday', 'weekend'] as $dayType)
+                    <div id="pricingBoard">
+                        @if ($pricing->isNotEmpty())
+                            <div class="board-wrapper" style="margin-bottom: 30px;">
+                                @foreach (['weekday', 'weekend'] as $dayType)
+                                    <div class="board-inner">
+                                        <div class="board-item" style="font-weight: 600;">
+                                            {{ ucfirst($dayType) }} :
+                                        </div>
+                                        <div class="board-line">
+                                            @foreach ($pricing->where('day_type', $dayType) as $price)
+                                                <div class="board-item">
+                                                    {{ $price->guest_name }} :
+                                                    <br>
+                                                    <span>Rp. {{ number_format($price->final_price, 0, ',', '.') }}</span>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-holder w-100 ">
+                                    <input type="number" class="form-control pl-85" value="0">
+                                    <span class="placeholder">Kids:</span>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-holder w-100 ">
+                                    <input type="number" class="form-control pl-85" value="0">
+                                    <span class="placeholder">Adults:</span>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-holder w-100 ">
+                                    <input type="number" class="form-control pl-85" value="0">
+                                    <span class="placeholder">Foreigners:</span>
+                                </div>
+                            </div>
+                            <button class="forward" style="width: 195px; margin-top: 44px;">Book by email
+                                <i class="zmdi zmdi-long-arrow-right"></i>
+                            </button>
+                        @else
+                            <div class="board-wrapper" style="margin-bottom: 30px;">
                                 <div class="board-inner">
                                     <div class="board-item" style="font-weight: 600;">
-                                        {{ ucfirst($dayType) }} :
-                                    </div>
-                                    <div class="board-line">
-                                        @foreach ($pricing->where('day_type', $dayType) as $price)
-                                            <div class="board-item">
-                                                {{ $price->guest_name }} :
-                                                <br>
-                                                <span>Rp. {{ number_format($price->final_price, 0, ',', '.') }}</span>
-                                            </div>
-                                        @endforeach
+                                        Tickets are not available.
                                     </div>
                                 </div>
-                            @endforeach
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-holder w-100 ">
-                                <input type="number" class="form-control pl-85" value="0">
-                                <span class="placeholder">Kids:</span>
                             </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-holder w-100 ">
-                                <input type="number" class="form-control pl-85" value="0">
-                                <span class="placeholder">Adults:</span>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-holder w-100 ">
-                                <input type="number" class="form-control pl-85" value="0">
-                                <span class="placeholder">Foreigners:</span>
-                            </div>
-                        </div>
-                        <button class="forward" style="width: 195px; margin-top: 44px;">Book by email
-                            <i class="zmdi zmdi-long-arrow-right"></i>
-                        </button>
-
-                    @else
-                        <div class="board-wrapper" style="margin-bottom: 30px;">
-                            <div class="board-inner">
-                                <div class="board-item" style="font-weight: 600;">
-                                    Tickets are not available.
-                                </div>
-                            </div>
-                        </div>
-                    @endif
+                        @endif
+                    </div>
                 </section>
 
+                {{-- @if ($pricing->isNotEmpty()) --}}
+                <h4>Payment Option</h4>
+                    <section class="section-style">
+                        <div class="board-wrapper">
+                            <div class="board-inner">
+                                <div class="board-item">
+                                    Check In :
+                                    <span>2-5-2018</span>
+                                </div>
+                                <div class="board-item">
+                                    Check Out :
+                                    <span>8-5-2018</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pay-wrapper">
+                            <div class="bill">
+                                <div class="bill-cell">
+                                    <div class="bill-item">
+                                        <div class="bill-unit">
+                                            Room 1 : <span>Small Room</span>
+                                        </div>
+                                        <span class="price">$34</span>
+                                    </div>
+                                    <div class="bill-item people">
+                                        <div class="bill-unit">
+                                            Adult : <span>2</span>
+                                        </div>
+                                        <div class="bill-unit">
+                                            Children : <span>0</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="bill-cell" style="margin-bottom: 13px">
+                                    <div class="bill-item">
+                                        <div class="bill-unit">
+                                            Room 2 : <span>Luxury Room</span>
+                                        </div>
+                                        <span class="price">$23</span>
+                                    </div>
+                                    <div class="bill-item people">
+                                        <div class="bill-unit">
+                                            Adult : <span>4</span>
+                                        </div>
+                                        <div class="bill-unit">
+                                            Children : <span>1</span>
+                                        </div>
+                                    </div>
+                                    <div class="bill-item service">
+                                        <div class="bill-unit">
+                                            Rooms & Services :
+                                        </div>
+                                        <span class="price">$80</span>
+                                    </div>
+                                </div>
+                                <div class="bill-cell">
+                                    <div class="bill-item vat">
+                                        <div class="bill-unit">
+                                            Vat 8% :
+                                        </div>
+                                        <span class="price">$08</span>
+                                    </div>
+                                    <div class="bill-item total-price">
+                                        <div class="bill-unit">
+                                            Total Price :
+                                        </div>
+                                        <span class="price">$88</span>
+                                    </div>
+                                    <div class="checkbox-circle">
+                                        <label>
+                                            <input type="radio" name="payment" value="full payment" checked> Full
+                                            Payment<br>
+                                            <span class="checkmark"></span>
+                                        </label>
+                                        <label>
+                                            <input type="radio" name="payment" value="10% Deposit"> 10% Deposit
+                                            <span class="checkmark"></span>
+                                        </label>
+                                    </div>
+                                    <div class="bill-item total">
+                                        <div class="bill-unit">
+                                            <span>20% Deposit</span>
+                                            Pay the rest on arrival
+                                        </div>
+                                        <span class="price">$78</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <button style="width: 195px; margin-top: 45px;">Confirmation
+                                <i class="zmdi zmdi-long-arrow-right"></i>
+                            </button>
+                        </div>
+                    </section>
+                {{-- @endif --}}
 
-                @if ($pricing->isNotEmpty())
+
+                {{-- @if ($pricing->isNotEmpty()) --}}
                     <h4>Confirmation</h4>
                     <section class="section-style">
                         <div class="board-wrapper">
@@ -297,10 +393,9 @@
                             </button>
                         </div>
                     </section>
+                {{-- @else --}}
 
-                @else
-
-                @endif
+                {{-- @endif --}}
 
             </div>
         </div>
@@ -329,7 +424,89 @@
                 $('#selectedImage').fadeOut(200, function() { // ✅ Smooth fade effect
                     $(this).attr('src', imageUrl).fadeIn(200);
                 });
+
+                let destinationId = $(this).data('id'); // ✅ Get selected destination ID
+
+                // Load pricing dynamically using AJAX
+                $.ajax({
+                    url: "{{ route('get.pricing') }}", // ✅ Laravel route
+                    type: "GET",
+                    data: { destination_id: destinationId },
+                    success: function (response) {
+                        renderPricing(response); // ✅ Call function to update the pricing board
+                    }
+                });
+
             });
+
+            function renderPricing(pricingData) {
+                let pricingBoard = '';
+
+                if (pricingData.length === 0) {
+                    pricingBoard = `
+                        <div class="board-wrapper" style="margin-bottom: 30px;">
+                            <div class="board-inner">
+                                <div class="board-item" style="font-weight: 600;">
+                                    Tickets are not available.
+                                </div>
+                            </div>
+                        </div>`;
+                } else {
+                    pricingBoard += `<div class="board-wrapper" style="margin-bottom: 30px;">`;
+
+                    ['weekday', 'weekend'].forEach(dayType => {
+                        let dayPrices = pricingData.filter(price => price.day_type === dayType);
+
+                        if (dayPrices.length) {
+                            pricingBoard += `
+                                <div class="board-inner">
+                                    <div class="board-item" style="font-weight: 600;">${dayType.charAt(0).toUpperCase() + dayType.slice(1)} :</div>
+                                    <div class="board-line">`;
+
+                            dayPrices.forEach(price => {
+                                pricingBoard += `
+                                    <div class="board-item">
+                                        ${price.guest_name} :
+                                        <br>
+                                        <span>Rp. ${parseFloat(price.final_price).toLocaleString()}</span>
+                                    </div>`;
+                            });
+
+                            pricingBoard += `</div></div>`;
+                        }
+                    });
+
+                    pricingBoard += `</div>`;
+
+                    // ✅ Add booking fields ONLY if pricing exists
+                    pricingBoard += `
+                        <div class="form-row">
+                            <div class="form-holder w-100">
+                                <input type="number" class="form-control pl-85" value="0">
+                                <span class="placeholder">Kids:</span>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-holder w-100">
+                                <input type="number" class="form-control pl-85" value="0">
+                                <span class="placeholder">Adults:</span>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-holder w-100">
+                                <input type="number" class="form-control pl-85" value="0">
+                                <span class="placeholder">Foreigners:</span>
+                            </div>
+                        </div>
+                        <button class="forward" style="width: 195px; margin-top: 44px;">Book by email
+                            <i class="zmdi zmdi-long-arrow-right"></i>
+                        </button>`;
+                }
+
+                $('#pricingBoard').html(pricingBoard); // ✅ Update the pricing board dynamically
+            }
+
+
 
             let dateFromServer = "{{ $searchData['daterange'] ?? '' }}"; // ✅ Get date from backend
 

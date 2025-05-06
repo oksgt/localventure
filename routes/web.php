@@ -25,6 +25,7 @@ use App\Http\Middleware\RoleMiddleware;
     Route::get('/get-provinces', [BookingController::class, 'getProvinces'])->name('get.provinces');
     Route::get('/get-regencies', [BookingController::class, 'getRegencies'])->name('get.regencies');
     Route::get('/get-districts', [BookingController::class, 'getDistricts'])->name('get.districts');
+    Route::get('/get-pricing', [BookingController::class, 'getPricing'])->name('get.pricing');
 
     Route::middleware(['auth'])->group(function () {
 
