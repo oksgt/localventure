@@ -62,7 +62,7 @@
                 </a>
                 <div class="collapse" id="setting-dropdown">
                     <ul class="nav flex-column sub-menu">
-                        <li class="nav-item"> <a class="nav-link" href="pages/ui-features/buttons.html">Payment Option</a>
+                        <li class="nav-item"> <a class="nav-link" href="{{ route('admin.payment-option.index') }}">Payment Option</a>
                         </li>
                     </ul>
                 </div>

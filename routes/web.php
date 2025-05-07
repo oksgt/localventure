@@ -9,6 +9,7 @@ use App\Http\Controllers\landingpage\BookingController;
 use App\Http\Controllers\landingpage\HomeController;
 use App\Http\Controllers\MappingUserController;
 use App\Http\Controllers\MasterTicketController;
+use App\Http\Controllers\PaymentOptionController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserMappingController;
 use Illuminate\Support\Facades\Route;
@@ -105,6 +106,23 @@ use App\Http\Middleware\RoleMiddleware;
 
         Route::middleware([RoleMiddleware::class . ':1,2,3'])->group(function () {
             Route::get('/admin', [AdminHomeController::class, 'index'])->name('admin.home');
+        });
+
+        Route::middleware([RoleMiddleware::class . ':1'])->group(function () {
+            Route::prefix('admin/payment-option')->group(function () {
+                Route::get('/', [PaymentOptionController::class, 'index'])->name('admin.payment-option.index');
+                Route::get('/data', [PaymentOptionController::class, 'getData'])->name('admin.payment-option.data');
+                Route::post('/store', [PaymentOptionController::class, 'store'])->name('admin.payment-option.store');
+                Route::get('/edit/{id}', [PaymentOptionController::class, 'edit'])->name('admin.payment-option.edit');
+                Route::post('/update/{id}', [PaymentOptionController::class, 'update'])->name('admin.payment-option.update');
+                Route::delete('/delete/{id}', [PaymentOptionController::class, 'destroy'])->name('admin.payment-option.delete');
+            });
+
+            // Route::get('/admin/master-ticket/data', [MasterTicketController::class, 'getData'])->name('admin.master-ticket.data');
+            // Route::post('/admin/master-ticket/store', [MasterTicketController::class, 'store'])->name('admin.master-ticket.store');
+            // Route::put('/admin/master-ticket/{id}', [MasterTicketController::class, 'update'])->name('admin.master-ticket.update');
+            // Route::delete('/admin/master-ticket/{id}', [MasterTicketController::class, 'destroy'])->name('admin.master-ticket.destroy');
+            // Route::get('/admin/master-ticket/edit/{id}', [MasterTicketController::class, 'edit'])->name('admin.master-ticket.edit');
         });
 
         Route::post('/logout', [AuthController::class, 'logout'])->name('logout.process');
