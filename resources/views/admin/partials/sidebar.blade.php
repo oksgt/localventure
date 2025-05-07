@@ -53,6 +53,20 @@
                     </ul>
                 </div>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="collapse" href="#setting-dropdown" aria-expanded="false"
+                    aria-controls="setting-dropdown">
+                    <i class="ti-settings menu-icon"></i>
+                    <span class="menu-title">Settings</span>
+                    <i class="menu-arrow"></i>
+                </a>
+                <div class="collapse" id="setting-dropdown">
+                    <ul class="nav flex-column sub-menu">
+                        <li class="nav-item"> <a class="nav-link" href="pages/ui-features/buttons.html">Payment Option</a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
         @endif
         <li class="nav-item">
             <form method="POST" action="{{ route('logout.process') }}">
