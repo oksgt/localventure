@@ -128,4 +128,12 @@ class BankAccountController extends Controller
 
         return response()->json(['success' => true, 'message' => 'Bank account deleted successfully!']);
     }
+
+    public function getActiveBankAccounts()
+    {
+        $bankAccounts = BankAccount::where('account_status', 1)
+            ->get(['bank_name', 'account_name', 'account_number']); // ✅ Fetch only required fields
+
+        return response()->json($bankAccounts);
+    }
 }

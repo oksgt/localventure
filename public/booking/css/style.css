@@ -626,3 +626,13 @@ button:hover {
     flex-grow: 1; /* ✅ Expands input while keeping icons in place */
     text-align: center; /* ✅ Centers input text */
 }
+
+.radio-group {
+    display: flex;
+    align-items: center; /* ✅ Ensures vertical alignment */
+    gap: 10px; /* ✅ Controls spacing between elements */
+}
+
+.radio-group input[type="radio"] {
+    margin-right: 5px; /* ✅ Adds slight spacing between radio and label */
+}

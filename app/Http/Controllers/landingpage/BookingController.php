@@ -5,6 +5,7 @@ namespace App\Http\Controllers\landingpage;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Destination;
+use App\Models\PaymentType;
 use App\Models\Pricing;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -84,10 +85,20 @@ class BookingController extends Controller
             $searchData['day_type'] = 'Weekday';
         }
 
-        // dd($searchData); // ✅ Debugging line to check search data
+        $paymentTypes = PaymentType::where('status', 1)
+            ->whereNull('deleted_at') // ✅ Ensure it's not deleted
+            ->get(['id', 'payment_type_name as name']);
+
+        $paymentTypesWithImage = PaymentType::where('status', 1)
+            ->whereNull('deleted_at') // ✅ Ensure it's not deleted
+            ->whereNotNull('payment_image') // ✅ Ensure image URL is not null
+            ->get(['id', 'payment_image'])
+            ->first();
+
+        // dd($paymentTypesWithImage); // ✅ Debugging line to check search data
 
         return view('landing-page.booking',
-        compact('searchData', 'destinations', 'destinationNames', 'selectedDestinationName', 'selectedImage', 'provinces', 'pricing')); // ✅ Pass data to results page
+        compact('searchData', 'destinations', 'destinationNames', 'selectedDestinationName', 'selectedImage', 'provinces', 'pricing', 'paymentTypes', 'paymentTypesWithImage')); // ✅ Pass data to results page
     }
 
     public function getProvinces(Request $request)

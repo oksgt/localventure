@@ -27,6 +27,8 @@ use App\Http\Middleware\RoleMiddleware;
     Route::get('/get-regencies', [BookingController::class, 'getRegencies'])->name('get.regencies');
     Route::get('/get-districts', [BookingController::class, 'getDistricts'])->name('get.districts');
     Route::get('/get-pricing', [BookingController::class, 'getPricing'])->name('get.pricing');
+    Route::get('/admin/payment-option/list', [PaymentOptionController::class, 'getActivePaymentTypes'])->name('admin.payment-option.list');
+    Route::get('/bank-accounts', [BankAccountController::class, 'getActiveBankAccounts'])->name('bank.accounts.list');
 
     Route::middleware(['auth'])->group(function () {
 

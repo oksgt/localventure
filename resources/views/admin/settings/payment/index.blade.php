@@ -32,13 +32,6 @@
                         <p class="card-description d-none">
                             Add class <code>.table-striped</code>
                         </p>
-
-                        @if (session('role_id') !== 3)
-                            <a type="button" class="btn btn-sm btn-primary" id="add-bank-account-btn">Add New</a>
-                        @endif
-
-                        <button type="button" class="btn btn-sm btn-light" id="refresh-bank-account-btn">Refresh</button>
-
                         <div class="table-responsive mt-2">
                             <table class="table table-striped" id="payment-options-table">
                                 <thead>

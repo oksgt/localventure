@@ -40,6 +40,8 @@ $(function(){
         var text = $(this).attr('rel');
         $(this).parent().prev().find('div').text(text);
     })
+
+
 })
 
 

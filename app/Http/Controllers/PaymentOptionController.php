@@ -24,7 +24,7 @@ class PaymentOptionController extends Controller
         return DataTables::of($query)
             ->addColumn('action', function ($paymentType) {
                 return '<button class="btn btn-warning btn-sm edit-btn" data-id="' . $paymentType->id . '"><i class="fa fa-edit"></i>Edit</button>
-                        <button class="btn btn-danger btn-sm delete-btn" data-id="' . $paymentType->id . '"><i class="fa fa-trash"></i>Delete</button>';
+                        ';
             })
             ->rawColumns(['action']) // ✅ Ensures buttons render correctly
             ->make(true);
@@ -139,5 +139,14 @@ class PaymentOptionController extends Controller
         $paymentType->delete();
 
         return response()->json(['message' => 'Payment type deleted successfully']);
+    }
+
+    public function getActivePaymentTypes()
+    {
+        $paymentTypes = PaymentType::where('status', 1)
+            ->whereNull('deleted_at') // ✅ Ensure it's not deleted
+            ->get(['id', 'payment_type_name as name']);
+
+        return response()->json($paymentTypes);
     }
 }

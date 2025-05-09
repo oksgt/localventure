@@ -92,7 +92,8 @@
                         <div class="form-row">
                             <div class="select w-100">
                                 <div class="form-holder">
-                                    <input type="text" id="provinceSearch" class="form-control pl-85" placeholder="Search province...">
+                                    <input type="text" id="provinceSearch" class="form-control pl-85"
+                                        placeholder="Search province...">
                                     <span class="placeholder">Province:</span>
                                 </div>
                             </div>
@@ -103,7 +104,8 @@
                         <div class="form-row">
                             <div class="select w-100">
                                 <div class="form-holder">
-                                    <input type="text" id="regencySearch" class="form-control pl-85" placeholder="Search regency..." disabled>
+                                    <input type="text" id="regencySearch" class="form-control pl-85"
+                                        placeholder="Search regency..." disabled>
                                     <span class="placeholder">Regency:</span>
                                 </div>
                             </div>
@@ -114,7 +116,8 @@
                         <div class="form-row">
                             <div class="select w-100">
                                 <div class="form-holder">
-                                    <input type="text" id="districtSearch" class="form-control pl-85" placeholder="Search district..." disabled>
+                                    <input type="text" id="districtSearch" class="form-control pl-85"
+                                        placeholder="Search district..." disabled>
                                     <span class="placeholder">District:</span>
                                 </div>
                             </div>
@@ -149,7 +152,6 @@
 
                 <h4>Ticket Option</h4>
                 <section>
-
                     <div id="pricingBoard">
                         @if ($pricing->isNotEmpty())
                             <div class="board-wrapper" style="margin-bottom: 30px;">
@@ -163,7 +165,8 @@
                                                 <div class="board-item">
                                                     {{ $price->guest_name }} :
                                                     <br>
-                                                    <span>Rp. {{ number_format($price->final_price, 0, ',', '.') }}</span>
+                                                    <span>Rp.
+                                                        {{ number_format($price->final_price, 0, ',', '.') }}</span>
                                                 </div>
                                             @endforeach
                                         </div>
@@ -204,195 +207,140 @@
                     </div>
                 </section>
 
-                {{-- @if ($pricing->isNotEmpty()) --}}
-                <h4>Payment Option</h4>
-                    <section class="section-style">
-                        <div class="board-wrapper">
-                            <div class="board-inner">
-                                <div class="board-item">
-                                    Check In :
-                                    <span>2-5-2018</span>
+                <h4>Payment Method</h4>
+                <section>
+                    <div class="form-group">
+                        <div class="form-row">
+                            <div class="select w-100">
+                                <div class="form-holder">
+                                    <div class="select-control form-control pl-85">-- Please select --</div>
+                                    <span class="lnr lnr-chevron-down"></span>
+                                    <span class="placeholder">Payment:</span>
                                 </div>
-                                <div class="board-item">
-                                    Check Out :
-                                    <span>8-5-2018</span>
-                                </div>
+                                <ul id="selectPayment" class="dropdown">
+                                    @foreach ($paymentTypes as $paymentType)
+                                        <li rel="{{ $paymentType->name }}" data-name="{{ $paymentType->name }}"
+                                            data-id="{{ $paymentType->id }}" class="payment-item">
+                                            {{ $paymentType->name }}
+                                        </li>
+                                    @endforeach
+                                </ul>
                             </div>
                         </div>
-                        <div class="pay-wrapper">
-                            <div class="bill">
-                                <div class="bill-cell">
-                                    <div class="bill-item">
-                                        <div class="bill-unit">
-                                            Room 1 : <span>Small Room</span>
-                                        </div>
-                                        <span class="price">$34</span>
-                                    </div>
-                                    <div class="bill-item people">
-                                        <div class="bill-unit">
-                                            Adult : <span>2</span>
-                                        </div>
-                                        <div class="bill-unit">
-                                            Children : <span>0</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="bill-cell" style="margin-bottom: 13px">
-                                    <div class="bill-item">
-                                        <div class="bill-unit">
-                                            Room 2 : <span>Luxury Room</span>
-                                        </div>
-                                        <span class="price">$23</span>
-                                    </div>
-                                    <div class="bill-item people">
-                                        <div class="bill-unit">
-                                            Adult : <span>4</span>
-                                        </div>
-                                        <div class="bill-unit">
-                                            Children : <span>1</span>
-                                        </div>
-                                    </div>
-                                    <div class="bill-item service">
-                                        <div class="bill-unit">
-                                            Rooms & Services :
-                                        </div>
-                                        <span class="price">$80</span>
-                                    </div>
-                                </div>
-                                <div class="bill-cell">
-                                    <div class="bill-item vat">
-                                        <div class="bill-unit">
-                                            Vat 8% :
-                                        </div>
-                                        <span class="price">$08</span>
-                                    </div>
-                                    <div class="bill-item total-price">
-                                        <div class="bill-unit">
-                                            Total Price :
-                                        </div>
-                                        <span class="price">$88</span>
-                                    </div>
-                                    <div class="checkbox-circle">
-                                        <label>
-                                            <input type="radio" name="payment" value="full payment" checked> Full
-                                            Payment<br>
-                                            <span class="checkmark"></span>
-                                        </label>
-                                        <label>
-                                            <input type="radio" name="payment" value="10% Deposit"> 10% Deposit
-                                            <span class="checkmark"></span>
-                                        </label>
-                                    </div>
-                                    <div class="bill-item total">
-                                        <div class="bill-unit">
-                                            <span>20% Deposit</span>
-                                            Pay the rest on arrival
-                                        </div>
-                                        <span class="price">$78</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <button style="width: 195px; margin-top: 45px;">Confirmation
-                                <i class="zmdi zmdi-long-arrow-right"></i>
-                            </button>
-                        </div>
-                    </section>
-                {{-- @endif --}}
+                    </div>
 
+                    {{-- <div class="form-group"> --}}
+                    <table id="bankAccountsTable" class="table table-striped" style="width: 100%;">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Bank List</th> <!-- ✅ Changed column name -->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Dynamic data will be injected here -->
+                        </tbody>
+                    </table>
+                    {{-- </div> --}}
+
+                    <button class="forward">NEXT
+                        <i class="zmdi zmdi-long-arrow-right"></i>
+                    </button>
+                </section>
 
                 {{-- @if ($pricing->isNotEmpty()) --}}
-                    <h4>Confirmation</h4>
-                    <section class="section-style">
-                        <div class="board-wrapper">
-                            <div class="board-inner">
-                                <div class="board-item">
-                                    Check In :
-                                    <span>2-5-2018</span>
-                                </div>
-                                <div class="board-item">
-                                    Check Out :
-                                    <span>8-5-2018</span>
-                                </div>
+                <h4>Confirmation</h4>
+                <section class="section-style">
+                    <div class="board-wrapper">
+                        <div class="board-inner">
+                            <div class="board-item">
+                                Check In :
+                                <span>2-5-2018</span>
+                            </div>
+                            <div class="board-item">
+                                Check Out :
+                                <span>8-5-2018</span>
                             </div>
                         </div>
-                        <div class="pay-wrapper">
-                            <div class="bill">
-                                <div class="bill-cell">
-                                    <div class="bill-item">
-                                        <div class="bill-unit">
-                                            Room 1 : <span>Small Room</span>
-                                        </div>
-                                        <span class="price">$34</span>
+                    </div>
+                    <div class="pay-wrapper">
+                        <div class="bill">
+                            <div class="bill-cell">
+                                <div class="bill-item">
+                                    <div class="bill-unit">
+                                        Room 1 : <span>Small Room</span>
                                     </div>
-                                    <div class="bill-item people">
-                                        <div class="bill-unit">
-                                            Adult : <span>2</span>
-                                        </div>
-                                        <div class="bill-unit">
-                                            Children : <span>0</span>
-                                        </div>
-                                    </div>
+                                    <span class="price">$34</span>
                                 </div>
-                                <div class="bill-cell" style="margin-bottom: 13px">
-                                    <div class="bill-item">
-                                        <div class="bill-unit">
-                                            Room 2 : <span>Luxury Room</span>
-                                        </div>
-                                        <span class="price">$23</span>
+                                <div class="bill-item people">
+                                    <div class="bill-unit">
+                                        Adult : <span>2</span>
                                     </div>
-                                    <div class="bill-item people">
-                                        <div class="bill-unit">
-                                            Adult : <span>4</span>
-                                        </div>
-                                        <div class="bill-unit">
-                                            Children : <span>1</span>
-                                        </div>
-                                    </div>
-                                    <div class="bill-item service">
-                                        <div class="bill-unit">
-                                            Rooms & Services :
-                                        </div>
-                                        <span class="price">$80</span>
-                                    </div>
-                                </div>
-                                <div class="bill-cell">
-                                    <div class="bill-item vat">
-                                        <div class="bill-unit">
-                                            Vat 8% :
-                                        </div>
-                                        <span class="price">$08</span>
-                                    </div>
-                                    <div class="bill-item total-price">
-                                        <div class="bill-unit">
-                                            Total Price :
-                                        </div>
-                                        <span class="price">$88</span>
-                                    </div>
-                                    <div class="checkbox-circle">
-                                        <label>
-                                            <input type="radio" name="payment" value="full payment" checked> Full
-                                            Payment<br>
-                                            <span class="checkmark"></span>
-                                        </label>
-                                        <label>
-                                            <input type="radio" name="payment" value="10% Deposit"> 10% Deposit
-                                            <span class="checkmark"></span>
-                                        </label>
-                                    </div>
-                                    <div class="bill-item total">
-                                        <div class="bill-unit">
-                                            <span>20% Deposit</span>
-                                            Pay the rest on arrival
-                                        </div>
-                                        <span class="price">$78</span>
+                                    <div class="bill-unit">
+                                        Children : <span>0</span>
                                     </div>
                                 </div>
                             </div>
-                            <button style="width: 195px; margin-top: 45px;">Confirmation
-                                <i class="zmdi zmdi-long-arrow-right"></i>
-                            </button>
+                            <div class="bill-cell" style="margin-bottom: 13px">
+                                <div class="bill-item">
+                                    <div class="bill-unit">
+                                        Room 2 : <span>Luxury Room</span>
+                                    </div>
+                                    <span class="price">$23</span>
+                                </div>
+                                <div class="bill-item people">
+                                    <div class="bill-unit">
+                                        Adult : <span>4</span>
+                                    </div>
+                                    <div class="bill-unit">
+                                        Children : <span>1</span>
+                                    </div>
+                                </div>
+                                <div class="bill-item service">
+                                    <div class="bill-unit">
+                                        Rooms & Services :
+                                    </div>
+                                    <span class="price">$80</span>
+                                </div>
+                            </div>
+                            <div class="bill-cell">
+                                <div class="bill-item vat">
+                                    <div class="bill-unit">
+                                        Vat 8% :
+                                    </div>
+                                    <span class="price">$08</span>
+                                </div>
+                                <div class="bill-item total-price">
+                                    <div class="bill-unit">
+                                        Total Price :
+                                    </div>
+                                    <span class="price">$88</span>
+                                </div>
+                                <div class="checkbox-circle">
+                                    <label>
+                                        <input type="radio" name="payment" value="full payment" checked> Full
+                                        Payment<br>
+                                        <span class="checkmark"></span>
+                                    </label>
+                                    <label>
+                                        <input type="radio" name="payment" value="10% Deposit"> 10% Deposit
+                                        <span class="checkmark"></span>
+                                    </label>
+                                </div>
+                                <div class="bill-item total">
+                                    <div class="bill-unit">
+                                        <span>20% Deposit</span>
+                                        Pay the rest on arrival
+                                    </div>
+                                    <span class="price">$78</span>
+                                </div>
+                            </div>
                         </div>
-                    </section>
+                        <button style="width: 195px; margin-top: 45px;">Confirmation
+                            <i class="zmdi zmdi-long-arrow-right"></i>
+                        </button>
+                    </div>
+                </section>
                 {{-- @else --}}
 
                 {{-- @endif --}}
@@ -417,6 +365,7 @@
         $(document).ready(function() {
             var dp1 = $('#dp1').datepicker().data('datepicker');
             dp1.selectDate(new Date());
+            $('#bankAccountsTable').hide();
 
             $('.destination-item').on('click', function() {
                 let imageUrl = $(this).data('image'); // ✅ Get stored image URL
@@ -431,8 +380,10 @@
                 $.ajax({
                     url: "{{ route('get.pricing') }}", // ✅ Laravel route
                     type: "GET",
-                    data: { destination_id: destinationId },
-                    success: function (response) {
+                    data: {
+                        destination_id: destinationId
+                    },
+                    success: function(response) {
                         renderPricing(response); // ✅ Call function to update the pricing board
                     }
                 });
@@ -506,8 +457,6 @@
                 $('#pricingBoard').html(pricingBoard); // ✅ Update the pricing board dynamically
             }
 
-
-
             let dateFromServer = "{{ $searchData['daterange'] ?? '' }}"; // ✅ Get date from backend
 
             if (dateFromServer) {
@@ -518,13 +467,15 @@
             }
 
             $("#provinceSearch").autocomplete({
-                source: function (request, response) {
+                source: function(request, response) {
                     $.ajax({
                         url: "{{ route('get.provinces') }}",
                         type: "GET",
-                        data: { search: request.term },
-                        success: function (data) {
-                            response($.map(data, function (item) {
+                        data: {
+                            search: request.term
+                        },
+                        success: function(data) {
+                            response($.map(data, function(item) {
                                 return {
                                     label: item.name,
                                     value: item.name,
@@ -534,7 +485,7 @@
                         }
                     });
                 },
-                select: function (event, ui) {
+                select: function(event, ui) {
                     $('#regencySearch').prop('disabled', false).val(''); // ✅ Enable regency search
                     $('#districtSearch').prop('disabled', true).val(''); // ✅ Reset district input
 
@@ -545,13 +496,16 @@
 
             function loadRegencies(provinceId) {
                 $("#regencySearch").autocomplete({
-                    source: function (request, response) {
+                    source: function(request, response) {
                         $.ajax({
                             url: "{{ route('get.regencies') }}",
                             type: "GET",
-                            data: { province_id: provinceId, search: request.term },
-                            success: function (data) {
-                                response($.map(data, function (item) {
+                            data: {
+                                province_id: provinceId,
+                                search: request.term
+                            },
+                            success: function(data) {
+                                response($.map(data, function(item) {
                                     return {
                                         label: item.name,
                                         value: item.name,
@@ -561,8 +515,9 @@
                             }
                         });
                     },
-                    select: function (event, ui) {
-                        $('#districtSearch').prop('disabled', false).val(''); // ✅ Enable district search
+                    select: function(event, ui) {
+                        $('#districtSearch').prop('disabled', false).val(
+                            ''); // ✅ Enable district search
                         loadDistricts(ui.item.id);
                     },
                     minLength: 1
@@ -571,13 +526,16 @@
 
             function loadDistricts(regencyId) {
                 $("#districtSearch").autocomplete({
-                    source: function (request, response) {
+                    source: function(request, response) {
                         $.ajax({
                             url: "{{ route('get.districts') }}",
                             type: "GET",
-                            data: { regency_id: regencyId, search: request.term },
-                            success: function (data) {
-                                response($.map(data, function (item) {
+                            data: {
+                                regency_id: regencyId,
+                                search: request.term
+                            },
+                            success: function(data) {
+                                response($.map(data, function(item) {
                                     return {
                                         label: item.name,
                                         value: item.name
@@ -595,6 +553,73 @@
                 if (this.value < 1) this.value = 0; // Ensures minimum value of 1
             });
 
+            // function loadPaymentMethods() {
+            //     $.ajax({
+            //         url: "{{ route('admin.payment-option.list') }}",
+            //         type: "GET",
+            //         success: function (response) {
+            //             let paymentOptions = '';
+
+            //             response.forEach(payment => {
+            //                 paymentOptions += `<li rel="${payment.name}" data-name="${payment.name}" class="payment-item">${payment.name}</li>`;
+            //             });
+
+            //             $("#selectPayment").html(paymentOptions);
+            //         },
+            //         error: function (xhr) {
+            //             console.error("Failed to load payment options:", xhr.responseText);
+            //         }
+            //     });
+            // }
+
+            // loadPaymentMethods(); // ✅ Ensure payment methods are
+
+            $('.payment-item').on('click', function() {
+                let paymentName = $(this).data('name'); // ✅ Get selected payment name
+                console.log('paymentName:', paymentName);
+
+                if (paymentName == 'Bank Transfer') {
+                    $('#bankAccountsTable').show(); // ✅ Show bank accounts table
+                    loadBankAccounts(); // ✅ Load bank accounts dynamically
+                } else {
+                    $('#bankAccountsTable').hide(); // ✅ Hide bank accounts table
+                }
+            });
+
+            function loadBankAccounts() {
+                $.ajax({
+                    url: "{{ route('bank.accounts.list') }}",
+                    type: "GET",
+                    success: function(response) {
+                        let tableBody = '';
+
+                        response.forEach((bank, index) => {
+                            tableBody += `
+                                <tr>
+                                    <td>
+                                        <input type="radio" name="bankSelection" value="${bank.account_number}" id="bank_${index}">
+                                    </td>
+                                    <td>
+                                        <strong>${bank.bank_name}</strong><br>
+                                        ${bank.account_number}<br>
+                                        atas nama ${bank.account_name}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2"><hr></td> <!-- ✅ Adds horizontal line between rows -->
+                                </tr>
+
+                            `;
+                        });
+                        $('#bankAccountsTable').show();
+                        $("#bankAccountsTable tbody").html(
+                            tableBody); // ✅ Inject formatted data into table
+                    },
+                    error: function(xhr) {
+                        console.error("Failed to load bank accounts:", xhr.responseText);
+                    }
+                });
+            }
 
         });
     </script>
