@@ -9,7 +9,7 @@ use App\Models\PaymentType;
 use App\Models\Pricing;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
-
+use Illuminate\Support\Facades\Session;
 
 class BookingController extends Controller
 {
@@ -44,36 +44,44 @@ class BookingController extends Controller
         $selectedDestinationName = $selectedDestination ? $selectedDestination->name : 'Unknown Destination';
 
         $selectedImage = $selectedDestination && $selectedDestination->images->isNotEmpty()
-        ? asset('storage/destination/' . basename($selectedDestination->images->first()->image_url))
-        : asset('storage/destination/bg-booking-header.png');
+            ? asset('storage/destination/' . basename($selectedDestination->images->first()->image_url))
+            : asset('storage/destination/bg-booking-header.png');
 
         $provinces = DB::table('reg_provinces')
-        ->orderBy('name', 'asc')
-        ->get();
+            ->orderBy('name', 'asc')
+            ->get();
 
         $destinationId = $searchData['destination_id'] ?? null; // ✅ Get selected destination ID
 
+        //get guest_types data
+        $guestTypes = DB::table('guest_types')
+            ->whereNull('deleted_at') // ✅ Ensure it's not deleted
+            ->select('id', 'name')
+            ->orderBy('name', 'asc')
+            ->get();
+
         $pricing = DB::table('pricing')
-        ->join('guest_types as gt', 'gt.id', '=', 'pricing.guest_type_id')
-        ->select(
-            'pricing.id',
-            'pricing.destination_id',
-            'pricing.guest_type_id',
-            'gt.name as guest_name',
-            'pricing.day_type',
-            'pricing.base_price',
-            'pricing.insurance_price',
-            'pricing.final_price'
-        )
-        ->whereNull('pricing.deleted_at') // ✅ Exclude soft-deleted records
-        ->where('pricing.destination_id', $destinationId) // ✅ Filter by selected destination ID
-        ->orderBy('pricing.day_type', 'asc')
-        ->orderBy('guest_name', 'asc')
-        ->get();
+            ->join('guest_types as gt', 'gt.id', '=', 'pricing.guest_type_id')
+            ->select(
+                'pricing.id',
+                'pricing.destination_id',
+                'pricing.guest_type_id',
+                'gt.name as guest_name',
+                'gt.id as guest_name_id',
+                'pricing.day_type',
+                'pricing.base_price',
+                'pricing.insurance_price',
+                'pricing.final_price'
+            )
+            ->whereNull('pricing.deleted_at') // ✅ Exclude soft-deleted records
+            ->where('pricing.destination_id', $destinationId) // ✅ Filter by selected destination ID
+            ->orderBy('pricing.day_type', 'asc')
+            ->orderBy('guest_name', 'asc')
+            ->get();
 
         $searchData['pricing_available'] = true;
 
-        if($pricing->isEmpty()){
+        if ($pricing->isEmpty()) {
             $searchData['pricing_available'] = false; // ✅ No pricing data found
         }
 
@@ -85,6 +93,8 @@ class BookingController extends Controller
             $searchData['day_type'] = 'Weekday';
         }
 
+        $jenisHari = $searchData['day_type'];
+
         $paymentTypes = PaymentType::where('status', 1)
             ->whereNull('deleted_at') // ✅ Ensure it's not deleted
             ->get(['id', 'payment_type_name as name']);
@@ -95,10 +105,12 @@ class BookingController extends Controller
             ->get(['id', 'payment_image'])
             ->first();
 
-        // dd($paymentTypesWithImage); // ✅ Debugging line to check search data
+        // dd($jenisHari); // ✅ Debugging line to check search data
 
-        return view('landing-page.booking',
-        compact('searchData', 'destinations', 'destinationNames', 'selectedDestinationName', 'selectedImage', 'provinces', 'pricing', 'paymentTypes', 'paymentTypesWithImage')); // ✅ Pass data to results page
+        return view(
+            'landing-page.booking',
+            compact('jenisHari', 'guestTypes', 'searchData', 'destinations', 'destinationNames', 'selectedDestinationName', 'selectedImage', 'provinces', 'pricing', 'paymentTypes', 'paymentTypesWithImage')
+        ); // ✅ Pass data to results page
     }
 
     public function getProvinces(Request $request)
@@ -146,5 +158,23 @@ class BookingController extends Controller
         return response()->json($pricing);
     }
 
+    public function updateDayType(Request $request)
+    {
+        // Validate the request
+        $request->validate([
+            'day_type' => 'required|string|in:Weekday,Weekend',
+        ]);
 
+        // Retrieve the day type from the request
+        $dayType = $request->input('day_type');
+
+        // Store it in session or process it further
+        Session::put('selected_day_type', $dayType);
+
+        return response()->json([
+            'success' => true,
+            'message' => "Day type updated successfully!",
+            'day_type' => $dayType
+        ]);
+    }
 }

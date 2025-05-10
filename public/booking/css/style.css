@@ -274,6 +274,12 @@ select .select-control option {
 .form-control.pl-96 {
     padding-left: 96px;
 }
+.form-control.pl-100 {
+    padding-left: 100px;
+}
+.form-control.pl-120 {
+    padding-left: 120px;
+}
 .form-control::-webkit-input-placeholder {
     color: #fff;
 }

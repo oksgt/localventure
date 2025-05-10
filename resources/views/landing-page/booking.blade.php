@@ -40,7 +40,7 @@
                                     <span class="lnr lnr-chevron-down"></span>
                                     <span class="placeholder">Destination:</span>
                                 </div>
-                                <ul id="selectDestination" class="dropdown">
+                                <ul id="selectDestination" class="dropdown" name="selectDestination" >
                                     @foreach ($destinations as $destination)
                                         <li rel="{{ $destination->name }}" data-id="{{ $destination->id }}"
                                             data-image="{{ asset('storage/destination/' . basename($destination->images->first()->image_url)) }}"
@@ -55,19 +55,19 @@
                     <div class="form-row">
                         <div class="form-holder w-100">
                             <input type="text" class="form-control datepicker-here pl-85" data-language='en'
-                                data-date-format="dd - M - yyyy" id="dp1">
+                                data-date-format="dd - M - yyyy" id="dp1" name="date">
                             <span class="lnr lnr-chevron-down"></span>
                             <span class="placeholder">Date:</span>
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-holder w-100">
-                            <input type="text" class="form-control pl-85" value="{{ $searchData['people_count'] }}">
+                            <input type="text" class="form-control pl-85" value="{{ $searchData['people_count'] }}" name="people_count">
                             <span class="placeholder">People:</span>
                         </div>
                     </div>
 
-                    <button class="forward">NEXT
+                    <button class="forwardFirst">NEXT
                         <i class="zmdi zmdi-long-arrow-right"></i>
                     </button>
                 </section>
@@ -92,7 +92,7 @@
                         <div class="form-row">
                             <div class="select w-100">
                                 <div class="form-holder">
-                                    <input type="text" id="provinceSearch" class="form-control pl-85"
+                                    <input type="text" id="provinceSearch" name="provinceSearch" class="form-control pl-85"
                                         placeholder="Search province...">
                                     <span class="placeholder">Province:</span>
                                 </div>
@@ -104,7 +104,7 @@
                         <div class="form-row">
                             <div class="select w-100">
                                 <div class="form-holder">
-                                    <input type="text" id="regencySearch" class="form-control pl-85"
+                                    <input type="text" id="regencySearch" name="regencySearch" class="form-control pl-85"
                                         placeholder="Search regency..." disabled>
                                     <span class="placeholder">Regency:</span>
                                 </div>
@@ -116,7 +116,7 @@
                         <div class="form-row">
                             <div class="select w-100">
                                 <div class="form-holder">
-                                    <input type="text" id="districtSearch" class="form-control pl-85"
+                                    <input type="text" id="districtSearch" name="districtSearch" class="form-control pl-85"
                                         placeholder="Search district..." disabled>
                                     <span class="placeholder">District:</span>
                                 </div>
@@ -124,28 +124,27 @@
                         </div>
                     </div>
 
-
                     <div class="form-row">
                         <div class="form-holder w-100">
-                            <input type="text" class="form-control pl-85" name="phone">
+                            <input type="text" class="form-control pl-85" name="phone" id="phone">
                             <span class="placeholder">Phone:</span>
                         </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-holder w-100">
-                            <input type="email" class="form-control pl-85" name="email">
+                            <input type="email" class="form-control pl-85" name="email" id="email">
                             <span class="placeholder">Email:</span>
                         </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-holder w-100">
-                            <textarea type="text" class="form-control pl-85" name="origin" style="height: 80px;"></textarea>
+                            <textarea type="text" class="form-control pl-85" name="origin" id = "origin" style="height: 80px;"></textarea>
                             <span class="placeholder" style="position: absolute; top: 0px;">Origin:</span>
                         </div>
                     </div>
-                    <button class="forward" style="width: 195px; margin-top: 44px;">Book by email
+                    <button class="forwardSecond" style="width: 195px; margin-top: 44px;">NEXT
                         <i class="zmdi zmdi-long-arrow-right"></i>
                     </button>
                 </section>
@@ -163,7 +162,7 @@
                                         <div class="board-line">
                                             @foreach ($pricing->where('day_type', $dayType) as $price)
                                                 <div class="board-item">
-                                                    {{ $price->guest_name }} :
+                                                    {{ ucwords($price->guest_name) }} :
                                                     <br>
                                                     <span>Rp.
                                                         {{ number_format($price->final_price, 0, ',', '.') }}</span>
@@ -174,25 +173,40 @@
                                 @endforeach
                             </div>
 
-                            <div class="form-row">
-                                <div class="form-holder w-100 ">
-                                    <input type="number" class="form-control pl-85" value="0">
-                                    <span class="placeholder">Kids:</span>
+                            @foreach ($guestTypes as $item)
+                                <div class="form-row">
+                                    <div class="form-holder w-100 ">
+                                        <input type="number" class="form-control pl-120" min="0" value="0" name="{{ $item->name }}" id="{{ $item->name }}">
+                                        <span class="placeholder">{{ ucwords($item->name) }}:</span>
+                                    </div>
                                 </div>
+                            @endforeach
+
+                            <div class="form-row" >
+                                <table style="width: 100%;" id="ticketSummaryTable">
+                                    <tr>
+                                        <th>Category</th>
+                                        <th>Quantity</th>
+                                        <th>Price</th>
+                                    </tr>
+
+                                    @foreach ($guestTypes as $item)
+                                        <tr>
+                                            <td>{{ ucwords($item->name) }}</td>
+                                            <td id="selectedTicket_{{ $item->id }}">x 0</td>
+                                            <td id="ticketPrice_{{ $item->id }}" style="text-align: right">Rp. 0</td>
+                                        </tr>
+                                    @endforeach
+
+
+                                    <tr style="background-color: #edc948; color: black">
+                                        <td colspan="2"><strong>Total</strong></td>
+                                        <td style="text-align: right"><strong>Rp. 45.000</strong></td>
+                                    </tr>
+                                </table>
                             </div>
-                            <div class="form-row">
-                                <div class="form-holder w-100 ">
-                                    <input type="number" class="form-control pl-85" value="0">
-                                    <span class="placeholder">Adults:</span>
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-holder w-100 ">
-                                    <input type="number" class="form-control pl-85" value="0">
-                                    <span class="placeholder">Foreigners:</span>
-                                </div>
-                            </div>
-                            <button class="forward" style="width: 195px; margin-top: 44px;">Book by email
+
+                            <button class="forwardThird" style="width: 195px; margin-top: 44px;">NEXT
                                 <i class="zmdi zmdi-long-arrow-right"></i>
                             </button>
                         @else
@@ -229,7 +243,6 @@
                         </div>
                     </div>
 
-                    {{-- <div class="form-group"> --}}
                     <table id="bankAccountsTable" class="table table-striped" style="width: 100%;">
                         <thead>
                             <tr>
@@ -238,14 +251,47 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- Dynamic data will be injected here -->
                         </tbody>
                     </table>
-                    {{-- </div> --}}
 
-                    <button class="forward">NEXT
+                    <button class="forwardFourth">NEXT
                         <i class="zmdi zmdi-long-arrow-right"></i>
                     </button>
+                </section>
+
+                <h4>Confirmation</h4>
+                <section class="section-style">
+
+                    <table>
+                        <tr>
+                            <th>Rincian Pembelian Tiket</th>
+                            <th></th>
+                        </tr>
+                        <tr>
+                            <td>Nama</td>
+                            <td>Pejabat Gemes</td>
+                        </tr>
+                        <tr>
+                            <td>Email</td>
+                            <td>restadianna@gmail.com</td>
+                        </tr>
+                        <tr>
+                            <td>Alamat</td>
+                            <td>Semarang Barat, Ngemplak Simongan</td>
+                        </tr>
+                        <tr>
+                            <td>Kategori Tiket</td>
+                            <td>Rombongan</td>
+                        </tr>
+                        <tr>
+                            <td>Total Pengunjung</td>
+                            <td>3 Pengunjung</td>
+                        </tr>
+                        <tr>
+                            <td>Harga</td>
+                            <td>Rp. 30,000,-</td>
+                        </tr>
+                        </table>
                 </section>
 
                 {{-- @if ($pricing->isNotEmpty()) --}}
@@ -365,7 +411,52 @@
         $(document).ready(function() {
             var dp1 = $('#dp1').datepicker().data('datepicker');
             dp1.selectDate(new Date());
+
+            let currentDayType = "{{ $jenisHari }}";
+
+            // $('#dp1').on('change', function () {
+            //     let selectedDate = $(this).val();
+
+            //     // Convert to Date object
+            //     let dateObj = new Date(selectedDate.replace(/ - /g, ' ')); // Ensure proper formatting for Date constructor
+
+            //     // Determine day type
+            //     let dayType = (dateObj.getDay() === 0 || dateObj.getDay() === 6) ? 'Weekend' : 'Weekday';
+
+            //     console.log(`Selected Date: ${selectedDate}, Day Type: ${dayType}`);
+
+            //     // Send data to controller (AJAX)
+            //     sendDayTypeToController(dayType);
+            // });
+
+            $('#dp1').datepicker({
+                language: 'en',
+                dateFormat: "dd - M - yyyy",
+                onSelect: function (formattedDate, dateObj) {
+                    if (dateObj) {
+                        let dayType = (dateObj.getDay() === 0 || dateObj.getDay() === 6) ? 'Weekend' : 'Weekday';
+                        console.log(`Selected Date: ${formattedDate}, Day Type: ${dayType}`);
+                        sendDayTypeToController(dayType);
+                    }
+                }
+            });
+
+            function sendDayTypeToController(dayType) {
+                $.ajax({
+                    url: "{{ route('booking.updateDayType') }}",
+                    type: "POST",
+                    data: { day_type: dayType, _token: "{{ csrf_token() }}" },
+                    success: function(response) {
+                        currentDayType = response.day_type; // ✅ Update current day type
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Error sending day type:", error);
+                    }
+                });
+            }
+
             $('#bankAccountsTable').hide();
+            let pricingData = @json($pricing);
 
             $('.destination-item').on('click', function() {
                 let imageUrl = $(this).data('image'); // ✅ Get stored image URL
@@ -388,6 +479,106 @@
                     }
                 });
 
+            });
+
+            function validateFirstSection() {
+                let destination = $(".select-control").text().trim();
+                let date = $("#dp1").val().trim();
+                let peopleCount = $("input[name='people_count']").val().trim();
+
+                if (destination === "-- Please select --" || destination === "") {
+                    console.log("Error: Please select a destination!");
+                    return false;
+                }
+
+                if (date === "") {
+                    console.log("Error: Please select a date!");
+                    return false;
+                }
+
+                if (peopleCount === "" || isNaN(peopleCount) || peopleCount <= 0) {
+                    console.log("Error: Please enter a valid number of people!");
+                    return false;
+                }
+
+                console.log("Validation passed: All fields are valid!");
+                return true; // ✅ Validation passed
+            }
+
+            function validateSecondSection() {
+                let name = $("input[name='name']").val().trim();
+                let address = $("input[name='address']").val().trim();
+                let province = $("#provinceSearch").val().trim();
+                let regency = $("#regencySearch").val().trim();
+                let district = $("#districtSearch").val().trim();
+                let phone = $("input[name='phone']").val().trim();
+                let email = $("input[name='email']").val().trim();
+                let origin = $("textarea[name='origin']").val().trim();
+
+                if (name === "") {
+                    console.log("Error: Name is required!");
+                    return false;
+                }
+
+                if (address === "") {
+                    console.log("Error: Address is required!");
+                    return false;
+                }
+
+                if (province === "") {
+                    console.log("Error: Province is required!");
+                    return false;
+                }
+
+                if (regency === "") {
+                    console.log("Error: Regency is required!");
+                    return false;
+                }
+
+                if (district === "") {
+                    console.log("Error: District is required!");
+                    return false;
+                }
+
+                if (phone === "" || isNaN(phone) || phone.length < 6) {
+                    console.log("Error: Please enter a valid phone number!");
+                    return false;
+                }
+
+                if (email === "" || !email.includes("@")) {
+                    console.log("Error: Please enter a valid email!");
+                    return false;
+                }
+
+                if (origin === "") {
+                    console.log("Error: Origin is required!");
+                    return false;
+                }
+
+                console.log("Validation passed: All fields are valid!");
+                return true; // ✅ Validation passed
+            }
+
+            // ✅ Attach validation function to NEXT button
+            $(document).ready(function () {
+                $(".forwardSecond").click(function (event) {
+                    event.preventDefault(); // ✅ Prevent default submission
+
+                    if (validateSecondSection()) {
+                        console.log("Validation passed: All fields are valid!");
+                        $("#wizard").steps('next'); // ✅ Proceed to next step
+                    }
+                });
+            });
+
+
+            $(".forwardFirst").click(function (event) {
+                event.preventDefault(); // ✅ Prevent default submission
+
+                if (validateFirstSection()) {
+                    console.log("Validation passed: All fields are valid!");
+                    $("#wizard").steps('next');
+                }
             });
 
             function renderPricing(pricingData) {
@@ -620,6 +811,48 @@
                     }
                 });
             }
+
+            function updateTicketSummary() {
+                let totalPrice = 0;
+
+                console.log("Updating ticket summary...");
+
+                $("input[type='number']").each(function () {
+                    let guestTypeName = $(this).attr("name"); // kids, adults, foreigners
+                    let quantity = parseInt($(this).val()) || 0;
+
+                    console.log(`Guest Type: ${guestTypeName}, Quantity: ${quantity}`);
+
+                    // Find matching pricing based on the current dayType
+                    let matchingPricing = pricingData.find(price =>
+                        price.guest_name.toLowerCase() === guestTypeName &&
+                        price.day_type.toLowerCase() === currentDayType.toLowerCase()
+                    );
+                    console.log('currentDayType:', currentDayType);
+                    console.log(`Matching Pricing: ${JSON.stringify(matchingPricing)}`);
+
+                    if (matchingPricing) {
+                        let finalPrice = matchingPricing.final_price * quantity;
+                        totalPrice += finalPrice;
+
+                        console.log(`Matched Pricing -> Guest Name: ${matchingPricing.guest_name}, Day Type: ${matchingPricing.day_type}, Final Price: ${finalPrice}`);
+
+                        // Update the corresponding ticket summary row dynamically
+                        $(`#selectedTicket_${matchingPricing.guest_name_id}`).text(`x ${quantity}`);
+                        $(`#ticketPrice_${matchingPricing.guest_name_id}`).text(`Rp. ${finalPrice.toLocaleString('id-ID')}`);
+                    } else {
+                        console.warn(`No matching pricing found for Guest Type: ${guestTypeName}, Day Type: ${currentDayType}`);
+                    }
+                });
+
+                // Update the total price in the summary table
+                console.log(`Total Price Updated: Rp. ${totalPrice.toLocaleString('id-ID')}`);
+                $("#ticketSummaryTable tr:last-child td:last-child").text(`Rp. ${totalPrice.toLocaleString('id-ID')}`);
+            }
+            // Attach event listeners to number input fields
+            $("input[type='number']").on("input", updateTicketSummary);
+
+
 
         });
     </script>
