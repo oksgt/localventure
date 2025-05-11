@@ -269,42 +269,9 @@
 
                 <h4>Confirmation</h4>
                 <section class="section-style">
+                    <div id="purchaseDetails" style="width: 100%;">
 
-                    <table style="width: 100%; border-collapse: collapse; border: 1px solid #ddd;">
-                        <tr>
-                            <th colspan="2" style="text-align: center; padding: 10px; background-color: #f8f8f8; border-bottom: 2px solid #ccc; color: black">
-                                Rincian Pembelian Tiket
-                            </th>
-                        </tr>
-                        <tr>
-                            <td style="padding: 12px; border-bottom: 1px solid #ddd;">Nama</td>
-                            <td style="padding: 12px; border-bottom: 1px solid #ddd;">Pejabat Gemes</td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 12px; border-bottom: 1px solid #ddd;">Email</td>
-                            <td style="padding: 12px; border-bottom: 1px solid #ddd;">restadianna@gmail.com</td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 12px; border-bottom: 1px solid #ddd;">Alamat</td>
-                            <td style="padding: 12px; border-bottom: 1px solid #ddd;">Semarang Barat, Ngemplak Simongan</td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 12px; border-bottom: 1px solid #ddd;">Kategori Tiket</td>
-                            <td style="padding: 12px; border-bottom: 1px solid #ddd;">Rombongan</td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 12px; border-bottom: 1px solid #ddd;">Total Pengunjung</td>
-                            <td style="padding: 12px; border-bottom: 1px solid #ddd;">3 Pengunjung</td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 12px; border-bottom: 1px solid #ddd;">Metode Bayar</td>
-                            <td style="padding: 12px; border-bottom: 1px solid #ddd;">QRIS</td>
-                        </tr>
-                        <tr style="background-color: #edc948; border-top: 2px solid #ccc;">
-                            <td style="padding: 12px; border-bottom: 1px solid #ddd; color: black">Total Harga</td>
-                            <td style="padding: 12px; border-bottom: 1px solid #ddd; color: black">Rp. 30,000,-</td>
-                        </tr>
-                    </table>
+                    </div>
                 </section>
 
                 {{-- @if ($pricing->isNotEmpty()) --}}
@@ -336,6 +303,7 @@
 
             let currentDayType = "{{ $jenisHari }}";
             let totalPrice = 0;
+            let selectedPaymentName = "";
 
             $('#dp1').datepicker({
                 language: 'en',
@@ -520,6 +488,7 @@
                     if ($(this).is(":radio")) {
                         if ($(this).is(":checked")) {
                             formData[inputName] = $(this).val();
+                            formData['bank_name'] = $(this).data('bank-name'); // Get bank name from data attribute
                         }
                     } else {
                         // Standard inputs, textareas, and selects
@@ -528,6 +497,8 @@
                 });
 
                 console.log("Collected Form Data:", formData);
+                renderPurchaseDetails(formData); // ✅ Call function to render purchase details
+                $("#wizard").steps('next');
             });
 
 
@@ -719,6 +690,7 @@
             $('.payment-item').on('click', function() {
                 let paymentName = $(this).data('name'); // ✅ Get selected payment name
                 console.log('paymentName:', paymentName);
+                selectedPaymentName = paymentName; // ✅ Store selected payment name
 
                 $('#selectPaymentId').val($(this).data('id')); // ✅ Set hidden input value
 
@@ -741,7 +713,7 @@
                             tableBody += `
                                 <tr>
                                     <td>
-                                        <input type="radio" name="bankSelection" value="${bank.id}" id="bank_${index}">
+                                        <input type="radio" name="bankSelection" data-bank-name="${bank.bank_name}" value="${bank.id}" id="bank_${index}">
                                     </td>
                                     <td>
                                         <strong>${bank.bank_name}</strong><br>
@@ -797,6 +769,8 @@
 
                 console.log("Updating ticket summary...");
 
+                totalPrice = 0; // Reset total price
+
                 $("input[type='number']").each(function() {
                     let guestTypeName = $(this).attr("name"); // kids, adults, foreigners
                     let quantity = parseInt($(this).val()) || 0;
@@ -843,15 +817,20 @@
                 let kategoriTiket = data.people_count > 1 ? "Group" : "Single"; // ✅ Group if >1, else Single
 
                 let visitorKeys = ["anak-anak", "dewasa", "mancanegara"];
-                let totalPengunjung = visitorKeys.reduce((sum, key) => sum + Number(formData[key] || 0), 0);
+                let totalPengunjung = visitorKeys.reduce((sum, key) => sum + Number(data[key] || 0), 0);
 
                 let totalHarga = `Rp. ${(totalPrice).toLocaleString()},-`; // ✅ Calculate price dynamically
+
+                if(selectedPaymentName == 'Bank Transfer') {
+                    let bankName = $("input[name='bankSelection']:checked").data('bank-name');
+                    selectedPaymentName = 'Transfer - ' + bankName;
+                }
 
                 let tableHTML = `
                     <table style="width: 100%; border-collapse: collapse; border: 1px solid #ddd;">
                         <tr>
                             <th colspan="2" style="text-align: center; padding: 10px; background-color: #f8f8f8; border-bottom: 2px solid #ccc; color: black">
-                                <h4>Rincian Pembelian Tiket</h4>
+                                Rincian Pembelian Tiket
                             </th>
                         </tr>
                         <tr>
@@ -868,19 +847,19 @@
                         </tr>
                         <tr>
                             <td style="padding: 12px; border-bottom: 1px solid #ddd;">Kategori Tiket</td>
-                            <td style="padding: 12px; border-bottom: 1px solid #ddd;">${kategoriTiket}</td>
+                            <td style="padding: 12px; border-bottom: 1px solid #ddd;">${data.people_count > 1 ? "Rombongan" : "Single"}</td>
                         </tr>
                         <tr>
                             <td style="padding: 12px; border-bottom: 1px solid #ddd;">Total Pengunjung</td>
                             <td style="padding: 12px; border-bottom: 1px solid #ddd;">${totalPengunjung} Pengunjung</td>
                         </tr>
+                        <tr>
+                            <td style="padding: 12px; border-bottom: 1px solid #ddd;">Metode Bayar</td>
+                            <td style="padding: 12px; border-bottom: 1px solid #ddd;">${selectedPaymentName}</td>
+                        </tr>
                         <tr style="background-color: #edc948; border-top: 2px solid #ccc;">
-                            <td style="padding: 12px; border-bottom: 1px solid #ddd; font-weight: bold;">
-                                <h3>Total Harga</h3>
-                            </td>
-                            <td style="padding: 12px; border-bottom: 1px solid #ddd; font-weight: bold;">
-                                <h3>${totalHarga}</h3>
-                            </td>
+                            <td style="padding: 12px; border-bottom: 1px solid #ddd; color: black;">Total Harga</td>
+                            <td style="padding: 12px; border-bottom: 1px solid #ddd; color: black;">${totalHarga}</td>
                         </tr>
                     </table>
                 `;
