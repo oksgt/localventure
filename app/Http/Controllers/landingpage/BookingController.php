@@ -182,22 +182,27 @@ class BookingController extends Controller
     public function finishPayment(Request $request)
     {
 
-        dd($request->all()); // ✅ Debugging line to check request data
-
         $validatedData = $request->validate([
             'formData.selectDestinationId' => 'required|exists:destinations,id',
+            'formData.date' => 'required',
             'formData.people_count' => 'required|integer|min:1',
             'formData.name' => 'required|string|max:255',
             'formData.address' => 'required|string|max:255',
+            'formData.provinceSearch' => 'required',
+            'formData.regencySearch' => 'required',
+            'formData.districtSearch' => 'required',
             'formData.phone' => 'required|string|max:20',
             'formData.origin' => 'nullable|string',
             'formData.email' => 'nullable|email|max:255',
             'formData.anak-anak' => 'nullable|integer|min:0',
             'formData.dewasa' => 'nullable|integer|min:0',
             'formData.mancanegara' => 'nullable|integer|min:0',
-            'formData.selectPaymentId' => 'required|exists:payment_types,id',
+            'formData.selectPaymentId' => 'required',
+            'formData.bankSelection' => 'nullable',
             'formData.total_price' => 'required|numeric|min:0',
         ]);
+
+        // dd($request->all()); // ✅ Debugging line to check the request data
 
         try {
             $totalVisitors = ($validatedData['formData']['anak-anak'] ?? 0)
@@ -206,10 +211,12 @@ class BookingController extends Controller
 
             $visitorType = $validatedData['formData']['people_count'] > 1 ? 'group' : 'individual';
 
-            $ticketOrder = TicketOrder::create([
+            $formattedDate = Carbon::createFromFormat("d - F - Y", $validatedData['formData']['date'])->format("Y-m-d");
+
+            $object = [
                 'destination_id' => $validatedData['formData']['selectDestinationId'],
                 'visitor_type' => $visitorType,
-                'visit_date' => now(), // ✅ Assuming today's date, adjust as needed
+                'visit_date' => $formattedDate, // ✅ Assuming today's date, adjust as needed
                 'visitor_name' => $validatedData['formData']['name'],
                 'visitor_address' => $validatedData['formData']['address'],
                 'visitor_phone' => $validatedData['formData']['phone'],
@@ -217,7 +224,7 @@ class BookingController extends Controller
                 'visitor_email' => $validatedData['formData']['email'] ?? null,
                 'total_visitor' => $totalVisitors,
                 'total_price' => $validatedData['formData']['total_price'],
-                'billing_number' => strtoupper(uniqid('INV')), // ✅ Generates a unique billing number
+                'billing_number' => $this->generateInvoiceNumber($formattedDate), // ✅ Generates a unique billing number
                 'payment_status' => 'pending',
                 'purchasing_type' => 'online',
                 'notes' => null, // ✅ Adjust if needed
@@ -229,7 +236,11 @@ class BookingController extends Controller
                 'visitor_female_count' => 0,
                 'payment_type_id' => $validatedData['formData']['selectPaymentId'],
                 'bank_id' => null, // ✅ Adjust if needed
-            ]);
+            ];
+
+            dd($object); // ✅ Debugging line to check the object before saving
+
+            $ticketOrder = TicketOrder::create($object);
 
             return response()->json([
                 'message' => 'Booking created successfully!',
@@ -243,5 +254,15 @@ class BookingController extends Controller
             ], 500);
         }
     }
+
+    private function generateInvoiceNumber($formattedDate)
+    {
+        // ✅ Get a unique timestamp-based number
+        $uniqueNumber = time(); // ✅ Uses the current Unix timestamp
+
+        // ✅ Format Invoice Number: INV-YYYYMMDD-TIMESTAMP
+        return sprintf("INV-%s-%d", Carbon::parse($formattedDate)->format("Ymd"), $uniqueNumber);
+    }
+
 
 }

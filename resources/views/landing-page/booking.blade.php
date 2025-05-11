@@ -294,9 +294,18 @@
                 </section>
 
                 <h4>Confirmation</h4>
-                <section class="section-style">
+                <section class="">
                     <div id="purchaseDetails" style="width: 100%;">
 
+                    </div>
+                    <div class="form-row" style="margin-top: 0px;">
+                        <button class="back-navigation backLast">Back
+                            <i class="zmdi zmdi-long-arrow-left"></i>
+                        </button>
+
+                        <button class="forwardLast">FINISH PAYMENT
+                            <i class="zmdi zmdi-long-arrow-right"></i>
+                        </button>
                     </div>
                 </section>
 
@@ -536,6 +545,8 @@
                         formData[inputName] = $(this).val();
                     }
                 });
+
+                formData['total_price'] = totalPrice; // Add total price to form data
 
                 console.log("Collected Form Data:", formData);
                 renderPurchaseDetails(formData); // ✅ Call function to render purchase details
@@ -921,16 +932,6 @@
                             <td style="padding: 12px; border-bottom: 1px solid #ddd; color: black;">${totalHarga}</td>
                         </tr>
                     </table>
-
-                    <div class="form-row" style="margin-top: 0px;">
-                        <button class="back-navigation backLast">Back
-                            <i class="zmdi zmdi-long-arrow-left"></i>
-                        </button>
-
-                        <button class="forwardLast">FINISH PAYMENT
-                            <i class="zmdi zmdi-long-arrow-right"></i>
-                        </button>
-                    </div>
                 `;
 
                 $("#purchaseDetails").html(tableHTML); // ✅ Inject the updated table into the page

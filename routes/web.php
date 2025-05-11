@@ -14,7 +14,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserMappingController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\RoleMiddleware;
-
+use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 
 // Public Routes (Accessible Without Login)
     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
@@ -30,7 +30,12 @@ use App\Http\Middleware\RoleMiddleware;
     Route::get('/admin/payment-option/list', [PaymentOptionController::class, 'getActivePaymentTypes'])->name('admin.payment-option.list');
     Route::get('/bank-accounts', [BankAccountController::class, 'getActiveBankAccounts'])->name('bank.accounts.list');
     Route::post('/update-day-type', [BookingController::class, 'updateDayType'])->name('booking.updateDayType');
-    Route::post('/finish-payment', [BookingController::class, 'finishPayment'])->name('booking.finishPayment');
+    // Route::post('/finish-payment', [BookingController::class, 'finishPayment'])->name('booking.finishPayment');
+
+    Route::post('/finish-payment', [BookingController::class, 'finishPayment'])
+    ->withoutMiddleware([VerifyCsrfToken::class]) // ✅ Disables CSRF for this route
+    ->name('booking.finishPayment');
+
 
     Route::middleware(['auth'])->group(function () {
 
