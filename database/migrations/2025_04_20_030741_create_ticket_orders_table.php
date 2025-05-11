@@ -24,8 +24,8 @@ return new class extends Migration
             $table->integer('id_kabupaten');
             $table->integer('id_provinsi');
 
-            $table->integer('visitor_male_count')->default(0);
-            $table->integer('visitor_female_count')->default(0);
+            $table->integer('visitor_male_count')->nullable()->default(0);
+            $table->integer('visitor_female_count')->nullable()->default(0);
 
             $table->integer('total_visitor');
             $table->decimal('total_price', 10, 2);

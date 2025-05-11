@@ -330,6 +330,7 @@
             let currentDayType = "{{ $jenisHari }}";
             let totalPrice = 0;
             let selectedPaymentName = "";
+            let finalFormData = null;
 
             $('#dp1').datepicker({
                 language: 'en',
@@ -479,6 +480,12 @@
 
             // ✅ Attach validation function to NEXT button
 
+            $(".forwardLast").click(function(event) {
+                event.preventDefault(); // ✅ Prevent default submission
+                finishPayment(); // ✅ Call function to finish payment
+                console.log("Finish payment button clicked!"); // ✅ Debugging
+            });
+
 
             $(".forwardThird").click(function(event) {
                 event.preventDefault(); // ✅ Prevent default submission
@@ -532,10 +539,28 @@
 
                 console.log("Collected Form Data:", formData);
                 renderPurchaseDetails(formData); // ✅ Call function to render purchase details
+                finalFormData = formData; // Store final form data for later use
                 $("#wizard").steps('next');
             });
 
-
+            function finishPayment() {
+                $.ajax({
+                    url: "{{ route('booking.finishPayment') }}",
+                    type: "POST",
+                    data: {
+                        formData: finalFormData,
+                        _token: "{{ csrf_token() }}"
+                    },
+                    success: function(response) {
+                        console.log("Payment finished successfully:", response);
+                        // Handle success response
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Error finishing payment:", error);
+                        // Handle error response
+                    }
+                });
+            }
 
             // function renderPricing(pricingData) {
             //     let pricingBoard = '';
@@ -902,7 +927,7 @@
                             <i class="zmdi zmdi-long-arrow-left"></i>
                         </button>
 
-                        <button class="forwardFourth">FINISH PAYMENT
+                        <button class="forwardLast">FINISH PAYMENT
                             <i class="zmdi zmdi-long-arrow-right"></i>
                         </button>
                     </div>

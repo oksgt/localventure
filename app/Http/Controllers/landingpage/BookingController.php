@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Destination;
 use App\Models\PaymentType;
 use App\Models\Pricing;
+use App\Models\TicketOrder;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Session;
@@ -177,4 +178,70 @@ class BookingController extends Controller
             'day_type' => $dayType
         ]);
     }
+
+    public function finishPayment(Request $request)
+    {
+
+        dd($request->all()); // ✅ Debugging line to check request data
+
+        $validatedData = $request->validate([
+            'formData.selectDestinationId' => 'required|exists:destinations,id',
+            'formData.people_count' => 'required|integer|min:1',
+            'formData.name' => 'required|string|max:255',
+            'formData.address' => 'required|string|max:255',
+            'formData.phone' => 'required|string|max:20',
+            'formData.origin' => 'nullable|string',
+            'formData.email' => 'nullable|email|max:255',
+            'formData.anak-anak' => 'nullable|integer|min:0',
+            'formData.dewasa' => 'nullable|integer|min:0',
+            'formData.mancanegara' => 'nullable|integer|min:0',
+            'formData.selectPaymentId' => 'required|exists:payment_types,id',
+            'formData.total_price' => 'required|numeric|min:0',
+        ]);
+
+        try {
+            $totalVisitors = ($validatedData['formData']['anak-anak'] ?? 0)
+                + ($validatedData['formData']['dewasa'] ?? 0)
+                + ($validatedData['formData']['mancanegara'] ?? 0);
+
+            $visitorType = $validatedData['formData']['people_count'] > 1 ? 'group' : 'individual';
+
+            $ticketOrder = TicketOrder::create([
+                'destination_id' => $validatedData['formData']['selectDestinationId'],
+                'visitor_type' => $visitorType,
+                'visit_date' => now(), // ✅ Assuming today's date, adjust as needed
+                'visitor_name' => $validatedData['formData']['name'],
+                'visitor_address' => $validatedData['formData']['address'],
+                'visitor_phone' => $validatedData['formData']['phone'],
+                'visitor_origin_description' => $validatedData['formData']['origin'] ?? null,
+                'visitor_email' => $validatedData['formData']['email'] ?? null,
+                'total_visitor' => $totalVisitors,
+                'total_price' => $validatedData['formData']['total_price'],
+                'billing_number' => strtoupper(uniqid('INV')), // ✅ Generates a unique billing number
+                'payment_status' => 'pending',
+                'purchasing_type' => 'online',
+                'notes' => null, // ✅ Adjust if needed
+                'created_by' => auth()->id(), // ✅ Stores the logged-in user
+                'id_kecamatan' => 1, // ✅ Placeholder, replace with actual value
+                'id_kabupaten' => 1, // ✅ Placeholder
+                'id_provinsi' => 1, // ✅ Placeholder
+                'visitor_male_count' => 0, // ✅ Assuming default values, adjust if necessary
+                'visitor_female_count' => 0,
+                'payment_type_id' => $validatedData['formData']['selectPaymentId'],
+                'bank_id' => null, // ✅ Adjust if needed
+            ]);
+
+            return response()->json([
+                'message' => 'Booking created successfully!',
+                'ticket_order_id' => $ticketOrder->id
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error processing booking!',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
 }
