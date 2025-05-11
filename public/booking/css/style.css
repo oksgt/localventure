@@ -642,3 +642,11 @@ button:hover {
 .radio-group input[type="radio"] {
     margin-right: 5px; /* ✅ Adds slight spacing between radio and label */
 }
+
+.back-navigation{
+    background: #cdc6ac;
+}
+
+ul[role="menu"] {
+    display: none !important; /* ✅ Completely hides the pagination */
+}

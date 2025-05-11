@@ -1,15 +1,22 @@
-$(function(){
-	$("#wizard").steps({
+    $(function(){
+        $("#wizard").steps({
         headerTag: "h4",
         bodyTag: "section",
         transitionEffect: "fade",
-        enableAllSteps: true,
-        enablePagination: false,
+        enableAllSteps: false, // ✅ Prevent jumping between steps
+        enablePagination: true, // ✅ Enable "Next" button navigation
         transitionEffectSpeed: 500,
         labels: {
             current: ""
         }
     });
+
+    // ✅ Disable manual navigation via step headers
+        $(".wizard > .steps > ul > li a").on("click", function(event) {
+            event.preventDefault(); // ✅ Stops clicking on <h4> headers
+        });
+
+
 
     // Custome Button Jquery Step
     // $('.forward').click(function(){

@@ -43,7 +43,7 @@
                                     <span class="placeholder">Destination:</span>
                                 </div>
                                 <ul id="selectDestination" class="dropdown" name="selectDestination"
-                                    id="selectDestination"> >
+                                    id="selectDestination">
                                     @foreach ($destinations as $destination)
                                         <li rel="{{ $destination->name }}" data-id="{{ $destination->id }}"
                                             data-image="{{ asset('storage/destination/' . basename($destination->images->first()->image_url)) }}"
@@ -71,9 +71,13 @@
                         </div>
                     </div>
 
-                    <button class="forwardFirst">NEXT
-                        <i class="zmdi zmdi-long-arrow-right"></i>
-                    </button>
+                    <div class="form-row" style="margin-top: 0px;">
+                        <button class="forwardFirst">NEXT
+                            <i class="zmdi zmdi-long-arrow-right"></i>
+                        </button>
+                    </div>
+
+
                 </section>
 
                 <h4>Reservation Data</h4>
@@ -148,9 +152,17 @@
                             <span class="placeholder" style="position: absolute; top: 0px;">Origin:</span>
                         </div>
                     </div>
-                    <button class="forwardSecond" style="width: 195px; margin-top: 44px;">NEXT
-                        <i class="zmdi zmdi-long-arrow-right"></i>
-                    </button>
+
+
+                    <div class="form-row" style="margin-top: 0px;">
+                        <button class="back-navigation backSecond">Back
+                            <i class="zmdi zmdi-long-arrow-left"></i>
+                        </button>
+
+                        <button class="forwardSecond" >NEXT
+                            <i class="zmdi zmdi-long-arrow-right"></i>
+                        </button>
+                    </div>
                 </section>
 
                 <h4>Ticket Option</h4>
@@ -212,9 +224,17 @@
                                 </table>
                             </div>
 
-                            <button class="forwardThird" style="width: 195px; margin-top: 44px;">NEXT
-                                <i class="zmdi zmdi-long-arrow-right"></i>
-                            </button>
+
+
+                            <div class="form-row" style="margin-top: 0px;">
+                                <button class="back-navigation backSecond">Back
+                                    <i class="zmdi zmdi-long-arrow-left"></i>
+                                </button>
+
+                                <button class="forwardThird" >NEXT
+                                    <i class="zmdi zmdi-long-arrow-right"></i>
+                                </button>
+                            </div>
                         @else
                             <div class="board-wrapper" style="margin-bottom: 30px;">
                                 <div class="board-inner">
@@ -262,9 +282,15 @@
                         </tbody>
                     </table>
 
-                    <button class="forwardFourth">NEXT
-                        <i class="zmdi zmdi-long-arrow-right"></i>
-                    </button>
+                    <div class="form-row" style="margin-top: 0px;">
+                        <button class="back-navigation backSecond">Back
+                            <i class="zmdi zmdi-long-arrow-left"></i>
+                        </button>
+
+                        <button class="forwardFourth">NEXT
+                            <i class="zmdi zmdi-long-arrow-right"></i>
+                        </button>
+                    </div>
                 </section>
 
                 <h4>Confirmation</h4>
@@ -442,27 +468,34 @@
                 return true; // ✅ Validation passed
             }
 
-            // ✅ Attach validation function to NEXT button
-            $(document).ready(function() {
-                $(".forwardThird").click(function(event) {
-                    event.preventDefault(); // ✅ Prevent default submission
+            // back-navigation
+            $(".back-navigation").click(function(event) {
+                event.preventDefault();
 
-                    if (validateSecondSection()) {
-                        console.log("Validation passed: All fields are valid!");
-                        $("#wizard").steps('next'); // ✅ Proceed to next step
-                    }
-                });
+                console.log("Back button clicked!"); // ✅ Debugging
+
+                $("#wizard").steps("previous");
             });
 
-            $(document).ready(function() {
-                $(".forwardSecond").click(function(event) {
-                    event.preventDefault(); // ✅ Prevent default submission
+            // ✅ Attach validation function to NEXT button
 
-                    if (validateSecondSection()) {
-                        console.log("Validation passed: All fields are valid!");
-                        $("#wizard").steps('next'); // ✅ Proceed to next step
-                    }
-                });
+
+            $(".forwardThird").click(function(event) {
+                event.preventDefault(); // ✅ Prevent default submission
+
+                if (validateSecondSection()) {
+                    console.log("Validation passed: All fields are valid!");
+                    $("#wizard").steps('next'); // ✅ Proceed to next step
+                }
+            });
+
+            $(".forwardSecond").click(function(event) {
+                event.preventDefault(); // ✅ Prevent default submission
+
+                if (validateSecondSection()) {
+                    console.log("Validation passed: All fields are valid!");
+                    $("#wizard").steps('next'); // ✅ Proceed to next step
+                }
             });
 
 
@@ -488,7 +521,8 @@
                     if ($(this).is(":radio")) {
                         if ($(this).is(":checked")) {
                             formData[inputName] = $(this).val();
-                            formData['bank_name'] = $(this).data('bank-name'); // Get bank name from data attribute
+                            formData['bank_name'] = $(this).data(
+                                'bank-name'); // Get bank name from data attribute
                         }
                     } else {
                         // Standard inputs, textareas, and selects
@@ -503,72 +537,72 @@
 
 
 
-            function renderPricing(pricingData) {
-                let pricingBoard = '';
+            // function renderPricing(pricingData) {
+            //     let pricingBoard = '';
 
-                if (pricingData.length === 0) {
-                    pricingBoard = `
-                        <div class="board-wrapper" style="margin-bottom: 30px;">
-                            <div class="board-inner">
-                                <div class="board-item" style="font-weight: 600;">
-                                    Tickets are not available.
-                                </div>
-                            </div>
-                        </div>`;
-                } else {
-                    pricingBoard += `<div class="board-wrapper" style="margin-bottom: 30px;">`;
+            //     if (pricingData.length === 0) {
+            //         pricingBoard = `
+            //             <div class="board-wrapper" style="margin-bottom: 30px;">
+            //                 <div class="board-inner">
+            //                     <div class="board-item" style="font-weight: 600;">
+            //                         Tickets are not available.
+            //                     </div>
+            //                 </div>
+            //             </div>`;
+            //     } else {
+            //         pricingBoard += `<div class="board-wrapper" style="margin-bottom: 30px;">`;
 
-                    ['weekday', 'weekend'].forEach(dayType => {
-                        let dayPrices = pricingData.filter(price => price.day_type === dayType);
+            //         ['weekday', 'weekend'].forEach(dayType => {
+            //             let dayPrices = pricingData.filter(price => price.day_type === dayType);
 
-                        if (dayPrices.length) {
-                            pricingBoard += `
-                                <div class="board-inner">
-                                    <div class="board-item" style="font-weight: 600;">${dayType.charAt(0).toUpperCase() + dayType.slice(1)} :</div>
-                                    <div class="board-line">`;
+            //             if (dayPrices.length) {
+            //                 pricingBoard += `
+            //                     <div class="board-inner">
+            //                         <div class="board-item" style="font-weight: 600;">${dayType.charAt(0).toUpperCase() + dayType.slice(1)} :</div>
+            //                         <div class="board-line">`;
 
-                            dayPrices.forEach(price => {
-                                pricingBoard += `
-                                    <div class="board-item">
-                                        ${price.guest_name} :
-                                        <br>
-                                        <span>Rp. ${parseFloat(price.final_price).toLocaleString()}</span>
-                                    </div>`;
-                            });
+            //                 dayPrices.forEach(price => {
+            //                     pricingBoard += `
+            //                         <div class="board-item">
+            //                             ${price.guest_name} :
+            //                             <br>
+            //                             <span>Rp. ${parseFloat(price.final_price).toLocaleString()}</span>
+            //                         </div>`;
+            //                 });
 
-                            pricingBoard += `</div></div>`;
-                        }
-                    });
+            //                 pricingBoard += `</div></div>`;
+            //             }
+            //         });
 
-                    pricingBoard += `</div>`;
+            //         pricingBoard += `</div>`;
 
-                    // ✅ Add booking fields ONLY if pricing exists
-                    pricingBoard += `
-                        <div class="form-row">
-                            <div class="form-holder w-100">
-                                <input type="number" class="form-control pl-85" value="0">
-                                <span class="placeholder">Kids:</span>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-holder w-100">
-                                <input type="number" class="form-control pl-85" value="0">
-                                <span class="placeholder">Adults:</span>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-holder w-100">
-                                <input type="number" class="form-control pl-85" value="0">
-                                <span class="placeholder">Foreigners:</span>
-                            </div>
-                        </div>
-                        <button class="forward" style="width: 195px; margin-top: 44px;">Book by email
-                            <i class="zmdi zmdi-long-arrow-right"></i>
-                        </button>`;
-                }
+            //         // ✅ Add booking fields ONLY if pricing exists
+            //         pricingBoard += `
+            //             <div class="form-row">
+            //                 <div class="form-holder w-100">
+            //                     <input type="number" class="form-control pl-85" value="0">
+            //                     <span class="placeholder">Kids:</span>
+            //                 </div>
+            //             </div>
+            //             <div class="form-row">
+            //                 <div class="form-holder w-100">
+            //                     <input type="number" class="form-control pl-85" value="0">
+            //                     <span class="placeholder">Adults:</span>
+            //                 </div>
+            //             </div>
+            //             <div class="form-row">
+            //                 <div class="form-holder w-100">
+            //                     <input type="number" class="form-control pl-85" value="0">
+            //                     <span class="placeholder">Foreigners:</span>
+            //                 </div>
+            //             </div>
+            //             <button class="forward" >Book by email
+            //                 <i class="zmdi zmdi-long-arrow-right"></i>
+            //             </button>`;
+            //     }
 
-                $('#pricingBoard').html(pricingBoard); // ✅ Update the pricing board dynamically
-            }
+            //     $('#pricingBoard').html(pricingBoard); // ✅ Update the pricing board dynamically
+            // }
 
             let dateFromServer = "{{ $searchData['daterange'] ?? '' }}"; // ✅ Get date from backend
 
@@ -758,7 +792,7 @@
                     } else {
                         console.warn(
                             `No matching pricing found for Guest Type: ${guestTypeName}, Day Type: ${currentDayType}`
-                            );
+                        );
                     }
                 });
 
@@ -791,7 +825,7 @@
 
                         console.log(
                             `Matched Pricing -> Guest Name: ${matchingPricing.guest_name}, Day Type: ${matchingPricing.day_type}, Final Price: ${finalPrice}`
-                            );
+                        );
 
                         // Update the corresponding ticket summary row dynamically
                         $(`#selectedTicket_${matchingPricing.guest_name_id}`).text(`x ${quantity}`);
@@ -800,7 +834,7 @@
                     } else {
                         console.warn(
                             `No matching pricing found for Guest Type: ${guestTypeName}, Day Type: ${currentDayType}`
-                            );
+                        );
                     }
                 });
 
@@ -821,7 +855,7 @@
 
                 let totalHarga = `Rp. ${(totalPrice).toLocaleString()},-`; // ✅ Calculate price dynamically
 
-                if(selectedPaymentName == 'Bank Transfer') {
+                if (selectedPaymentName == 'Bank Transfer') {
                     let bankName = $("input[name='bankSelection']:checked").data('bank-name');
                     selectedPaymentName = 'Transfer - ' + bankName;
                 }
@@ -862,6 +896,16 @@
                             <td style="padding: 12px; border-bottom: 1px solid #ddd; color: black;">${totalHarga}</td>
                         </tr>
                     </table>
+
+                    <div class="form-row" style="margin-top: 0px;">
+                        <button class="back-navigation backLast">Back
+                            <i class="zmdi zmdi-long-arrow-left"></i>
+                        </button>
+
+                        <button class="forwardFourth">FINISH PAYMENT
+                            <i class="zmdi zmdi-long-arrow-right"></i>
+                        </button>
+                    </div>
                 `;
 
                 $("#purchaseDetails").html(tableHTML); // ✅ Inject the updated table into the page
