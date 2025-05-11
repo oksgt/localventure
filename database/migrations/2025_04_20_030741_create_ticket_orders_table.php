@@ -39,6 +39,9 @@ return new class extends Migration
             $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignId('deleted_by')->nullable()->constrained('users')->nullOnDelete();
 
+            $table->integer('payment_type_id')->nullable()->after('column_name_here');
+            $table->integer('bank_id')->nullable()->after('payment_type_id');
+
             $table->index('visit_date');
         });
     }

@@ -37,10 +37,13 @@
                             <div class="select w-100">
                                 <div class="form-holder">
                                     <div class="select-control form-control pl-85">{{ $selectedDestinationName }}</div>
+                                    <input type="hidden" name="selectDestinationId" id="selectDestinationId"
+                                        value="{{ $searchData['destination_id'] }}" />
                                     <span class="lnr lnr-chevron-down"></span>
                                     <span class="placeholder">Destination:</span>
                                 </div>
-                                <ul id="selectDestination" class="dropdown" name="selectDestination" >
+                                <ul id="selectDestination" class="dropdown" name="selectDestination"
+                                    id="selectDestination"> >
                                     @foreach ($destinations as $destination)
                                         <li rel="{{ $destination->name }}" data-id="{{ $destination->id }}"
                                             data-image="{{ asset('storage/destination/' . basename($destination->images->first()->image_url)) }}"
@@ -62,7 +65,8 @@
                     </div>
                     <div class="form-row">
                         <div class="form-holder w-100">
-                            <input type="text" class="form-control pl-85" value="{{ $searchData['people_count'] }}" name="people_count">
+                            <input type="text" class="form-control pl-85" value="{{ $searchData['people_count'] }}"
+                                name="people_count">
                             <span class="placeholder">People:</span>
                         </div>
                     </div>
@@ -92,8 +96,8 @@
                         <div class="form-row">
                             <div class="select w-100">
                                 <div class="form-holder">
-                                    <input type="text" id="provinceSearch" name="provinceSearch" class="form-control pl-85"
-                                        placeholder="Search province...">
+                                    <input type="text" id="provinceSearch" name="provinceSearch"
+                                        class="form-control pl-85" placeholder="Search province...">
                                     <span class="placeholder">Province:</span>
                                 </div>
                             </div>
@@ -104,8 +108,8 @@
                         <div class="form-row">
                             <div class="select w-100">
                                 <div class="form-holder">
-                                    <input type="text" id="regencySearch" name="regencySearch" class="form-control pl-85"
-                                        placeholder="Search regency..." disabled>
+                                    <input type="text" id="regencySearch" name="regencySearch"
+                                        class="form-control pl-85" placeholder="Search regency..." disabled>
                                     <span class="placeholder">Regency:</span>
                                 </div>
                             </div>
@@ -116,8 +120,8 @@
                         <div class="form-row">
                             <div class="select w-100">
                                 <div class="form-holder">
-                                    <input type="text" id="districtSearch" name="districtSearch" class="form-control pl-85"
-                                        placeholder="Search district..." disabled>
+                                    <input type="text" id="districtSearch" name="districtSearch"
+                                        class="form-control pl-85" placeholder="Search district..." disabled>
                                     <span class="placeholder">District:</span>
                                 </div>
                             </div>
@@ -176,13 +180,14 @@
                             @foreach ($guestTypes as $item)
                                 <div class="form-row">
                                     <div class="form-holder w-100 ">
-                                        <input type="number" class="form-control pl-120" min="0" value="0" name="{{ $item->name }}" id="{{ $item->name }}">
+                                        <input type="number" class="form-control pl-120" min="0"
+                                            value="0" name="{{ $item->name }}" id="{{ $item->id }}">
                                         <span class="placeholder">{{ ucwords($item->name) }}:</span>
                                     </div>
                                 </div>
                             @endforeach
 
-                            <div class="form-row" >
+                            <div class="form-row">
                                 <table style="width: 100%;" id="ticketSummaryTable">
                                     <tr>
                                         <th>Category</th>
@@ -194,7 +199,8 @@
                                         <tr>
                                             <td>{{ ucwords($item->name) }}</td>
                                             <td id="selectedTicket_{{ $item->id }}">x 0</td>
-                                            <td id="ticketPrice_{{ $item->id }}" style="text-align: right">Rp. 0</td>
+                                            <td id="ticketPrice_{{ $item->id }}" style="text-align: right">Rp. 0
+                                            </td>
                                         </tr>
                                     @endforeach
 
@@ -230,6 +236,8 @@
                                     <div class="select-control form-control pl-85">-- Please select --</div>
                                     <span class="lnr lnr-chevron-down"></span>
                                     <span class="placeholder">Payment:</span>
+                                    <input type="hidden" name="selectPaymentId" id="selectPaymentId"
+                                        value="" />
                                 </div>
                                 <ul id="selectPayment" class="dropdown">
                                     @foreach ($paymentTypes as $paymentType)
@@ -262,131 +270,45 @@
                 <h4>Confirmation</h4>
                 <section class="section-style">
 
-                    <table>
+                    <table style="width: 100%; border-collapse: collapse; border: 1px solid #ddd;">
                         <tr>
-                            <th>Rincian Pembelian Tiket</th>
-                            <th></th>
+                            <th colspan="2" style="text-align: center; padding: 10px; background-color: #f8f8f8; border-bottom: 2px solid #ccc; color: black">
+                                Rincian Pembelian Tiket
+                            </th>
                         </tr>
                         <tr>
-                            <td>Nama</td>
-                            <td>Pejabat Gemes</td>
+                            <td style="padding: 12px; border-bottom: 1px solid #ddd;">Nama</td>
+                            <td style="padding: 12px; border-bottom: 1px solid #ddd;">Pejabat Gemes</td>
                         </tr>
                         <tr>
-                            <td>Email</td>
-                            <td>restadianna@gmail.com</td>
+                            <td style="padding: 12px; border-bottom: 1px solid #ddd;">Email</td>
+                            <td style="padding: 12px; border-bottom: 1px solid #ddd;">restadianna@gmail.com</td>
                         </tr>
                         <tr>
-                            <td>Alamat</td>
-                            <td>Semarang Barat, Ngemplak Simongan</td>
+                            <td style="padding: 12px; border-bottom: 1px solid #ddd;">Alamat</td>
+                            <td style="padding: 12px; border-bottom: 1px solid #ddd;">Semarang Barat, Ngemplak Simongan</td>
                         </tr>
                         <tr>
-                            <td>Kategori Tiket</td>
-                            <td>Rombongan</td>
+                            <td style="padding: 12px; border-bottom: 1px solid #ddd;">Kategori Tiket</td>
+                            <td style="padding: 12px; border-bottom: 1px solid #ddd;">Rombongan</td>
                         </tr>
                         <tr>
-                            <td>Total Pengunjung</td>
-                            <td>3 Pengunjung</td>
+                            <td style="padding: 12px; border-bottom: 1px solid #ddd;">Total Pengunjung</td>
+                            <td style="padding: 12px; border-bottom: 1px solid #ddd;">3 Pengunjung</td>
                         </tr>
                         <tr>
-                            <td>Harga</td>
-                            <td>Rp. 30,000,-</td>
+                            <td style="padding: 12px; border-bottom: 1px solid #ddd;">Metode Bayar</td>
+                            <td style="padding: 12px; border-bottom: 1px solid #ddd;">QRIS</td>
                         </tr>
-                        </table>
+                        <tr style="background-color: #edc948; border-top: 2px solid #ccc;">
+                            <td style="padding: 12px; border-bottom: 1px solid #ddd; color: black">Total Harga</td>
+                            <td style="padding: 12px; border-bottom: 1px solid #ddd; color: black">Rp. 30,000,-</td>
+                        </tr>
+                    </table>
                 </section>
 
                 {{-- @if ($pricing->isNotEmpty()) --}}
-                <h4>Confirmation</h4>
-                <section class="section-style">
-                    <div class="board-wrapper">
-                        <div class="board-inner">
-                            <div class="board-item">
-                                Check In :
-                                <span>2-5-2018</span>
-                            </div>
-                            <div class="board-item">
-                                Check Out :
-                                <span>8-5-2018</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="pay-wrapper">
-                        <div class="bill">
-                            <div class="bill-cell">
-                                <div class="bill-item">
-                                    <div class="bill-unit">
-                                        Room 1 : <span>Small Room</span>
-                                    </div>
-                                    <span class="price">$34</span>
-                                </div>
-                                <div class="bill-item people">
-                                    <div class="bill-unit">
-                                        Adult : <span>2</span>
-                                    </div>
-                                    <div class="bill-unit">
-                                        Children : <span>0</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="bill-cell" style="margin-bottom: 13px">
-                                <div class="bill-item">
-                                    <div class="bill-unit">
-                                        Room 2 : <span>Luxury Room</span>
-                                    </div>
-                                    <span class="price">$23</span>
-                                </div>
-                                <div class="bill-item people">
-                                    <div class="bill-unit">
-                                        Adult : <span>4</span>
-                                    </div>
-                                    <div class="bill-unit">
-                                        Children : <span>1</span>
-                                    </div>
-                                </div>
-                                <div class="bill-item service">
-                                    <div class="bill-unit">
-                                        Rooms & Services :
-                                    </div>
-                                    <span class="price">$80</span>
-                                </div>
-                            </div>
-                            <div class="bill-cell">
-                                <div class="bill-item vat">
-                                    <div class="bill-unit">
-                                        Vat 8% :
-                                    </div>
-                                    <span class="price">$08</span>
-                                </div>
-                                <div class="bill-item total-price">
-                                    <div class="bill-unit">
-                                        Total Price :
-                                    </div>
-                                    <span class="price">$88</span>
-                                </div>
-                                <div class="checkbox-circle">
-                                    <label>
-                                        <input type="radio" name="payment" value="full payment" checked> Full
-                                        Payment<br>
-                                        <span class="checkmark"></span>
-                                    </label>
-                                    <label>
-                                        <input type="radio" name="payment" value="10% Deposit"> 10% Deposit
-                                        <span class="checkmark"></span>
-                                    </label>
-                                </div>
-                                <div class="bill-item total">
-                                    <div class="bill-unit">
-                                        <span>20% Deposit</span>
-                                        Pay the rest on arrival
-                                    </div>
-                                    <span class="price">$78</span>
-                                </div>
-                            </div>
-                        </div>
-                        <button style="width: 195px; margin-top: 45px;">Confirmation
-                            <i class="zmdi zmdi-long-arrow-right"></i>
-                        </button>
-                    </div>
-                </section>
+
                 {{-- @else --}}
 
                 {{-- @endif --}}
@@ -413,30 +335,18 @@
             dp1.selectDate(new Date());
 
             let currentDayType = "{{ $jenisHari }}";
-
-            // $('#dp1').on('change', function () {
-            //     let selectedDate = $(this).val();
-
-            //     // Convert to Date object
-            //     let dateObj = new Date(selectedDate.replace(/ - /g, ' ')); // Ensure proper formatting for Date constructor
-
-            //     // Determine day type
-            //     let dayType = (dateObj.getDay() === 0 || dateObj.getDay() === 6) ? 'Weekend' : 'Weekday';
-
-            //     console.log(`Selected Date: ${selectedDate}, Day Type: ${dayType}`);
-
-            //     // Send data to controller (AJAX)
-            //     sendDayTypeToController(dayType);
-            // });
+            let totalPrice = 0;
 
             $('#dp1').datepicker({
                 language: 'en',
                 dateFormat: "dd - M - yyyy",
-                onSelect: function (formattedDate, dateObj) {
+                onSelect: function(formattedDate, dateObj) {
                     if (dateObj) {
-                        let dayType = (dateObj.getDay() === 0 || dateObj.getDay() === 6) ? 'Weekend' : 'Weekday';
+                        let dayType = (dateObj.getDay() === 0 || dateObj.getDay() === 6) ? 'Weekend' :
+                            'Weekday';
                         console.log(`Selected Date: ${formattedDate}, Day Type: ${dayType}`);
                         sendDayTypeToController(dayType);
+                        resetTicketSummary();
                     }
                 }
             });
@@ -445,7 +355,10 @@
                 $.ajax({
                     url: "{{ route('booking.updateDayType') }}",
                     type: "POST",
-                    data: { day_type: dayType, _token: "{{ csrf_token() }}" },
+                    data: {
+                        day_type: dayType,
+                        _token: "{{ csrf_token() }}"
+                    },
                     success: function(response) {
                         currentDayType = response.day_type; // ✅ Update current day type
                     },
@@ -466,6 +379,8 @@
                 });
 
                 let destinationId = $(this).data('id'); // ✅ Get selected destination ID
+
+                $("#selectDestinationId").val(destinationId); // ✅ Set hidden input value
 
                 // Load pricing dynamically using AJAX
                 $.ajax({
@@ -560,8 +475,19 @@
             }
 
             // ✅ Attach validation function to NEXT button
-            $(document).ready(function () {
-                $(".forwardSecond").click(function (event) {
+            $(document).ready(function() {
+                $(".forwardThird").click(function(event) {
+                    event.preventDefault(); // ✅ Prevent default submission
+
+                    if (validateSecondSection()) {
+                        console.log("Validation passed: All fields are valid!");
+                        $("#wizard").steps('next'); // ✅ Proceed to next step
+                    }
+                });
+            });
+
+            $(document).ready(function() {
+                $(".forwardSecond").click(function(event) {
                     event.preventDefault(); // ✅ Prevent default submission
 
                     if (validateSecondSection()) {
@@ -572,7 +498,7 @@
             });
 
 
-            $(".forwardFirst").click(function (event) {
+            $(".forwardFirst").click(function(event) {
                 event.preventDefault(); // ✅ Prevent default submission
 
                 if (validateFirstSection()) {
@@ -580,6 +506,31 @@
                     $("#wizard").steps('next');
                 }
             });
+
+            $(".forwardFourth").on("click", function(event) {
+                event.preventDefault(); // Prevent default button behavior (if it's inside a form)
+
+                let formData = {}; // Object to store collected inputs
+
+                // Collect all input fields inside the four sections
+                $("section input, section textarea, section select").each(function() {
+                    let inputName = $(this).attr("name"); // Get input name attribute
+
+                    // Special handling for radio buttons
+                    if ($(this).is(":radio")) {
+                        if ($(this).is(":checked")) {
+                            formData[inputName] = $(this).val();
+                        }
+                    } else {
+                        // Standard inputs, textareas, and selects
+                        formData[inputName] = $(this).val();
+                    }
+                });
+
+                console.log("Collected Form Data:", formData);
+            });
+
+
 
             function renderPricing(pricingData) {
                 let pricingBoard = '';
@@ -769,6 +720,8 @@
                 let paymentName = $(this).data('name'); // ✅ Get selected payment name
                 console.log('paymentName:', paymentName);
 
+                $('#selectPaymentId').val($(this).data('id')); // ✅ Set hidden input value
+
                 if (paymentName == 'Bank Transfer') {
                     $('#bankAccountsTable').show(); // ✅ Show bank accounts table
                     loadBankAccounts(); // ✅ Load bank accounts dynamically
@@ -788,7 +741,7 @@
                             tableBody += `
                                 <tr>
                                     <td>
-                                        <input type="radio" name="bankSelection" value="${bank.account_number}" id="bank_${index}">
+                                        <input type="radio" name="bankSelection" value="${bank.id}" id="bank_${index}">
                                     </td>
                                     <td>
                                         <strong>${bank.bank_name}</strong><br>
@@ -812,12 +765,39 @@
                 });
             }
 
+            function resetTicketSummary() {
+                console.log("Resetting ticket summary...");
+
+                $("input[type='number']").each(function() {
+                    let guestTypeName = $(this).attr("name"); // kids, adults, foreigners
+                    $(this).val(0);
+
+                    // Find matching pricing based on the current dayType
+                    let matchingPricing = pricingData.find(price =>
+                        price.guest_name.toLowerCase() === guestTypeName &&
+                        price.day_type.toLowerCase() === currentDayType.toLowerCase()
+                    );
+
+                    if (matchingPricing) {
+
+                        // Update the corresponding ticket summary row dynamically
+                        $(`#selectedTicket_${matchingPricing.guest_name_id}`).text(`x 0`);
+                        $(`#ticketPrice_${matchingPricing.guest_name_id}`).text(`Rp. 0`);
+                    } else {
+                        console.warn(
+                            `No matching pricing found for Guest Type: ${guestTypeName}, Day Type: ${currentDayType}`
+                            );
+                    }
+                });
+
+                $("#ticketSummaryTable tr:last-child td:last-child").text(`Rp. 0`);
+            }
+
             function updateTicketSummary() {
-                let totalPrice = 0;
 
                 console.log("Updating ticket summary...");
 
-                $("input[type='number']").each(function () {
+                $("input[type='number']").each(function() {
                     let guestTypeName = $(this).attr("name"); // kids, adults, foreigners
                     let quantity = parseInt($(this).val()) || 0;
 
@@ -835,23 +815,78 @@
                         let finalPrice = matchingPricing.final_price * quantity;
                         totalPrice += finalPrice;
 
-                        console.log(`Matched Pricing -> Guest Name: ${matchingPricing.guest_name}, Day Type: ${matchingPricing.day_type}, Final Price: ${finalPrice}`);
+                        console.log(
+                            `Matched Pricing -> Guest Name: ${matchingPricing.guest_name}, Day Type: ${matchingPricing.day_type}, Final Price: ${finalPrice}`
+                            );
 
                         // Update the corresponding ticket summary row dynamically
                         $(`#selectedTicket_${matchingPricing.guest_name_id}`).text(`x ${quantity}`);
-                        $(`#ticketPrice_${matchingPricing.guest_name_id}`).text(`Rp. ${finalPrice.toLocaleString('id-ID')}`);
+                        $(`#ticketPrice_${matchingPricing.guest_name_id}`).text(
+                            `Rp. ${finalPrice.toLocaleString('id-ID')}`);
                     } else {
-                        console.warn(`No matching pricing found for Guest Type: ${guestTypeName}, Day Type: ${currentDayType}`);
+                        console.warn(
+                            `No matching pricing found for Guest Type: ${guestTypeName}, Day Type: ${currentDayType}`
+                            );
                     }
                 });
 
                 // Update the total price in the summary table
                 console.log(`Total Price Updated: Rp. ${totalPrice.toLocaleString('id-ID')}`);
-                $("#ticketSummaryTable tr:last-child td:last-child").text(`Rp. ${totalPrice.toLocaleString('id-ID')}`);
+                $("#ticketSummaryTable tr:last-child td:last-child").text(
+                    `Rp. ${totalPrice.toLocaleString('id-ID')}`);
             }
             // Attach event listeners to number input fields
             $("input[type='number']").on("input", updateTicketSummary);
 
+
+            function renderPurchaseDetails(data) {
+                let kategoriTiket = data.people_count > 1 ? "Group" : "Single"; // ✅ Group if >1, else Single
+
+                let visitorKeys = ["anak-anak", "dewasa", "mancanegara"];
+                let totalPengunjung = visitorKeys.reduce((sum, key) => sum + Number(formData[key] || 0), 0);
+
+                let totalHarga = `Rp. ${(totalPrice).toLocaleString()},-`; // ✅ Calculate price dynamically
+
+                let tableHTML = `
+                    <table style="width: 100%; border-collapse: collapse; border: 1px solid #ddd;">
+                        <tr>
+                            <th colspan="2" style="text-align: center; padding: 10px; background-color: #f8f8f8; border-bottom: 2px solid #ccc; color: black">
+                                <h4>Rincian Pembelian Tiket</h4>
+                            </th>
+                        </tr>
+                        <tr>
+                            <td style="padding: 12px; border-bottom: 1px solid #ddd;">Nama</td>
+                            <td style="padding: 12px; border-bottom: 1px solid #ddd;">${data.name}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 12px; border-bottom: 1px solid #ddd;">Email</td>
+                            <td style="padding: 12px; border-bottom: 1px solid #ddd;">${data.email}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 12px; border-bottom: 1px solid #ddd;">Alamat</td>
+                            <td style="padding: 12px; border-bottom: 1px solid #ddd;">${data.address}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 12px; border-bottom: 1px solid #ddd;">Kategori Tiket</td>
+                            <td style="padding: 12px; border-bottom: 1px solid #ddd;">${kategoriTiket}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 12px; border-bottom: 1px solid #ddd;">Total Pengunjung</td>
+                            <td style="padding: 12px; border-bottom: 1px solid #ddd;">${totalPengunjung} Pengunjung</td>
+                        </tr>
+                        <tr style="background-color: #edc948; border-top: 2px solid #ccc;">
+                            <td style="padding: 12px; border-bottom: 1px solid #ddd; font-weight: bold;">
+                                <h3>Total Harga</h3>
+                            </td>
+                            <td style="padding: 12px; border-bottom: 1px solid #ddd; font-weight: bold;">
+                                <h3>${totalHarga}</h3>
+                            </td>
+                        </tr>
+                    </table>
+                `;
+
+                $("#purchaseDetails").html(tableHTML); // ✅ Inject the updated table into the page
+            }
 
 
         });

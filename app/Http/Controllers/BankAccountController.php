@@ -132,7 +132,7 @@ class BankAccountController extends Controller
     public function getActiveBankAccounts()
     {
         $bankAccounts = BankAccount::where('account_status', 1)
-            ->get(['bank_name', 'account_name', 'account_number']); // ✅ Fetch only required fields
+            ->get(['id', 'bank_name', 'account_name', 'account_number']); // ✅ Fetch only required fields
 
         return response()->json($bankAccounts);
     }
