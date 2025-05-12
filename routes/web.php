@@ -36,6 +36,8 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
     ->withoutMiddleware([VerifyCsrfToken::class]) // ✅ Disables CSRF for this route
     ->name('booking.finishPayment');
 
+    Route::get('/ticket/pay', [BookingController::class, 'finishPaymentPage'])->name('booking.finish-payment-page');
+
 
     Route::middleware(['auth'])->group(function () {
 

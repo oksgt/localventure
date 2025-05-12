@@ -650,3 +650,14 @@ button:hover {
 ul[role="menu"] {
     display: none !important; /* ✅ Completely hides the pagination */
 }
+
+
+.payment-information{
+    margin-top: 0px;
+    background: #012252;
+    padding: 20px;
+}
+
+.payment-information table td {
+    padding: 10px;
+}

@@ -317,4 +317,15 @@ class BookingController extends Controller
 
         return $code;
     }
+
+    public function finishPaymentPage()
+    {
+        // $ticketOrder = TicketOrder::with('details')->findOrFail($id);
+        $destination = Destination::with('images')->orderBy('id', 'asc')->first();
+        $selectedImage = $destination && $destination->images->isNotEmpty()
+            ? asset('storage/destination/' . basename($destination->images->first()->image_url))
+            : asset('storage/destination/bg-booking-header.png');
+
+        return view('landing-page.finish-payment', compact('destination', 'selectedImage'));
+    }
 }
