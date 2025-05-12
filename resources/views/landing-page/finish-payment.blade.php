@@ -34,37 +34,57 @@
                 <table style="width: 100%; border: 1px solid #ccc; border-radius: 5px; padding: 20px;">
                     <tr>
                         <td><strong>ID Billing</strong></td>
-                        <td>0703010000000019</td>
+                        <td>{{ $result['invoice_number'] }}</td>
                     </tr>
                     <tr>
                         <td><strong>Total Tagihan</strong></td>
-                        <td>Rp. 30,000,-</td>
+                        <td>Rp. {{ number_format($result['total_price'], 2, ',', '.') }}</td>
                     </tr>
                     <tr>
                         <td><strong>Jumlah Pengunjung</strong></td>
-                        <td>3 Pengunjung</td>
+                        <td>{{ $result['total_visitor'] }} Pengunjung</td>
                     </tr>
                     <tr>
                         <td><strong>Keterangan</strong></td>
-                        <td>Tiket Wisata Kalianget Pejabat Gemes, Semarang Barat, Ngamplak Simongan</td>
+                        <td>{{ $result['notes'] }}</td>
                     </tr>
                     <tr>
                         <td><strong>Status Bayar</strong></td>
-                        <td style="background: green; color: white;">Belum Lunas</td>
+                        @if ($result['payment_status'] == 'paid')
+                            <td style="background: green; color: white;">Lunas</td>
+                        @else
+                            <td style="background: red; color: white;">Belum Lunas</td>
+                        @endif
+
                     </tr>
                 </table>
 
                 <div class="board-wrapper" style="margin-top: 20px;">
-                    <div class="board-inner">
-                        <div class="board-item">
-                            Silahkan Transfer ke Rekening di bawah ini:
-                            <h4>Bank BCA 1234567890</h4>
-                            <h4>a.n. PT. Wisata Kalianget</h4>
+                    @if ($result['payment_type_id'] == 3)
+                        <div class="board-inner">
+                            <div class="board-item">
+                                Silahkan Transfer ke Rekening di bawah ini:
+                                <h4>{{ $result['bank']['bank_name'] }} - {{ $result['bank']['account_number'] }}</h4>
+                                <h4>a.n. {{ $result['bank']['account_name'] }}</h4>
+                            </div>
+                            <p>* Note: Download Invoice atau Screenshot halaman ini</p>
                         </div>
-                        <p>* Note: Download Invoice atau Screenshot halaman ini</p>
-                    </div>
+                    @elseif ($result['payment_type_id'] == 1)
+                        <div class="board-inner">
+                            <div class="board-item">
+                                Silahkan scan code QRIS
+                                <br>
+                                <div style="text-align: center">
+                                    <img src="{{ asset('storage/' . $result['qris']->payment_image) }}" alt="qris"
+                                        style="width: 200px; ">
+                                </div>
+                            </div>
+                            <p>* Note: Download Invoice atau Screenshot halaman ini</p>
+                        </div>
+                    @endif
 
-                    <button id="downloadPdf" style="margin-top: 20px">Download <i class="zmdi zmdi-download"></i></button>
+                    <button id="downloadPdf" data-id="{{ $result['id'] }}" style="margin-top: 20px">Download Invoice <i
+                            class="zmdi zmdi-download"></i></button>
                 </div>
             </div>
         </div>
@@ -83,16 +103,11 @@
     <script src="{{ asset('booking') }}/js/main.js"></script>
 
     <script>
-        document.getElementById("downloadPdf").addEventListener("click", function () {
-            const { jsPDF } = window.jspdf;
+        document.getElementById("downloadPdf").addEventListener("click", function() {
+            let invoiceId = this.getAttribute("data-id");
+            let url = "{{ route('invoice', ':id') }}".replace(':id', invoiceId); // ✅ Dynamically set URL
 
-            html2canvas(document.body, { scale: 2 }).then(canvas => {
-                const doc = new jsPDF("p", "mm", "a4");
-                const imgData = canvas.toDataURL("image/png");
-
-                doc.addImage(imgData, "PNG", 10, 10, 190, 0);
-                doc.save("Full-Page.pdf");
-            });
+            window.location.href = url; // ✅ Redirects to download URL
         });
     </script>
 </body>

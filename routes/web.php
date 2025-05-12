@@ -38,6 +38,8 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 
     Route::get('/ticket/pay', [BookingController::class, 'finishPaymentPage'])->name('booking.finish-payment-page');
 
+    Route::get('/download-invoice/{id}', [BookingController::class, 'downloadInvoice'])->name('invoice');
+
 
     Route::middleware(['auth'])->group(function () {
 

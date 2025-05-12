@@ -4,11 +4,13 @@ namespace App\Http\Controllers\landingpage;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\BankAccount;
 use App\Models\Destination;
 use App\Models\PaymentType;
 use App\Models\Pricing;
 use App\Models\TicketOrder;
 use App\Models\TicketOrderDetail;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Session;
@@ -210,9 +212,15 @@ class BookingController extends Controller
             $regencyId = DB::table('reg_regencies')->where('name', $validatedData['formData']['regencySearch'])->value('id');
             $districtId = DB::table('reg_districts')->where('name', $validatedData['formData']['districtSearch'])->value('id');
 
+            $bank_id = null;
+            $bankAccount = null;
 
-            // ✅ Create Ticket Order
-            $ticketOrder = TicketOrder::create([
+            if($validatedData['formData']['selectPaymentId'] == 3){
+                $bankAccount = BankAccount::where('id', $request['formData']['bankSelection'])->first();
+                $bank_id = $bankAccount->id;
+            }
+
+            $object = [
                 'destination_id' => $validatedData['formData']['selectDestinationId'],
                 'visitor_type' => ($validatedData['formData']['people_count'] > 1) ? 'group' : 'individual',
                 'visit_date' => $formattedDate,
@@ -234,8 +242,11 @@ class BookingController extends Controller
                 'visitor_male_count' => 0,
                 'visitor_female_count' => 0,
                 'payment_type_id' => $validatedData['formData']['selectPaymentId'],
-                'bank_id' => null,
-            ]);
+                'bank_id' => $bank_id,
+            ];
+
+            // ✅ Create Ticket Order
+            $ticketOrder = TicketOrder::create($object);
 
             // ✅ Define Guest Types
             $guestTypes = ['anak-anak', 'dewasa', 'mancanegara'];
@@ -283,10 +294,36 @@ class BookingController extends Controller
 
             DB::commit(); // ✅ Confirm transaction
 
-            return response()->json([
-                'message' => 'Booking created successfully!',
-                'ticket_order_id' => $ticketOrder->id
-            ], 200);
+            $destination = Destination::with('images')->orderBy('id', 'asc')->first();
+            $selectedImage = $destination && $destination->images->isNotEmpty()
+                ? asset('storage/destination/' . basename($destination->images->first()->image_url))
+                : asset('storage/destination/bg-booking-header.png');
+
+            $qris = null;
+
+            if($validatedData['formData']['selectPaymentId'] == 1){
+                $qris = DB::table('payment_type')
+                ->select('id', 'payment_type_name', 'payment_image')
+                ->where('id', 1)
+                ->whereNull('deleted_at') // ✅ Ensures it's not soft-deleted
+                ->first(); // ✅ Retrieves a single record
+            }
+
+            $result = [
+                'id' => $ticketOrder->id,
+                'invoice_number' => $object['billing_number'],
+                'total_price' => $object['total_price'],
+                'total_visitor' => $object['total_visitor'],
+                'notes' => $object['notes'],
+                'payment_status' => $object['payment_status'],
+                'payment_type_id' => $object['payment_type_id'],
+                'qris' => $qris,
+                'bank' => $bankAccount,
+            ];
+
+            // dd($result);
+
+            return view('landing-page.finish-payment', compact('destination', 'selectedImage', 'result'));
 
         } catch (\Exception $e) {
             DB::rollBack(); // ❌ Rollback on error
@@ -327,5 +364,84 @@ class BookingController extends Controller
             : asset('storage/destination/bg-booking-header.png');
 
         return view('landing-page.finish-payment', compact('destination', 'selectedImage'));
+    }
+
+    public function invoice(){
+        return view('invoice');
+    }
+
+    public function downloadInvoice($id)
+    {
+        //get ticket order by id
+        $ticketOrder = TicketOrder::findOrFail($id);
+
+        if(!$ticketOrder) {
+            return 404; // ❌ Not Found
+        }
+
+        $items = DB::table('ticket_order_details AS tod')
+        ->join('guest_types AS gt', 'gt.id', '=', 'tod.guest_type_id')
+        ->select('tod.day_type', 'gt.name AS guest_type',
+                 DB::raw('SUM(tod.qty) AS total_qty'),
+                 DB::raw('SUM(tod.total_price) AS total_price'))
+        ->where('tod.order_id', $id)
+        ->groupBy('gt.name', 'tod.day_type')
+        ->get();
+
+
+
+        // ✅ Retrieve the invoice HTML view
+        $data = [
+            'invoice_number' => $ticketOrder->billing_number,
+            'created_date' => Carbon::parse($ticketOrder->created_at)->format('d F Y'),
+            'company' => 'PT LocalVenture Tourism',
+            'address' => 'Jl. Utama, No. 1. Kota Besar',
+            'customer_name' => $ticketOrder->visitor_name,
+            'customer_email' => $ticketOrder->visitor_email,
+            'customer_phone' => $ticketOrder->visitor_phone,
+            'items' => $items,
+            'total_price' => number_format($ticketOrder->total_price, 2, ',', '.'),
+            'payment_status' => $ticketOrder->payment_status,
+            'purchasing_type' => $ticketOrder->purchasing_type,
+            'payment_type' => $ticketOrder->paymentType->payment_type_name,
+        ];
+
+        // dd($data); // ✅ Debugging line to check data
+
+        $imagePath = public_path('booking/images/logo.png');
+        $base64Image = $this->processImage($imagePath);
+
+
+        if($ticketOrder->paymentType->payment_type_name == 'QRIS'){
+            $qris = DB::table('payment_type')
+                ->select('id', 'payment_type_name', 'payment_image')
+                ->where('id', 1)
+                ->whereNull('deleted_at') // ✅ Ensures it's not soft-deleted
+                ->first(); // ✅ Retrieves a single record
+
+            $imagePath = public_path('storage/'.$qris->payment_image);
+            $base64ImageQRIS = $this->processImage($imagePath);
+        }
+
+        $pdf = Pdf::loadView('invoice', $data, ['base64Image' => $base64Image, 'base64ImageQRIS' => $base64ImageQRIS]);
+        Pdf::setOption(['isRemoteEnabled' => true]);
+        return $pdf->download('invoice.pdf', );
+    }
+
+    private function processImage($imagePath) {
+        if (!file_exists($imagePath)) {
+            // Return a 1-pixel transparent image as fallback
+            return 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
+        }
+
+        // Read file in chunks to avoid memory issues
+        $handle = fopen($imagePath, 'rb');
+        $contents = '';
+        while (!feof($handle)) {
+            $contents .= fread($handle, 8192); // Read 8KB at a time
+            }
+        fclose($handle);
+
+        return base64_encode($contents);
     }
 }
