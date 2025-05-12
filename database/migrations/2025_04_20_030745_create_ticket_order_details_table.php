@@ -11,6 +11,7 @@ return new class extends Migration
         Schema::create('ticket_order_details', function (Blueprint $table) {
             $table->id();
             $table->foreignId('order_id')->constrained('ticket_orders')->onDelete('cascade');
+            $table->string('ticket_code', 10);
             $table->foreignId('guest_type_id')->constrained('guest_types')->onDelete('cascade');
             $table->enum('day_type', ['weekend', 'weekday']);
             $table->date('visit_date');

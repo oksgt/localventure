@@ -8,6 +8,7 @@ use App\Models\Destination;
 use App\Models\PaymentType;
 use App\Models\Pricing;
 use App\Models\TicketOrder;
+use App\Models\TicketOrderDetail;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Session;
@@ -181,7 +182,6 @@ class BookingController extends Controller
 
     public function finishPayment(Request $request)
     {
-
         $validatedData = $request->validate([
             'formData.selectDestinationId' => 'required|exists:destinations,id',
             'formData.date' => 'required',
@@ -198,49 +198,90 @@ class BookingController extends Controller
             'formData.dewasa' => 'nullable|integer|min:0',
             'formData.mancanegara' => 'nullable|integer|min:0',
             'formData.selectPaymentId' => 'required',
-            'formData.bankSelection' => 'nullable',
             'formData.total_price' => 'required|numeric|min:0',
         ]);
 
-        // dd($request->all()); // ✅ Debugging line to check the request data
-
         try {
-            $totalVisitors = ($validatedData['formData']['anak-anak'] ?? 0)
-                + ($validatedData['formData']['dewasa'] ?? 0)
-                + ($validatedData['formData']['mancanegara'] ?? 0);
-
-            $visitorType = $validatedData['formData']['people_count'] > 1 ? 'group' : 'individual';
+            DB::beginTransaction(); // ✅ Ensures atomicity
 
             $formattedDate = Carbon::createFromFormat("d - F - Y", $validatedData['formData']['date'])->format("Y-m-d");
 
-            $object = [
+            $provinceId = DB::table('reg_provinces')->where('name', $validatedData['formData']['provinceSearch'])->value('id');
+            $regencyId = DB::table('reg_regencies')->where('name', $validatedData['formData']['regencySearch'])->value('id');
+            $districtId = DB::table('reg_districts')->where('name', $validatedData['formData']['districtSearch'])->value('id');
+
+
+            // ✅ Create Ticket Order
+            $ticketOrder = TicketOrder::create([
                 'destination_id' => $validatedData['formData']['selectDestinationId'],
-                'visitor_type' => $visitorType,
-                'visit_date' => $formattedDate, // ✅ Assuming today's date, adjust as needed
+                'visitor_type' => ($validatedData['formData']['people_count'] > 1) ? 'group' : 'individual',
+                'visit_date' => $formattedDate,
                 'visitor_name' => $validatedData['formData']['name'],
                 'visitor_address' => $validatedData['formData']['address'],
                 'visitor_phone' => $validatedData['formData']['phone'],
                 'visitor_origin_description' => $validatedData['formData']['origin'] ?? null,
                 'visitor_email' => $validatedData['formData']['email'] ?? null,
-                'total_visitor' => $totalVisitors,
+                'total_visitor' => $validatedData['formData']['anak-anak'] + $validatedData['formData']['dewasa'] + $validatedData['formData']['mancanegara'],
                 'total_price' => $validatedData['formData']['total_price'],
-                'billing_number' => $this->generateInvoiceNumber($formattedDate), // ✅ Generates a unique billing number
+                'billing_number' => $this->generateInvoiceNumber($formattedDate),
                 'payment_status' => 'pending',
                 'purchasing_type' => 'online',
-                'notes' => null, // ✅ Adjust if needed
-                'created_by' => auth()->id(), // ✅ Stores the logged-in user
-                'id_kecamatan' => 1, // ✅ Placeholder, replace with actual value
-                'id_kabupaten' => 1, // ✅ Placeholder
-                'id_provinsi' => 1, // ✅ Placeholder
-                'visitor_male_count' => 0, // ✅ Assuming default values, adjust if necessary
+                'notes' => null,
+                'created_by' => auth()->id(),
+                'id_kecamatan' => $districtId,
+                'id_kabupaten' => $regencyId,
+                'id_provinsi' => $provinceId,
+                'visitor_male_count' => 0,
                 'visitor_female_count' => 0,
                 'payment_type_id' => $validatedData['formData']['selectPaymentId'],
-                'bank_id' => null, // ✅ Adjust if needed
-            ];
+                'bank_id' => null,
+            ]);
 
-            dd($object); // ✅ Debugging line to check the object before saving
+            // ✅ Define Guest Types
+            $guestTypes = ['anak-anak', 'dewasa', 'mancanegara'];
 
-            $ticketOrder = TicketOrder::create($object);
+            foreach ($guestTypes as $guestTypeName) {
+                $qty = $validatedData['formData'][$guestTypeName] ?? 0;
+
+                if ($qty > 0) {
+                    // ✅ Retrieve Guest Type ID
+                    $guestTypeId = DB::table('guest_types')->where('name', $guestTypeName)->value('id');
+
+                    // ✅ Determine day type
+                    $dayType = (Carbon::parse($formattedDate)->isWeekend()) ? 'weekend' : 'weekday';
+
+                    // ✅ Retrieve pricing
+                    $pricing = DB::table('pricing')
+                        ->where('destination_id', $validatedData['formData']['selectDestinationId'])
+                        ->where('guest_type_id', $guestTypeId)
+                        ->where('day_type', $dayType)
+                        ->first();
+
+                    if ($pricing) {
+                        $insurancePrice = $pricing->insurance_price ?? 0;
+                        $basePrice = $pricing->base_price;
+                        $totalPrice = $insurancePrice + $basePrice;
+
+                        // ✅ Store each guest type individually
+                        for ($i = 0; $i < $qty; $i++) {
+                            TicketOrderDetail::create([
+                                'ticket_code' => $this->generateTicketCode(), // ✅ Generate unique ticket code
+                                'order_id' => $ticketOrder->id,
+                                'guest_type_id' => $guestTypeId,
+                                'day_type' => $dayType,
+                                'visit_date' => $formattedDate,
+                                'insurance_price' => $insurancePrice,
+                                'base_price' => $basePrice,
+                                'total_price' => $totalPrice,
+                                'qty' => 1, // ✅ Always store individual tickets per row
+                                'created_by' => auth()->id(),
+                            ]);
+                        }
+                    }
+                }
+            }
+
+            DB::commit(); // ✅ Confirm transaction
 
             return response()->json([
                 'message' => 'Booking created successfully!',
@@ -248,6 +289,7 @@ class BookingController extends Controller
             ], 200);
 
         } catch (\Exception $e) {
+            DB::rollBack(); // ❌ Rollback on error
             return response()->json([
                 'message' => 'Error processing booking!',
                 'error' => $e->getMessage()
@@ -264,5 +306,15 @@ class BookingController extends Controller
         return sprintf("INV-%s-%d", Carbon::parse($formattedDate)->format("Ymd"), $uniqueNumber);
     }
 
+    private function generateTicketCode()
+    {
+        $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'; // ✅ Alphanumeric mix
+        $code = '';
 
+        for ($i = 0; $i < 6; $i++) {
+            $code .= $characters[rand(0, strlen($characters) - 1)]; // ✅ Random selection
+        }
+
+        return $code;
+    }
 }
