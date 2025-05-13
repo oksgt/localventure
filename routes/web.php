@@ -10,6 +10,7 @@ use App\Http\Controllers\landingpage\HomeController;
 use App\Http\Controllers\MappingUserController;
 use App\Http\Controllers\MasterTicketController;
 use App\Http\Controllers\PaymentOptionController;
+use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserMappingController;
 use Illuminate\Support\Facades\Route;
@@ -43,6 +44,12 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
     Route::get('/result-finish-payment/{id}', [BookingController::class, 'showFinishPayment'])->name('finish.payment.view');
 
     Route::middleware(['auth'])->group(function () {
+
+        // 🔹 Admin & Super Admin (role_id = 1,2) - Master Ticket
+        Route::middleware([RoleMiddleware::class . ':1,2'])->group(function () {
+            Route::get('/admin/online-transaction', [TransactionController::class, 'index'])->name('admin.transaction.index');
+            Route::get('/admin/online-transaction/data', [TransactionController::class, 'getData'])->name('c');
+        });
 
         // 🔹 Admin & Super Admin (role_id = 1,2) - Master Ticket
         Route::middleware([RoleMiddleware::class . ':1'])->group(function () {

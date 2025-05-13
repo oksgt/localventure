@@ -46,9 +46,9 @@
                 </a>
                 <div class="collapse" id="ui-basic">
                     <ul class="nav flex-column sub-menu">
-                        <li class="nav-item"> <a class="nav-link" href="pages/ui-features/buttons.html">On The Spot</a>
+                        <li class="nav-item"> <a class="nav-link" href="{{ route('admin.transaction.index') }}">Online</a>
                         </li>
-                        <li class="nav-item"> <a class="nav-link" href="pages/ui-features/dropdowns.html">Online</a>
+                        <li class="nav-item"> <a class="nav-link" href="pages/ui-features/buttons.html">On The Spot</a>
                         </li>
                     </ul>
                 </div>
