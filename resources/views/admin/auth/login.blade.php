@@ -27,7 +27,7 @@
                     <div class="col-lg-4 mx-auto">
                         <div class="auth-form-light text-left py-5 px-4 px-sm-5">
                             <div class="brand-logo w-100">
-                                <img class="w-100" src="{{ asset('storage/assets/image/logo-utama.png') }}" alt="logo">
+                                <img class="w-100" src="{{ asset('storage/assets/image/2-cropped.svg') }}" alt="logo">
                             </div>
                             <h4>Hello! let's get started</h4>
                             <h6 class="font-weight-light">Sign in to continue.</h6>
