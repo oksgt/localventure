@@ -74,6 +74,15 @@
                 serverSide: true,
                 ajax: "{{ route('admin.transaction.data') }}",
                 columns: [
+                    {
+                        data: null,
+                        name: 'row_number',
+                        orderable: false,
+                        searchable: false,
+                        render: function(data, type, row, meta) {
+                            return meta.row + 1; // Auto-generate row number
+                        }
+                    },
                     { data: 'visit_date', name: 'visit_date' },
                     { data: 'billing_number', name: 'billing_number' },
                     { data: 'destination_name', name: 'destination_name' },
