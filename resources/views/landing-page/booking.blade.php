@@ -564,14 +564,21 @@
                     },
                     success: function(response) {
                         console.log("Payment finished successfully:", response);
-                        // Handle success response
+
+                        // ✅ Extract 'id' from response.data
+                        let orderId = response.data.id;
+
+                        // ✅ Redirect to the next page with correct order ID
+                        let url = "{{ route('finish.payment.view', ['id' => ':id']) }}".replace(':id', orderId);
+                        window.location.href = url;
                     },
                     error: function(xhr, status, error) {
                         console.error("Error finishing payment:", error);
-                        // Handle error response
                     }
                 });
             }
+
+
 
             // function renderPricing(pricingData) {
             //     let pricingBoard = '';

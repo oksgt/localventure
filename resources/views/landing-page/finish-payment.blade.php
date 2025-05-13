@@ -83,7 +83,7 @@
                         </div>
                     @endif
 
-                    <button id="downloadPdf" data-id="{{ $result['id'] }}" style="margin-top: 20px">Download Invoice <i
+                    <button id="downloadPdf" data-id="{{ $result['id'] }}" style="margin-top: 20px; width: 200px;">Download Invoice <i
                             class="zmdi zmdi-download"></i></button>
                 </div>
             </div>
