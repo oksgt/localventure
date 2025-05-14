@@ -29,10 +29,6 @@
                     <div class="card-body">
                         <h4 class="card-title">Online Ticket Order</h4>
 
-                        @if (session('role_id') !== 3)
-                            <a type="button" class="btn btn-sm btn-primary" id="add-bank-account-btn">Add New</a>
-                        @endif
-
                         <button type="button" class="btn btn-sm btn-light" id="refresh-bank-account-btn">Refresh</button>
 
                         <div class="table-responsive mt-2">
@@ -40,15 +36,17 @@
                                 <thead>
                                     <tr>
                                         <th>#</th>
+                                        <th>Action</th>
+                                        <th>Payment</th>
+                                        <th>Status</th>
                                         <th>Visit Date</th>
                                         <th>Inv. Number</th>
+                                        <th>Visitor Name</th>
+                                        <th>Total Visitor</th>
                                         <th>Dest. Name</th>
                                         <th>Keterangan</th>
                                         <th>Amount</th>
-                                        <th>Payment</th>
-                                        <th>Status</th>
                                         <th>Order Date</th>
-                                        <th>Action</th>
                                     </tr>
                                 </thead>
                             </table>
@@ -83,15 +81,17 @@
                             return meta.row + 1; // Auto-generate row number
                         }
                     },
+                    { data: 'action', name: 'action', orderable: false, searchable: false },
+                    { data: 'payment_name', name: 'payment_name' },
+                    { data: 'payment_status', name: 'payment_status' },
                     { data: 'visit_date', name: 'visit_date' },
                     { data: 'billing_number', name: 'billing_number' },
+                    { data: 'visitor_name', name: 'visitor_name' },
+                    { data: 'total_visitor', name: 'total_visitor' },
                     { data: 'destination_name', name: 'destination_name' },
                     { data: 'notes', name: 'notes' },
                     { data: 'total_price', name: 'total_price' },
-                    { data: 'payment_name', name: 'payment_name' },
-                    { data: 'payment_status', name: 'payment_status' },
                     { data: 'created_at', name: 'created_at' },
-                    { data: 'action', name: 'action', orderable: false, searchable: false }
                 ]
             });
 

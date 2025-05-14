@@ -48,7 +48,8 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
         // 🔹 Admin & Super Admin (role_id = 1,2) - Master Ticket
         Route::middleware([RoleMiddleware::class . ':1,2'])->group(function () {
             Route::get('/admin/online-transaction', [TransactionController::class, 'index'])->name('admin.transaction.index');
-            Route::get('/admin/online-transaction/data', [TransactionController::class, 'getData'])->name('c');
+            Route::get('/admin/online-transaction/data', [TransactionController::class, 'getData'])->name('admin.transaction.data');
+            Route::get('/admin/online-transaction/detail/{id}', [TransactionController::class, 'detail'])->name('admin.transaction.detail');
         });
 
         // 🔹 Admin & Super Admin (role_id = 1,2) - Master Ticket
