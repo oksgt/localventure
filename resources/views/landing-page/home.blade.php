@@ -422,7 +422,7 @@
     <script>
         document.addEventListener("DOMContentLoaded", function() {
 
-            var map = L.map('map').setView([{{ $randomDestination->latlon }}], 13);
+            map = L.map('map').setView([{{ $randomDestination->latlon }}], 13);
 
             L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 maxZoom: 19,

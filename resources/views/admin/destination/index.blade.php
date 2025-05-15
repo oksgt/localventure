@@ -116,7 +116,7 @@
                                                 <span class="text-muted" style="font-style: italic"><i
                                                         class="ti-info"></i>Drag the blue marker below to get the latitude
                                                     and longitude</span>
-                                                <div id="map" style="height: 300px; border-radius: 5px;"></div>
+                                                    <div id="map" style="height: 300px; border-radius: 5px;"></div>
                                             </div>
                                         </div>
                                     </form>
@@ -171,8 +171,7 @@
 @endsection
 
 @push('scripts')
-    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap4.min.js"></script>
+
     <script>
         $(document).ready(function() {
 
@@ -504,7 +503,16 @@
 
         });
 
-        function initializeMap(lat = -2.5, lon = 117.5) {
+        function initializeMap(lat = -0.789275, lon = 113.921327) {
+
+            // map = L.map('map').setView([lat, lon], 4);
+
+            // L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            //     maxZoom: 19,
+            //     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            // }).addTo(map);
+
+            // var marker = L.marker([lat, lon]).addTo(map);
 
             if (map && map instanceof L.Map) {
                 map.setView([lat, lon], 5); // If map exists, just update view
