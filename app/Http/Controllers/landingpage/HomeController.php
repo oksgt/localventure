@@ -10,10 +10,13 @@ class HomeController extends Controller
 {
     public function index()
     {
-        $destinations = Destination::with('images')->orderBy('id', 'asc')->get(); // ✅ Order by ID ascending
+        $destinations = Destination::with('images')->orderBy('id', 'asc')->get();
         $destinationNames = $destinations->pluck('name')->toArray();
 
-        return view('landing-page.home', compact('destinations', 'destinationNames'));
+        // ✅ Get 1 random destination
+        $randomDestination = Destination::with('images')->inRandomOrder()->first();
+
+        return view('landing-page.home', compact('destinations', 'destinationNames', 'randomDestination'));
     }
 
 
