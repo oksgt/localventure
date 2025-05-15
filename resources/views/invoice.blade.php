@@ -111,7 +111,9 @@
                                 <img src="data:image/png;base64,{{ $base64Image }}" style="width: 200px">
                             </td>
 
-                            <td>
+                            <td style="text-align: right">
+                                <img src="data:image/png;base64,{{ $qrcodeBase64 }}" style="width: 50px" id="qrcode-invoice">
+                                <br/>
                                 Invoice #: {{ $invoice_number }}<br />
                                 Created: {{ $created_date }}<br />
                                 @if ($payment_status == 'paid')

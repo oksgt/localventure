@@ -39,7 +39,10 @@
 	<nav class="site-nav">
 		<div class="container">
 			<div class="site-navigation">
-				<a href="index.html" class="logo m-0">LocalVenture <span class="text-primary">.</span></a>
+				{{-- <a href="index.html" class="logo m-0">LocalVenture <span class="text-primary">.</span></a> --}}
+                <div>
+                    <img src="{{ asset('storage/assets/image/logo-2.png') }}" alt="localVenture" style="width: 170px">
+                </div>
 
 				{{-- <ul class="js-clone-nav d-none d-lg-inline-block text-left site-menu float-right">
 					<li class="active"><a href="index.html">Home</a></li>
@@ -71,7 +74,6 @@
 			</div>
 		</div>
 	</nav>
-
 
 	<div class="hero">
 		<div class="container">
@@ -106,6 +108,9 @@
                                     <div class="row align-items-center">
                                         <div class="col-sm-12 col-md-6 mb-3 mb-lg-0 col-lg-4">
                                             <input type="submit" class="btn btn-primary btn-block mt-3" value="Cari Tiket">
+                                        </div>
+                                        <div class="col-sm-12 col-md-6 mb-3 mb-lg-0 col-lg-4">
+                                            <input type="button" class="btn btn-outline-primary btn-block mt-3" id="btn-confirm-booking" value="Konfirmasi">
                                         </div>
                                     </div>
 
@@ -196,7 +201,7 @@
 				<div class="row">
 					<div class="col-md-6 col-lg-4">
 						<div class="widget">
-							<h3 class="heading">About Tour</h3>
+							<h3 class="heading">About LocalVenture</h3>
 							<p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
 						</div>
 						<div class="widget">
@@ -216,32 +221,12 @@
 						<div class="widget">
 							<h3 class="heading">Pages</h3>
 							<ul class="links list-unstyled">
-								<li><a href="#">Blog</a></li>
-								<li><a href="#">About</a></li>
-								<li><a href="#">Contact</a></li>
+								<li><a href="#">Pesan Tiket</a></li>
+								<li><a href="#">Konfirmasi</a></li>
 							</ul>
 						</div>
 					</div>
-					<div class="col-md-6 col-lg-2">
-						<div class="widget">
-							<h3 class="heading">Resources</h3>
-							<ul class="links list-unstyled">
-								<li><a href="#">Blog</a></li>
-								<li><a href="#">About</a></li>
-								<li><a href="#">Contact</a></li>
-							</ul>
-						</div>
-					</div>
-					<div class="col-md-6 col-lg-4">
-						<div class="widget">
-							<h3 class="heading">Contact</h3>
-							<ul class="list-unstyled quick-info links">
-								<li class="email"><a href="#">mail@example.com</a></li>
-								<li class="phone"><a href="#">+1 222 212 3819</a></li>
-								<li class="address"><a href="#">43 Raymouth Rd. Baltemoer, London 3910</a></li>
-							</ul>
-						</div>
-					</div>
+
 				</div>
 			</div>
 		</div>
@@ -341,6 +326,10 @@
         document.querySelector('input[name="people_count"]').addEventListener('input', function() {
             this.value = this.value.replace(/[^0-9]/g, ''); // ✅ Removes non-numeric characters
             if (this.value < 1) this.value = 1; // ✅ Forces minimum value of 1
+        });
+
+        document.getElementById('btn-confirm-booking').addEventListener('click', function() {
+            window.location.href = "{{ route('konfirmasi') }}";
         });
     </script>
 </body>

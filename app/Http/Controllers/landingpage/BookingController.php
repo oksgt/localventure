@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\BankAccount;
 use App\Models\Destination;
+use App\Models\DestinationGallery;
 use App\Models\PaymentType;
 use App\Models\Pricing;
 use App\Models\TicketOrder;
@@ -14,6 +15,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Session;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class BookingController extends Controller
 {
@@ -467,14 +469,18 @@ class BookingController extends Controller
             $qris = DB::table('payment_type')
                 ->select('id', 'payment_type_name', 'payment_image')
                 ->where('id', 1)
-                ->whereNull('deleted_at') // ✅ Ensures it's not soft-deleted
-                ->first(); // ✅ Retrieves a single record
+                ->whereNull('deleted_at')
+                ->first();
 
             $imagePath = public_path('storage/' . $qris->payment_image);
             $base64ImageQRIS = $this->processImage($imagePath);
         }
 
-        $pdf = Pdf::loadView('invoice', $data, ['base64Image' => $base64Image, 'base64ImageQRIS' => $base64ImageQRIS]);
+        $qrcodeBase64 = base64_encode(QrCode::format('png')->size(200)->generate($ticketOrder->billing_number));
+
+        $pdf = Pdf::loadView('invoice', $data, ['base64Image' => $base64Image, 'base64ImageQRIS' => $base64ImageQRIS,
+        'qrcodeBase64' => $qrcodeBase64]);
+
         Pdf::setOption(['isRemoteEnabled' => true]);
         return $pdf->download('invoice.pdf',);
     }
@@ -495,5 +501,27 @@ class BookingController extends Controller
         fclose($handle);
 
         return base64_encode($contents);
+    }
+
+    public function konfirmasi(Request $request, $billing = null)
+    {
+        // ✅ Get transaction if billing is provided
+        $transaction = $billing
+            ? TicketOrder::where('billing_number', $billing)->first()
+            : null;
+
+        // ✅ Determine image source
+        if (!$transaction) {
+            // If billing is null, get random image from destination_gallery
+            $selectedImage = DestinationGallery::inRandomOrder()->first()->file_name ?? 'default.jpg';
+        } else {
+            // If billing exists, get destination image based on transaction's destination_id
+            $destination = Destination::where('id', $transaction->destination_id)->with('images')->first();
+            $selectedImage = $destination && $destination->images->isNotEmpty()
+                ? asset('storage/destination/' . basename($destination->images->first()->image_url))
+                : 'default.jpg';
+        }
+
+        return view('landing-page.konfirmasi', compact('transaction', 'selectedImage'));
     }
 }
