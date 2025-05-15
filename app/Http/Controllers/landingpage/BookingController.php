@@ -503,7 +503,7 @@ class BookingController extends Controller
         return base64_encode($contents);
     }
 
-    public function konfirmasi(Request $request, $billing = null)
+    public function cek(Request $request, $billing = null)
     {
         // ✅ Get transaction if billing is provided
         $transaction = $billing
@@ -522,6 +522,10 @@ class BookingController extends Controller
                 : 'default.jpg';
         }
 
-        return view('landing-page.konfirmasi', compact('transaction', 'selectedImage'));
+        $destination = Destination::with('images')
+        ->where('id', $transaction->destination_id)
+        ->orderBy('id', 'asc')->first();
+
+        return view('landing-page.cek', compact('transaction', 'selectedImage', 'billing', 'destination'));
     }
 }

@@ -43,7 +43,8 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 
     Route::get('/result-finish-payment/{id}', [BookingController::class, 'showFinishPayment'])->name('finish.payment.view');
 
-    Route::get('/konfirmasi/{billing?}', [BookingController::class, 'konfirmasi'])->name('konfirmasi');
+    Route::get('/cek/{billing?}', [BookingController::class, 'cek'])->name('cek');
+    Route::post('/payment-confirmation/store', [PaymentConfirmationController::class, 'store'])->name('payment.store');
 
     Route::middleware(['auth'])->group(function () {
 

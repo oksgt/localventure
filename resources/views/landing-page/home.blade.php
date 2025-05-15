@@ -27,6 +27,7 @@
     <link rel="stylesheet" href="{{ asset('landing-page') }}/css/style.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
         integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
     <title>Local Venture</title>
 </head>
@@ -121,10 +122,6 @@
                                             <input type="submit" class="btn btn-primary btn-block mt-3"
                                                 value="Cari Tiket">
                                         </div>
-                                        <div class="col-sm-12 col-md-6 mb-3 mb-lg-0 col-lg-4">
-                                            <input type="button" class="btn btn-outline-primary btn-block mt-3"
-                                                id="btn-confirm-booking" value="Konfirmasi">
-                                        </div>
                                     </div>
 
                                     <div id="error-message" class="row align-items-center d-none">
@@ -198,7 +195,6 @@
         </div>
     </div>
 
-
     <div class="py-5 cta-section">
         <div class="container">
             <div class="row text-center">
@@ -222,8 +218,9 @@
             <div class="row justify-content-between align-items-center">
 
                 <div class="col-lg-6">
-                    <div id="map" style="height: 400px; display: flex; align-items: center; justify-content: center; text-align: center;">
-                        @if($randomDestination->latlon)
+                    <div id="map" class="rounded-20"
+                        style="height: 400px; display: flex; align-items: center; justify-content: center; text-align: center;">
+                        @if ($randomDestination->latlon)
                             <script>
                                 document.addEventListener("DOMContentLoaded", function() {
                                     var map = L.map('map').setView([{{ $randomDestination->latlon }}], 13);
@@ -258,15 +255,28 @@
             <div class="row text-center">
                 <div class="col-md-12">
                     <h2 class="mb-2 text-white">Selesaikan pesanan tiketmu sekarang!</h2>
-                    <p class="mb-4 lead text-white text-white-opacity">Pastikan pembayaranmu sudah berhasil agar
+                    <p class="mb-4 lead text-white ">Pastikan pembayaranmu sudah berhasil agar
                         perjalanan wisatamu tetap lancar. Cek dan konfirmasi sekarang supaya semua siap untuk
                         petualangan seru!</p>
-                    <p class="mb-0">
-                        <a href="#" onclick="scrollToTop()"
-                            class="btn text-white btn-outline-white btn-md font-weight-bold">
-                            Pesan Sekarang
-                        </a>
-                    </p>
+                </div>
+                <div class="col-md-12 d-flex justify-content-center">
+                    <div class="form-group w-50">
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control" placeholder="Masukkan nomor invoice kamu"
+                                aria-label="Masukkan nomor invoice kamu" aria-describedby="basic-addon2">
+                            <div class="input-group-append">
+                                <button class="btn text-white" type="button">Cek</button>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-outline-primary mt-4 text-white" id="scan-btn"
+                            style="font-size: 20px">
+                            <i class="fa fa-qrcode"></i> Scan QR
+                        </button>
+
+                        <!-- ✅ Video Element to Show Camera -->
+                        <video id="preview" style="display: none; width: 100%;"></video>
+                    </div>
                 </div>
             </div>
         </div>
@@ -346,7 +356,7 @@
     <script src="{{ asset('landing-page') }}/js/daterangepicker.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-
+    <script type="text/javascript" src="https://rawgit.com/schmich/instascan-builds/master/instascan.min.js"></script>
     <script src="{{ asset('landing-page') }}/js/typed.js"></script>
     <script>
         $(function() {
@@ -413,10 +423,6 @@
             this.value = this.value.replace(/[^0-9]/g, ''); // ✅ Removes non-numeric characters
             if (this.value < 1) this.value = 1; // ✅ Forces minimum value of 1
         });
-
-        document.getElementById('btn-confirm-booking').addEventListener('click', function() {
-            window.location.href = "{{ route('konfirmasi') }}";
-        });
     </script>
 
     <script>
@@ -430,6 +436,36 @@
             }).addTo(map);
 
             var marker = L.marker([{{ $randomDestination->latlon }}]).addTo(map);
+        });
+    </script>
+
+    <script>
+        document.getElementById('scan-btn').addEventListener('click', function() {
+            let scanner = new Instascan.Scanner({
+                video: document.getElementById('preview'),
+                mirror: false
+            });
+
+            scanner.addListener('scan', function(content) {
+                console.log("QR Code Scanned:", content);
+                document.getElementById('qr-result').value = content; // ✅ Auto-fill input with scanned data
+                scanner.stop(); // ✅ Stop scanner after successful scan
+            });
+
+            Instascan.Camera.getCameras().then(function(cameras) {
+                if (cameras.length > 0) {
+                    let selectedCamera = cameras.length > 1 ? cameras[1] : cameras[
+                    0]; // ✅ Use the second camera if available (likely the back camera)
+                    document.getElementById('preview').style.display = 'block';
+                    scanner.start(selectedCamera);
+                } else {
+                    console.error('No cameras found.');
+                    alert('No camera detected. Please allow camera access.');
+                }
+            }).catch(function(e) {
+                console.error("Camera Error:", e);
+                alert("Error accessing camera: " + e.message);
+            });
         });
     </script>
 </body>
