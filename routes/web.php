@@ -7,6 +7,7 @@ use App\Http\Controllers\GuestTypeController;
 use App\Http\Controllers\HomeController as AdminHomeController;
 use App\Http\Controllers\landingpage\BookingController;
 use App\Http\Controllers\landingpage\HomeController;
+use App\Http\Controllers\landingpage\PaymentConfirmationController;
 use App\Http\Controllers\MappingUserController;
 use App\Http\Controllers\MasterTicketController;
 use App\Http\Controllers\PaymentOptionController;

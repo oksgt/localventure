@@ -94,8 +94,6 @@
         </div>
     </div>
 
-
-
     <div class="untree_co-section">
         <div class="container">
             <div class="row">
@@ -112,16 +110,67 @@
                         <li>Nama: {{ $transaction->visitor_name }}</li>
                         <li>Tanggal: {{ Carbon\Carbon::parse($transaction->visit_date)->format('d F Y') }}</li>
                         <li>Jumlah: {{ $transaction->total_visitor }} orang</li>
-                        <li>Status: <span class="badge badge-warning p-2">{{ ucwords($transaction->payment_status) }}</span></li>
+                        <li>Status: <span
+                                class="badge badge-warning p-2">{{ ucwords($transaction->payment_status) }}</span></li>
                     </ul>
 
                     <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                        <strong>Oups!</strong> Nampaknya kamu belum selesaikan pembayarannya ya? <br> Konfirmasi yuk kalau sudah :)
+                        <strong>Oups!</strong> Nampaknya kamu belum selesaikan pembayarannya ya? <br> Konfirmasi yuk
+                        kalau sudah :)
                     </div>
 
-                    <p><a href="#" class="btn btn-primary" data-toggle="modal" data-target="#paymentModal">Konfirmasi</a></p>
+                    <p><a href="#" class="btn btn-primary" data-toggle="modal"
+                            data-target="#paymentModal">Konfirmasi</a></p>
                 </div>
             </div>
+
+            @if ($confirmation->isNotEmpty())
+                <div class="row">
+                    <div class="col-12 table-responsive">
+                        <table class="table table-striped mt-4">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Nominal</th>
+                                    <th>Nama Bank</th>
+                                    <th>Nama Akun</th>
+                                    <th>Nomor Rekening</th>
+                                    <th>Bukti Transfer</th>
+                                    <th>Status</th>
+                                    <th>Tanggal Konfirmasi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($confirmation as $item)
+                                    @php
+                                        $badgeStatus = '<span class="badge badge-warning p-2">Oncheck</span>';
+                                        if ($item->status == 1) {
+                                            $badgeStatus = '<span class="badge badge-success p-2">Approved</span>';
+                                        } elseif ($item->status == 2) {
+                                            $badgeStatus = '<span class="badge badge-danger p-2">Rejected</span>';
+                                        }
+                                    @endphp
+
+                                    <tr>
+                                        <td>{{ $loop->iteration }}</td>
+                                        <td>{{ 'Rp ' . number_format($item->transfer_amount, 2, ',', '.') }}</td>
+                                        <td>{{ $item->bank_name }}</td>
+                                        <td>{{ $item->account_name }}</td>
+                                        <td>{{ $item->account_number }}</td>
+                                        <td><a href="#" data-toggle="modal" data-target="#imageModal"
+                                                data-image="{{ asset('storage/' . $item->image) }}">
+                                                Lihat Bukti
+                                            </a></td>
+                                        <td>{!! $badgeStatus !!}</td>
+                                        <td>{{ Carbon\Carbon::parse($item->created_at)->format('d F Y H:i:s') }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            @endif
+
         </div>
     </div>
 
@@ -200,46 +249,67 @@
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
                     </div>
                     <div class="modal-body">
-                        <input type="hidden" name="ticket_order_id" id="ticket_order_id" value="{{ $transaction->id }}"> <!-- ✅ Hidden -->
+                        <input type="hidden" name="ticket_order_id" id="ticket_order_id"
+                            value="{{ $transaction->id }}"> <!-- ✅ Hidden -->
 
                         <div class="form-group">
                             <label>Invoice Number</label>
-                            <input type="text" class="form-control" name="billing_number" id="billing_number" readonly required value="{{ $transaction->billing_number }}">
+                            <input type="text" class="form-control" name="billing_number" id="billing_number"
+                                readonly required value="{{ $transaction->billing_number }}">
                             <div class="invalid-feedback"></div>
                         </div>
 
                         <div class="form-group">
                             <label>Jumlah Transfer</label>
-                            <input type="text" class="form-control" name="transfer_amount" id="transfer_amount" required>
+                            <input type="text" class="form-control" name="transfer_amount" id="transfer_amount"
+                                required>
                             <div class="invalid-feedback"></div>
                         </div>
 
                         <div class="form-group">
                             <label>Nama Bank</label>
                             <input type="text" class="form-control" name="bank_name">
+                            <div class="invalid-feedback"></div>
                         </div>
 
                         <div class="form-group">
                             <label>Nama Rekening</label>
                             <input type="text" class="form-control" name="account_name">
+                            <div class="invalid-feedback"></div>
                         </div>
 
                         <div class="form-group">
                             <label>Nomor Rekening</label>
                             <input type="text" class="form-control" name="account_number">
+                            <div class="invalid-feedback"></div>
                         </div>
 
                         <div class="form-group">
                             <label>Bukti Transfer</label>
                             <input type="file" class="form-control" name="image" id="imageUpload">
-                            <img id="imagePreview" class="mt-2" style="max-width: 100%;">
                             <div class="invalid-feedback"></div>
+                            <img id="imagePreview" class="mt-2" style="max-width: 100%;">
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">Kirim</button>
+                        <button type="button" id="btn-kirim" class="btn btn-primary">Kirim</button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ✅ Bootstrap Modal -->
+    <div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Bukti Transfer</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body text-center">
+                    <img id="modalImage" src="" class="img-fluid" alt="Bukti Transfer">
+                </div>
             </div>
         </div>
     </div>
@@ -260,20 +330,21 @@
 
     <script>
         $(document).ready(function() {
-            $("#transfer_amount").inputmask({
-                alias: "currency",
-                prefix: "Rp ",
-                groupSeparator: ",",
-                radixPoint: ".",
-                digits: 2,
-                autoUnmask: true,
-                removeMaskOnSubmit: true
+
+            $('#imageModal').on('show.bs.modal', function(event) {
+                var button = $(event.relatedTarget); // Button that triggered the modal
+                var imageUrl = button.data('image'); // Get image URL from data attribute
+
+                $('#modalImage').attr('src', imageUrl); // Set modal image src
             });
 
 
-            $('#paymentForm').on('submit', function(e) {
+            $('#btn-kirim').on('click', function(e) {
                 e.preventDefault();
-                var formData = new FormData(this);
+
+                var formData = new FormData($('#paymentForm')[0]);
+
+                formData.append('_token', '{{ csrf_token() }}');
 
                 $.ajax({
                     type: "POST",
@@ -291,12 +362,15 @@
                         $('.invalid-feedback').text('');
 
                         $.each(errors, function(field, message) {
-                            $('#paymentForm [name="' + field + '"]').addClass('is-invalid');
-                            $('#paymentForm [name="' + field + '"]').next('.invalid-feedback').text(message);
+                            var input = $('#paymentForm [name="' + field + '"]');
+                            input.addClass('is-invalid');
+                            input.next('.invalid-feedback').text(message);
                         });
                     }
                 });
             });
+
+
 
             $('#imageUpload').on('change', function() {
                 let reader = new FileReader();

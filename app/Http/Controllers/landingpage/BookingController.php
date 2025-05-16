@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\BankAccount;
 use App\Models\Destination;
 use App\Models\DestinationGallery;
+use App\Models\PaymentConfirmation;
 use App\Models\PaymentType;
 use App\Models\Pricing;
 use App\Models\TicketOrder;
@@ -505,10 +506,19 @@ class BookingController extends Controller
 
     public function cek(Request $request, $billing = null)
     {
+
+        if($billing == null){
+            return redirect()->route('landing-page.home');
+        }
+
         // ✅ Get transaction if billing is provided
         $transaction = $billing
             ? TicketOrder::where('billing_number', $billing)->first()
             : null;
+
+        if (!$transaction) {
+            return redirect()->route('landing-page.home');
+        }
 
         // ✅ Determine image source
         if (!$transaction) {
@@ -526,6 +536,13 @@ class BookingController extends Controller
         ->where('id', $transaction->destination_id)
         ->orderBy('id', 'asc')->first();
 
-        return view('landing-page.cek', compact('transaction', 'selectedImage', 'billing', 'destination'));
+        $confirmation = null;
+
+        $confirmationData = PaymentConfirmation::where('billing_number', $billing)->get();
+        if($confirmationData){
+            $confirmation = $confirmationData;
+        }
+
+        return view('landing-page.cek', compact('transaction', 'selectedImage', 'billing', 'destination', 'confirmation'));
     }
 }

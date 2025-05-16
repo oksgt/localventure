@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('account_name');
             $table->string('account_number');
             $table->string('image'); // Store image path
+            $table->integer('status')->default(0);
             $table->softDeletes(); // Enables soft deletes
             $table->timestamps();
 
