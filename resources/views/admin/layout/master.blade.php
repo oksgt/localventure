@@ -4,6 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>LocalVenture</title>
     <link rel="stylesheet" href="{{ asset('admin-page') }}/vendors/feather/feather.css">
     <link rel="stylesheet" href="{{ asset('admin-page') }}/vendors/ti-icons/css/themify-icons.css">
@@ -16,6 +17,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css">
 
 
 </head>
@@ -44,8 +46,11 @@
     <script src="{{ asset('admin-page') }}/js/template.js"></script>
     <script src="{{ asset('admin-page') }}/js/settings.js"></script>
     <script src="{{ asset('admin-page') }}/js/todolist.js"></script>
-    <script src="{{ asset('admin-page') }}/js/dashboard.js"></script>
+    <script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.js"></script>
+    {{-- <script src="{{ asset('admin-page') }}/js/dashboard.js"></script> --}}
     <script src="{{ asset('admin-page') }}/js/Chart.roundedBarCharts.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     {{-- <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap4.min.js"></script> --}}
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"

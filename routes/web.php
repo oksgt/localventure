@@ -134,6 +134,7 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 
         Route::middleware([RoleMiddleware::class . ':1,2,3'])->group(function () {
             Route::get('/admin', [AdminHomeController::class, 'index'])->name('admin.home');
+            Route::get('/get-visitor-chart-data', [AdminHomeController::class, 'getVisitorDataChart'])->name('admin.visitor.chart.data');
         });
 
         Route::middleware([RoleMiddleware::class . ':1'])->group(function () {
