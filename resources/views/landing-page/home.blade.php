@@ -262,10 +262,10 @@
                 <div class="col-md-12 d-flex justify-content-center">
                     <div class="form-group w-50">
                         <div class="input-group mb-3">
-                            <input type="text" class="form-control" placeholder="Masukkan nomor invoice kamu"
-                                aria-label="Masukkan nomor invoice kamu" aria-describedby="basic-addon2">
+                            <input type="text" class="form-control" placeholder="Masukkan nomor invoice kamu" autocomplete="off"
+                                aria-label="Masukkan nomor invoice kamu" aria-describedby="basic-addon2" name="invoice_input" id="invoice_input">
                             <div class="input-group-append">
-                                <button class="btn text-white" type="button">Cek</button>
+                                <button class="btn text-white" type="button" id="cek-btn">Cek</button>
                             </div>
                         </div>
 
@@ -417,6 +417,19 @@
                     }
                 });
             });
+
+            $('#cek-btn').on('click', function() {
+                var invoiceValue = $('#invoice_input').val().trim(); // ✅ Get and trim input value
+
+                if (invoiceValue === '') {
+                    alert("Silakan masukkan nomor invoice terlebih dahulu!");
+                    return;
+                }
+
+                window.location.href = "{{ url('/cek/') }}/" + encodeURIComponent(invoiceValue); // ✅ Redirect with encoded value
+            });
+
+
         });
     </script>
     <script>
@@ -449,8 +462,12 @@
 
             scanner.addListener('scan', function(content) {
                 console.log("QR Code Scanned:", content);
-                document.getElementById('qr-result').value = content; // ✅ Auto-fill input with scanned data
+                document.getElementById('invoice_input').value = content; // ✅ Auto-fill input with scanned data
                 scanner.stop(); // ✅ Stop scanner after successful scan
+                document.getElementById('preview').style.display = 'none';
+                setTimeout(function() {
+                    window.location.href = "{{ url('/cek/') }}/" + encodeURIComponent(content);
+                }, 1000);
             });
 
             Instascan.Camera.getCameras().then(function(cameras) {
