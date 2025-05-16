@@ -110,8 +110,16 @@
                         <li>Nama: {{ $transaction->visitor_name }}</li>
                         <li>Tanggal: {{ Carbon\Carbon::parse($transaction->visit_date)->format('d F Y') }}</li>
                         <li>Jumlah: {{ $transaction->total_visitor }} orang</li>
-                        <li>Status: <span
-                                class="badge badge-warning p-2">{{ ucwords($transaction->payment_status) }}</span></li>
+                        <li>Status:
+                            @if ($transaction->payment_status == 'pending')
+                                <span class="badge badge-warning p-2">{{ ucwords($transaction->payment_status) }}</span>
+                            @elseif ($transaction->payment_status == 'paid')
+                                <span class="badge badge-success p-2">{{ ucwords($transaction->payment_status) }}</span>
+                            @else
+                                <span class="badge badge-danger p-2">{{ ucwords($transaction->payment_status) }}</span>
+                            @endif
+
+                        </li>
                     </ul>
 
                     <div class="alert alert-warning alert-dismissible fade show" role="alert">

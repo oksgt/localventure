@@ -30,7 +30,7 @@ return new class extends Migration
             $table->integer('total_visitor');
             $table->decimal('total_price', 10, 2);
             $table->string('billing_number', 50)->unique();
-            $table->enum('payment_status', ['pending', 'paid'])->default('pending');
+            $table->enum('payment_status', ['pending', 'paid', 'rejected'])->default('pending');
             $table->enum('purchasing_type', ['onsite', 'online']);
             $table->text('notes')->nullable();
             $table->timestamps();

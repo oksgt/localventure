@@ -100,7 +100,7 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-md-6 stretch-card transparent">
+                                    <div class="col-md-6 mb-4 stretch-card transparent">
                                         <div class="card card-inverse-info">
                                             <div class="card-body">
                                                 <p class="mb-4">Payment Channel</p>
@@ -111,14 +111,35 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-md-6 mb-4 mb-lg-0 stretch-card transparent">
-                                        <div class="card card-inverse-warning" style="cursor: pointer">
-                                            <div class="card-body">
-                                                <p class="mb-4">Payment Status</p>
-                                                <p class="fs-30 mb-2">{{ ucwords($transaction->payment_status) }}</p>
-                                                <p>Click to check </p>
+                                    <div class="col-md-6 mb-4 stretch-card transparent">
+
+                                        @if ($transaction->payment_status == 'pending')
+                                            <div class="card card-inverse-warning" style="cursor: pointer" id="showPayment" data-id="{{ $transaction->billing_number }}">
+                                                <div class="card-body">
+                                                    <p class="mb-4">Payment Status</p>
+                                                    <p class="fs-30 mb-2">{{ ucwords($transaction->payment_status) }}</p>
+                                                    <p>Click to check </p>
+                                                </div>
                                             </div>
-                                        </div>
+                                        @elseif ($transaction->payment_status == 'paid')
+                                            <div class="card card-inverse-success" style="cursor: pointer" id="showPayment" data-id="{{ $transaction->billing_number }}">
+                                                <div class="card-body">
+                                                    <p class="mb-4">Payment Status</p>
+                                                    <p class="fs-30 mb-2">{{ ucwords($transaction->payment_status) }}</p>
+                                                    <p>Click to check </p>
+                                                </div>
+                                            </div>
+                                        @else
+                                            <div class="card card-inverse-danger" style="cursor: pointer" id="showPayment" data-id="{{ $transaction->billing_number }}">
+                                                <div class="card-body">
+                                                    <p class="mb-4">Payment Status</p>
+                                                    <p class="fs-30 mb-2">{{ ucwords($transaction->payment_status) }}</p>
+                                                    <p>Click to check </p>
+                                                </div>
+                                            </div>
+                                        @endif
+
+
                                     </div>
                                 </div>
                             </div>
@@ -158,9 +179,179 @@
         </div>
 
     </div>
+
+    <!-- ✅ Modal -->
+    <div class="modal fade" id="paymentModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Payment Confirmation Details</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th>Transfer Amount</th>
+                                    <th>Bank Name</th>
+                                    <th>Account Name</th>
+                                    <th>Account Number</th>
+                                    <th>Proof of Payment</th>
+                                    <th>Status</th>
+                                    <th>Created At</th>
+
+                                </tr>
+                            </thead>
+                            <tbody id="modalContent">
+                                <!-- ✅ AJAX will populate this dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ✅ Image Modal -->
+    <div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Proof of Payment</h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body text-center">
+                <div class="row">
+                    <div class="col-12 col-md-6">
+                        <img id="modalImage" src="" class="img-fluid" alt="Bukti Transfer">
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <form method="post">
+                            <input type="hidden" id="paymentId"> <!-- ✅ Hidden input for Payment ID -->
+
+                            <div class="form-group">
+                                <label for="status">Status</label>
+                                <select name="status" id="status" class="custom-select">
+                                    <option value="">-- Select Status --</option>
+                                    <option value="0">Pending</option>
+                                    <option value="1">Approve</option>
+                                    <option value="2">Reject</option>
+                                </select>
+                            </div>
+
+                            <button type="button" class="btn btn-primary btn-block" id="btnApprovePayment">Submit</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 
 @push('scripts')
     <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap4.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+
+            // ✅ Handle image modal
+            $('#imageModal').on('show.bs.modal', function(event) {
+                var button = $(event.relatedTarget);
+                var imageUrl = button.data('image');
+                var paymentId = button.data('id'); // ✅ Grab payment ID
+
+                $('#modalImage').attr('src', imageUrl);
+                $('#paymentId').val(paymentId); // ✅ Set hidden payment ID
+            });
+
+            // ✅ Handle status update submission
+            $('#btnApprovePayment').on('click', function() {
+                var paymentId = $('#paymentId').val();
+                var newStatus = $('#status').val();
+
+                if (newStatus === '') {
+                    Swal.fire({
+                        text: "Silakan pilih status!",
+                        confirmButtonText: "OK",
+                    });
+                    return;
+                }
+
+                $.ajax({
+                    url: "{{ route('admin.payment.update') }}",
+                    type: "POST",
+                    data: { id: paymentId, status: newStatus, _token: "{{ csrf_token() }}" },
+                    success: function(response) {
+                        Swal.fire({
+                            text: response.message,
+                            confirmButtonText: "OK",
+                        }).then(() => {
+                            location.reload(); // ✅ Refresh page after success
+                        });
+                    },
+                    error: function(xhr) {
+                        Swal.fire({
+                            text: "Terjadi kesalahan. Silakan coba lagi!",
+                            confirmButtonText: "OK",
+                        });
+                    }
+                });
+            });
+
+
+
+
+            $('#showPayment').on('click', function() {
+                var billingNumber = $(this).data('id');
+
+                // ✅ Show loading spinner
+                $('#modalContent').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-2x"></i></div>');
+                $('#paymentModal').modal('show');
+
+                $.ajax({
+                    url: "{{ route('admin.payment.show') }}",
+                    type: "POST",
+                    data: { billing_number: billingNumber, _token: "{{ csrf_token() }}" },
+                    success: function(response) {
+                        var payments = response.data;
+                        var rows = '';
+
+                        // ✅ Loop through multiple records
+                        payments.forEach(function(payment) {
+                            var statusBadge = '<span class="badge badge-warning p-2">Oncheck</span>';
+                            if (payment.status == 1) statusBadge = '<span class="badge badge-success p-2">Approved</span>';
+                            if (payment.status == 2) statusBadge = '<span class="badge badge-danger p-2">Rejected</span>';
+
+                            var imageUrl = payment.image ? "{{ asset('storage') }}/" + payment.image : '#';
+
+                            rows += `
+                                <tr>
+                                    <td>Rp ${new Intl.NumberFormat('id-ID').format(payment.transfer_amount)}</td>
+                                    <td>${payment.bank_name ?? '-'}</td>
+                                    <td>${payment.account_name ?? '-'}</td>
+                                    <td>${payment.account_number ?? '-'}</td>
+                                    <td>
+                                        ${payment.image
+                                            ? `<a href="#" data-toggle="modal" data-target="#imageModal" data-image="${imageUrl}" data-id="${payment.id}">
+                                                <img src="${imageUrl}" class="img-fluid" style="max-width: 100px;">
+                                            </a>`
+                                            : '-'}
+                                    </td>
+                                    <td>${statusBadge}</td>
+                                    <td>${new Date(payment.created_at).toLocaleString()}</td>
+                                </tr>`;
+                        });
+
+                        $('#modalContent').html(rows);
+                    },
+                    error: function() {
+                        $('#modalContent').html('<p class="text-center text-danger">Error loading data. Please try again.</p>');
+                    }
+                });
+            });
+        });
+    </script>
 @endpush

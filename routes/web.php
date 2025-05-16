@@ -54,6 +54,8 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
             Route::get('/admin/online-transaction', [TransactionController::class, 'index'])->name('admin.transaction.index');
             Route::get('/admin/online-transaction/data', [TransactionController::class, 'getData'])->name('admin.transaction.data');
             Route::get('/admin/online-transaction/detail/{id}', [TransactionController::class, 'detail'])->name('admin.transaction.detail');
+            Route::post('/admin/payment-confirmation', [PaymentConfirmationController::class, 'show'])->name('admin.payment.show');
+            Route::post('/admin/payment-update', [PaymentConfirmationController::class, 'updatePayment'])->name('admin.payment.update');
         });
 
         // 🔹 Admin & Super Admin (role_id = 1,2) - Master Ticket
