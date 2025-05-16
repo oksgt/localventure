@@ -153,6 +153,7 @@
                                             <tr>
                                                 <th>#</th>
                                                 <th>Ticket Code</th>
+                                                <th>Visit Date</th>
                                                 <th>Guest Type</th>
                                                 <th>Day Type</th>
                                                 <th>Amount</th>
@@ -163,6 +164,7 @@
                                                 <tr></tr>
                                                 <td>{{ $loop->iteration }}</td>
                                                 <td>{{ $item->ticket_code }}</td>
+                                                <td>{{ \Carbon\Carbon::parse($item->visit_date)->format('d F Y') }}</td>
                                                 <td>{{ $item->guestType->name }}</td>
                                                 <td>{{ $item->day_type }}</td>
                                                 <td>{{ 'Rp ' . number_format($item->total_price, 2, ',', '.') }}</td>
