@@ -42,23 +42,14 @@
                                     <span class="lnr lnr-chevron-down"></span>
                                     <span class="placeholder">Destination:</span>
                                 </div>
-                                <ul id="selectDestination" class="dropdown" name="selectDestination"
-                                    id="selectDestination">
-                                    @foreach ($destinations as $destination)
-                                        <li rel="{{ $destination->name }}" data-id="{{ $destination->id }}"
-                                            data-image="{{ asset('storage/destination/' . basename($destination->images->first()->image_url)) }}"
-                                            class="destination-item">
-                                            {{ $destination->name }}
-                                        </li>
-                                    @endforeach
-                                </ul>
+
                             </div>
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-holder w-100">
                             <input type="text" class="form-control datepicker-here pl-85" data-language='en'
-                                data-date-format="dd - M - yyyy" id="dp1" name="date">
+                                data-date-format="dd - M - yyyy" id="dp1" name="date" readonly>
                             <span class="lnr lnr-chevron-down"></span>
                             <span class="placeholder">Date:</span>
                         </div>
@@ -66,7 +57,7 @@
                     <div class="form-row">
                         <div class="form-holder w-100">
                             <input type="text" class="form-control pl-85" value="{{ $searchData['people_count'] }}"
-                                name="people_count">
+                                name="people_count" readonly>
                             <span class="placeholder">People:</span>
                         </div>
                     </div>

@@ -104,6 +104,7 @@ class BookingController extends Controller
 
         $paymentTypes = PaymentType::where('status', 1)
             ->whereNull('deleted_at') // ✅ Ensure it's not deleted
+            ->whereNot('payment_type_name', 'Cash')
             ->get(['id', 'payment_type_name as name']);
 
         $paymentTypesWithImage = PaymentType::where('status', 1)
