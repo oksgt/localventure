@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Destination;
+use App\Models\UserMapping;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -10,9 +11,18 @@ use Illuminate\Support\Facades\DB;
 
 class HomeController extends Controller
 {
-    public function index() {
-        $destinations = Destination::all();
-        return view('admin.home.index', compact('destinations'));
+    public function index()
+    {
+
+        if (session('role_id') == 1) {
+            $destinations = Destination::all();
+            return view('admin.home.index', compact('destinations'));
+        } else {
+
+            $userMapping = UserMapping::where('user_id', Auth::id())->first();
+            $destinations = Destination::where('id', $userMapping->destination_id)->get();
+            return view('admin.home.index_operator', compact('destinations'));
+        }
     }
 
     public function getVisitorDataChart(Request $request)
@@ -58,8 +68,8 @@ class HomeController extends Controller
         $result['visitorDetail'] = $dataDetail;
 
         $data = $data->groupBy('tod.visit_date', 'd.name', 'to2.destination_id')
-                    ->orderBy('tod.visit_date')
-                    ->get();
+            ->orderBy('tod.visit_date')
+            ->get();
 
         $result['visitorCount'] = $data;
 
@@ -76,16 +86,23 @@ class HomeController extends Controller
         $result['selectedPeriod'] = $startDate->format('d F Y') . ' - ' . $endDate->format('d F Y');
 
         $PurchasingSalesPieChart = DB::table('ticket_orders as to2')
-        ->select('to2.destination_id', 'to2.purchasing_type', DB::raw('SUM(to2.total_price) AS total'))
-        ->where('to2.payment_status', 'paid')
-        ->whereBetween('to2.visit_date', [$start, $end])
-        ->where('to2.destination_id', $destinationId)
-        ->groupBy('to2.destination_id', 'to2.purchasing_type') // Include destination_id in GROUP BY
-        ->get();
+            ->select('to2.destination_id', 'to2.purchasing_type', DB::raw('SUM(to2.total_price) AS total'))
+            ->where('to2.payment_status', 'paid')
+            ->whereBetween('to2.visit_date', [$start, $end])
+            ->where('to2.destination_id', $destinationId)
+            ->groupBy('to2.destination_id', 'to2.purchasing_type') // Include destination_id in GROUP BY
+            ->get();
 
         $result['PurchasingSalesPieChart']['data'] = $PurchasingSalesPieChart;
 
         return response()->json($result);
     }
 
+    public function ticketPurchase()
+    {
+        $userMapping = UserMapping::where('user_id', Auth::id())->first();
+
+        $destinations = Destination::with('images')->where('id', $userMapping->destination_id)->get();
+        return view('admin.home.ticket_purchase', compact('destinations'));
+    }
 }

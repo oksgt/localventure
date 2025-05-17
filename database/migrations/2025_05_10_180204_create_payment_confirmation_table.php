@@ -21,6 +21,8 @@ return new class extends Migration
             $table->string('account_number');
             $table->string('image'); // Store image path
             $table->integer('status')->default(0);
+            $table->integer('status_updated_by');
+            $table->timestamp('status_updated_at');
             $table->softDeletes(); // Enables soft deletes
             $table->timestamps();
 

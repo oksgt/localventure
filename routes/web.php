@@ -154,5 +154,9 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
             // Route::get('/admin/master-ticket/edit/{id}', [MasterTicketController::class, 'edit'])->name('admin.master-ticket.edit');
         });
 
+        Route::middleware([RoleMiddleware::class . ':3'])->group(function () {
+            Route::get('/ticket-purchase', [AdminHomeController::class, 'ticketPurchase'])->name('ticket-purchase.index');
+        });
+
         Route::post('/logout', [AuthController::class, 'logout'])->name('logout.process');
     });
