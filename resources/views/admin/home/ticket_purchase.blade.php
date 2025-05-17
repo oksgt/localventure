@@ -27,7 +27,7 @@
 
             @foreach ($destinations as $item)
                 <div class="col-md-6 grid-margin stretch-card">
-                    <a href="YOUR_URL_HERE" class="card tale-bg" style="text-decoration: none; color: inherit;">
+                    <a href="{{ route('form-ticket-purchase.index', ['destinationId' => $item->id]) }}" class="card tale-bg" style="text-decoration: none; color: inherit;">
                         <div class="card-people mt-auto pt-0">
                             <img src="{{ asset('storage/destination/' . basename($item->images->first()->image_url)) }}" alt="">
                             <div class="weather-info">

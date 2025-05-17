@@ -156,6 +156,7 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 
         Route::middleware([RoleMiddleware::class . ':3'])->group(function () {
             Route::get('/ticket-purchase', [AdminHomeController::class, 'ticketPurchase'])->name('ticket-purchase.index');
+            Route::get('/form-ticket-purchase/{destinationId}', [AdminHomeController::class, 'formTicketPurchase'])->name('form-ticket-purchase.index');
         });
 
         Route::post('/logout', [AuthController::class, 'logout'])->name('logout.process');

@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Destination;
+use App\Models\Pricing;
 use App\Models\UserMapping;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Casts\Json;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -104,5 +106,51 @@ class HomeController extends Controller
 
         $destinations = Destination::with('images')->where('id', $userMapping->destination_id)->get();
         return view('admin.home.ticket_purchase', compact('destinations'));
+    }
+
+    public function formTicketPurchase($destinationId){
+
+        $userMapping = UserMapping::where('user_id', Auth::id())->where('destination_id', $destinationId)->first();
+
+        if(!$userMapping){
+            abort(404);
+        }
+
+        $today = Carbon::today();
+        $currentDayType = $today->isWeekend() ? 'weekend' : 'weekday';
+
+        $destinations = Destination::with('images')->where('id', $userMapping->destination_id)->first();
+
+        $currentTicketPriceList = Pricing::
+        select('pricing.*', 'gt.name as guest_name')
+        ->join('guest_types as gt', 'gt.id', '=', 'pricing.guest_type_id')
+        ->where('destination_id', $userMapping->destination_id)->where('day_type', $currentDayType)->get()->toArray();
+
+        $allTicketPriceList = Pricing::where('destination_id', $userMapping->destination_id)->get()->toArray();
+
+        $formattedPrices = [];
+
+        foreach ($allTicketPriceList as $ticket) {
+            $dayType = $ticket['day_type'];
+            $guestTypeMap = [
+                1 => 'anak',
+                2 => 'dewasa',
+                3 => 'mancanegara',
+            ];
+
+            // ✅ Initialize the day type if not set
+            if (!isset($formattedPrices[$dayType])) {
+                $formattedPrices[$dayType] = [];
+            }
+
+            // ✅ Assign final_price to the correct guest type
+            $formattedPrices[$dayType][$guestTypeMap[$ticket['guest_type_id']]] = (int) $ticket['final_price'];
+        }
+
+        $formattedCurrentPrices = Json::encode($currentTicketPriceList);
+
+        // dd($formattedCurrentPrices);
+
+        return view('admin.home.form_ticket_purchase', compact('destinations', 'currentDayType', 'formattedCurrentPrices', 'formattedPrices'));
     }
 }
