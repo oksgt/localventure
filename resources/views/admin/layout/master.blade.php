@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="{{ asset('admin-page') }}/vendors/feather/feather.css">
     <link rel="stylesheet" href="{{ asset('admin-page') }}/vendors/ti-icons/css/themify-icons.css">
     <link rel="stylesheet" href="{{ asset('admin-page') }}/vendors/css/vendor.bundle.base.css">
+    <link rel="stylesheet" href="{{ asset('admin-page') }}/vendors/select2/select2.min.css">
     <link rel="stylesheet" href="{{ asset('admin-page') }}/vendors/datatables.net-bs4/dataTables.bootstrap4.css">
     <link rel="stylesheet" type="text/css" href="{{ asset('admin-page') }}/js/select.dataTables.min.css">
     <link rel="stylesheet" href="{{ asset('admin-page') }}/css/vertical-layout-light/style.css">
