@@ -141,7 +141,7 @@
                                                             style="display: block; height: 195px; width: 390px;"
                                                             width="780" height="390"
                                                             class="chartjs-render-monitor"></canvas>
-                                                        <div id="north-america-legend">
+                                                        <div id="pieChartLegend">
                                                             <div class="report-chart">
                                                                 <div
                                                                     class="d-flex justify-content-between mx-4 mx-xl-5 mt-3">
@@ -324,6 +324,28 @@
                                     },
 
                                 },
+                            });
+
+
+                            // Clear existing content
+                            const chartContainer = document.getElementById('pieChartLegend');
+                            chartContainer.innerHTML = '';
+
+                            response.PurchasingSalesPieChart.data.forEach(item => {
+                                const salesType = item.purchasing_type.charAt(0).toUpperCase() + item.purchasing_type.slice(1);
+                                const color = salesType === 'Online' ? '#4b49ac' : '#FFC100'; // Different colors for types
+
+                                const salesItemHTML = `
+                                    <div class="d-flex justify-content-between mx-4 mx-xl-5 mt-3">
+                                        <div class="d-flex align-items-center">
+                                            <div class="mr-3" style="width:20px; height:20px; border-radius: 50%; background-color: ${color};"></div>
+                                            <p class="mb-0">${salesType} sales</p>
+                                        </div>
+                                        <p class="mb-0">Rp. ${parseFloat(item.total).toLocaleString()}</p>
+                                    </div>
+                                `;
+
+                                chartContainer.insertAdjacentHTML('beforeend', salesItemHTML);
                             });
                         },
                         error: function(xhr, status, error) {
