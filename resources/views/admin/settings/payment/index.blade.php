@@ -64,12 +64,6 @@
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
                     </div>
                     <div class="modal-body">
-                        <!-- Payment Type Name -->
-                        <div class="form-group">
-                            <label for="paymentTypeName">Payment Type Name</label>
-                            <input type="text" class="form-control" id="paymentTypeName" name="payment_type_name">
-                            <small class="form-text text-danger" id="payment_type_name_error"></small>
-                        </div>
                         <!-- Status -->
                         <div class="form-group">
                             <label for="status">Status</label>
@@ -111,13 +105,6 @@
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
                     </div>
                     <div class="modal-body">
-                        <!-- Payment Type Name -->
-                        <div class="form-group">
-                            <label for="editPaymentTypeName">Payment Type Name</label>
-                            <input type="text" class="form-control" id="editPaymentTypeName"
-                                name="payment_type_name">
-                            <small class="form-text text-danger" id="edit_payment_type_name_error"></small>
-                        </div>
                         <!-- Status -->
                         <div class="form-group">
                             <label for="editStatus">Status</label>
@@ -128,12 +115,8 @@
                             <small class="form-text text-danger" id="edit_status_error"></small>
                         </div>
                         <!-- Payment Image -->
-                        <div class="form-group">
-                            <label for="editPaymentImage">Payment Image</label>
-                            <input type="file" class="form-control-file" id="editPaymentImage" name="payment_image">
-                            <img id="editImagePreview" src="#" alt="Preview"
-                                style="display: none; width: 100px; margin-top: 10px;">
-                            <small class="form-text text-danger" id="edit_payment_image_error"></small>
+                        <div class="form-group" id="editPaymentImageContainer">
+
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -266,8 +249,20 @@
                     url: "{{ route('admin.payment-option.edit', ':id') }}".replace(':id', id),
                     type: "GET",
                     success: function(data) {
+                        $('#editPaymentImageContainer').html("");
+                        if(data.id == 1){
+                            const paymentImageHTML = `
+                                <label for="editPaymentImage">Payment Image</label>
+                                <input type="file" class="form-control-file" id="editPaymentImage" name="payment_image">
+                                <img id="editImagePreview" src="#" alt="Preview" style="display: none; width: 100px; margin-top: 10px;">
+                                <small class="form-text text-danger" id="edit_payment_image_error"></small>
+                            `;
+
+                            // Append the HTML to the container
+                            $('#editPaymentImageContainer').html(paymentImageHTML);
+                        }
+
                         // ✅ Populate form fields
-                        $('#editPaymentTypeName').val(data.payment_type_name);
                         $('#editStatus').val(data.status);
                         $('#editPaymentTypeId').val(data.id);
 
