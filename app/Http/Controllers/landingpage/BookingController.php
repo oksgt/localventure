@@ -331,7 +331,6 @@ class BookingController extends Controller
                 'message' => 'Booking created successfully!',
                 'data' => $result,
             ], 200);
-
         } catch (\Exception $e) {
             DB::rollBack(); // ❌ Rollback on error
             return response()->json([
@@ -480,8 +479,11 @@ class BookingController extends Controller
 
         $qrcodeBase64 = base64_encode(QrCode::format('png')->size(200)->generate($ticketOrder->billing_number));
 
-        $pdf = Pdf::loadView('invoice', $data, ['base64Image' => $base64Image, 'base64ImageQRIS' => $base64ImageQRIS,
-        'qrcodeBase64' => $qrcodeBase64]);
+        $pdf = Pdf::loadView('invoice', $data, [
+            'base64Image' => $base64Image,
+            'base64ImageQRIS' => $base64ImageQRIS,
+            'qrcodeBase64' => $qrcodeBase64
+        ]);
 
         Pdf::setOption(['isRemoteEnabled' => true]);
         return $pdf->download('invoice.pdf',);
@@ -508,7 +510,7 @@ class BookingController extends Controller
     public function cek(Request $request, $billing = null)
     {
 
-        if($billing == null){
+        if ($billing == null) {
             return redirect()->route('landing-page.home');
         }
 
@@ -534,13 +536,13 @@ class BookingController extends Controller
         }
 
         $destination = Destination::with('images')
-        ->where('id', $transaction->destination_id)
-        ->orderBy('id', 'asc')->first();
+            ->where('id', $transaction->destination_id)
+            ->orderBy('id', 'asc')->first();
 
         $confirmation = null;
 
         $confirmationData = PaymentConfirmation::where('billing_number', $billing)->get();
-        if($confirmationData){
+        if ($confirmationData) {
             $confirmation = $confirmationData;
         }
 
@@ -550,7 +552,103 @@ class BookingController extends Controller
 
     public function storeTicketPurchase(Request $request)
     {
-        return response()->json($request->all(), 200);
-    }
+        $validatedData = $request->validate([
+            'destination_id' => 'required|exists:destinations,id',
+            'total_qty' => 'required|numeric|min:1',
+            'total_price' => 'required|numeric|min:0',
+        ]);
 
+        try {
+            DB::beginTransaction(); // ✅ Ensures atomicity
+
+            $formattedDate = Carbon::now()->format('Ymd');
+
+            $object = [
+                'destination_id' => $validatedData['destination_id'],
+                'visitor_type' => ($validatedData['total_qty'] > 1) ? 'group' : 'individual',
+                'visit_date' => $formattedDate,
+                'total_visitor' => $validatedData['total_qty'],
+                'total_price' => $validatedData['total_price'],
+                'billing_number' => $this->generateInvoiceNumber($formattedDate),
+                'payment_status' => 'paid',
+                'purchasing_type' => 'onsite',
+                'notes' => null,
+                'created_by' => auth()->id(),
+                'visitor_male_count' => 0,
+                'visitor_female_count' => 0,
+                'payment_type_id' => 4,
+            ];
+
+            // ✅ Create Ticket Order
+            $ticketOrder = TicketOrder::create($object);
+
+            // ✅ Define Guest Types
+            $guestTypes = ['anak-anak', 'dewasa', 'mancanegara'];
+
+            // ✅ Determine day type
+            $dayType = (Carbon::parse($formattedDate)->isWeekend()) ? 'weekend' : 'weekday';
+
+            foreach ($guestTypes as $guestTypeName) {
+                // Access quantity and price from the request data
+                $qty = $validatedData['ticket_details'][$guestTypeName]['qty'] ?? 0;
+                $price = $validatedData['ticket_details'][$guestTypeName]['price'] ?? 0;
+
+                $guestTypeId = DB::table('guest_types')->where('name', $guestTypeName)->value('id');
+
+                if ($qty > 0) {
+                    // ✅ Retrieve Guest Type ID
+                    $guestTypeId = DB::table('guest_types')->where('name', $guestTypeName)->value('id');
+
+                    // ✅ Determine day type
+                    $dayType = (Carbon::parse($formattedDate)->isWeekend()) ? 'weekend' : 'weekday';
+
+                    // ✅ Retrieve pricing
+                    $pricing = DB::table('pricing')
+                        ->where('destination_id', $validatedData['destination_id'])
+                        ->where('guest_type_id', $guestTypeId)
+                        ->where('day_type', $dayType)
+                        ->first();
+
+
+                    if ($pricing) {
+                        $insurancePrice = $pricing->insurance_price ?? 0;
+                        $basePrice = $pricing->base_price;
+                        $totalPrice = $insurancePrice + $basePrice;
+
+                        // ✅ Store each guest type individually
+                        for ($i = 0; $i < $qty; $i++) {
+                            TicketOrderDetail::create([
+                                'ticket_code' => $this->generateTicketCode(), // ✅ Generate unique ticket code
+                                'order_id' => $ticketOrder->id,
+                                'guest_type_id' => $guestTypeId,
+                                'day_type' => $dayType,
+                                'visit_date' => $formattedDate,
+                                'insurance_price' => $insurancePrice,
+                                'base_price' => $basePrice,
+                                'total_price' => $totalPrice,
+                                'qty' => 1, // ✅ Always store individual tickets per row
+                                'created_by' => auth()->id(),
+                            ]);
+                        }
+                    }
+                }
+            }
+
+            DB::commit(); // ✅ Confirm transaction
+
+
+            // dd($result);
+
+            return response()->json([
+                'message' => 'Booking created successfully!',
+                'data' => [],
+            ], 200);
+        } catch (\Exception $e) {
+            DB::rollBack(); // ❌ Rollback on error
+            return response()->json([
+                'message' => 'Error processing booking!',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

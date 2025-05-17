@@ -202,6 +202,15 @@
                     var totalQty = parseInt($('#total-quantity').text()) || 0;
                     var totalPrice = parseInt($('#total-price').text().replace(/[^\d]/g, '')) || 0;
 
+                    if (totalQty === 0) {
+                        Swal.fire({
+                            text: "Silakan pilih setidaknya satu tiket sebelum membeli!",
+                            icon: "warning",
+                            confirmButtonText: "OK",
+                        });
+                        return;
+                    }
+
                     var ticketDetails = {};
 
                     ['anak-anak', 'dewasa', 'mancanegara'].forEach(guestType => {
@@ -221,18 +230,27 @@
                             ticket_details: ticketDetails,
                             _token: "{{ csrf_token() }}"
                         },
+                        beforeSend: function() {
+                            $('#btn-purchase-tickets').prop('disabled', true).text('Processing...');
+                        },
                         success: function(response) {
-                            console.log(response); // ✅ Just logging the response for now
                             Swal.fire({
                                 text: "Purchase successful!",
+                                icon: "success",
                                 confirmButtonText: "OK",
+                            }).then(() => {
+                                window.location.reload();
                             });
                         },
                         error: function(xhr) {
                             Swal.fire({
                                 text: "Error processing purchase. Please try again!",
+                                icon: "error",
                                 confirmButtonText: "OK",
                             });
+                        },
+                        complete: function() {
+                            $('#btn-purchase-tickets').prop('disabled', false).text('Purchase');
                         }
                     });
                 });
