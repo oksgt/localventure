@@ -32,13 +32,16 @@
                         <!-- ✅ Ticket Pricing Table -->
 
                         <h3 class="mb-3 text-center">{{ $destinations->name }}</h3>
+                        <input type="hidden" name="destination_id" id="destination_id" value="{{ $destinations->id }}">
 
                         @foreach ($formattedPrices as $dayType => $prices)
-                            <div class="alert alert-{{ $dayType == $currentDayType ? 'success' : 'secondary' }}" role="alert">
+                            <div class="alert alert-{{ $dayType == $currentDayType ? 'success' : 'secondary' }}"
+                                role="alert">
                                 <h4 class="alert-heading">{{ ucfirst($dayType) }}</h4>
                                 <ul class="list-group list-group-flush">
                                     @foreach ($prices as $guestType => $price)
-                                        <li class="list-group-item">{{ ucfirst($guestType) }} : Rp. {{ number_format($price, 0, ',', '.') }}</li>
+                                        <li class="list-group-item">{{ ucfirst($guestType) }} : Rp.
+                                            {{ number_format($price, 0, ',', '.') }}</li>
                                     @endforeach
                                 </ul>
                             </div>
@@ -50,30 +53,39 @@
                                 <div class="form-group">
                                     <label for="anak">Anak-anak:</label>
                                     <div class="input-group">
-                                        <input type="text" class="form-control" placeholder="" value="0" readonly id="anak-anak" autocomplete="off">
+                                        <input type="text" class="form-control" placeholder="" value="0" readonly
+                                            id="anak-anak" autocomplete="off">
                                         <div class="input-group-append" id="button-addon4">
-                                            <button class="btn btn-primary" type="button"><i class="fa fa-arrow-up"></i></button>
-                                            <button class="btn btn-primary" type="button"><i class="fa fa-arrow-down"></i></button>
+                                            <button class="btn btn-primary" type="button"><i
+                                                    class="fa fa-arrow-up"></i></button>
+                                            <button class="btn btn-primary" type="button"><i
+                                                    class="fa fa-arrow-down"></i></button>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label for="dewasa">Dewasa:</label>
                                     <div class="input-group">
-                                        <input type="text" class="form-control" placeholder="" value="0" readonly id="dewasa" autocomplete="off">
+                                        <input type="text" class="form-control" placeholder="" value="0" readonly
+                                            id="dewasa" autocomplete="off">
                                         <div class="input-group-append" id="button-addon4">
-                                            <button class="btn btn-primary" type="button"><i class="fa fa-arrow-up"></i></button>
-                                            <button class="btn btn-primary" type="button"><i class="fa fa-arrow-down"></i></button>
+                                            <button class="btn btn-primary" type="button"><i
+                                                    class="fa fa-arrow-up"></i></button>
+                                            <button class="btn btn-primary" type="button"><i
+                                                    class="fa fa-arrow-down"></i></button>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label for="mancanegara">Mancanegara:</label>
                                     <div class="input-group">
-                                        <input type="text" class="form-control" placeholder="" value="0" readonly id="mancanegara" autocomplete="off">
+                                        <input type="text" class="form-control" placeholder="" value="0" readonly
+                                            id="mancanegara" autocomplete="off">
                                         <div class="input-group-append" id="button-addon4">
-                                            <button class="btn btn-primary" type="button"><i class="fa fa-arrow-up"></i></button>
-                                            <button class="btn btn-primary" type="button"><i class="fa fa-arrow-down"></i></button>
+                                            <button class="btn btn-primary" type="button"><i
+                                                    class="fa fa-arrow-up"></i></button>
+                                            <button class="btn btn-primary" type="button"><i
+                                                    class="fa fa-arrow-down"></i></button>
                                         </div>
                                     </div>
                                 </div>
@@ -131,16 +143,12 @@
             console.log(ticketPrices); // ✅ Should display an array of objects
         </script>
 
-
         <script>
             $(document).ready(function() {
-
-                const currentDay = "{{ $currentDayType }}";
-
                 $('.fa-arrow-up, .fa-arrow-down').parent().on('click', function() {
                     var inputField = $(this).closest('.input-group').find('input');
                     var currentValue = parseInt(inputField.val()) || 0;
-                    var guestType = inputField.attr('id'); // ✅ Get related guest name
+                    var guestType = inputField.attr('id'); // ✅ Ensure guest type matches JSON structure
 
                     if ($(this).find('i').hasClass('fa-arrow-up')) {
                         currentValue += 1;
@@ -149,15 +157,17 @@
                     }
 
                     inputField.val(currentValue);
-
                     updateSummaryTable(guestType, currentValue);
                 });
 
                 function updateSummaryTable(guestType, qty) {
-                    var finalPrice = ticketPrices.find(ticket => ticket.guest_name === guestType)?.final_price || 0;
+                    // ✅ Ensure guest type matches ticketPrices JSON structure
+                    var matchedTicket = ticketPrices.find(ticket => ticket.guest_name.replace(/\s+/g, '-')
+                    .toLowerCase() === guestType);
+                    var finalPrice = matchedTicket ? parseFloat(matchedTicket.final_price) : 0;
                     var totalPrice = qty * finalPrice;
 
-                    // ✅ Update the quantity and price in the table
+                    // ✅ Update table dynamically
                     $('#' + guestType + '-quantity').text(qty);
                     $('#' + guestType + '-price').text(totalPrice.toLocaleString('id-ID'));
 
@@ -170,17 +180,62 @@
 
                     ['anak-anak', 'dewasa', 'mancanegara'].forEach(guestType => {
                         var qty = parseInt($('#' + guestType + '-quantity').text()) || 0;
-                        var price = parseInt($('#' + guestType + '-price').text().replace(/\./g, '')) || 0;
+                        var price = parseFloat($('#' + guestType + '-price').text().replace(/[^\d]/g, '')) || 0;
 
                         totalQty += qty;
                         totalPrice += price;
                     });
 
-                    $('#total-price').text(totalPrice.toLocaleString('id-ID'));
-                    $('#total-quantity').text(totalQty);
+                    animateUpdate('#total-price', totalPrice.toLocaleString('id-ID'));
+                    animateUpdate('#total-quantity', totalQty);
                 }
 
+                function animateUpdate(selector, newValue) {
+                    $(selector).fadeOut(150, function() {
+                        $(this).text(newValue).fadeIn(150);
+                    });
+                }
+
+                $('#btn-purchase-tickets').on('click', function() {
+                    var destinationId = $('#destination_id').val();
+
+                    var totalQty = parseInt($('#total-quantity').text()) || 0;
+                    var totalPrice = parseInt($('#total-price').text().replace(/[^\d]/g, '')) || 0;
+
+                    var ticketDetails = {};
+
+                    ['anak-anak', 'dewasa', 'mancanegara'].forEach(guestType => {
+                        var qty = parseInt($('#' + guestType + '-quantity').text()) || 0;
+                        var price = parseInt($('#' + guestType + '-price').text().replace(/[^\d]/g, '')) || 0;
+
+                        ticketDetails[guestType] = { qty, price };
+                    });
+
+                    $.ajax({
+                        url: "{{ route('ticket.purchase') }}",
+                        type: "POST",
+                        data: {
+                            destination_id: destinationId,
+                            total_qty: totalQty,
+                            total_price: totalPrice,
+                            ticket_details: ticketDetails,
+                            _token: "{{ csrf_token() }}"
+                        },
+                        success: function(response) {
+                            console.log(response); // ✅ Just logging the response for now
+                            Swal.fire({
+                                text: "Purchase successful!",
+                                confirmButtonText: "OK",
+                            });
+                        },
+                        error: function(xhr) {
+                            Swal.fire({
+                                text: "Error processing purchase. Please try again!",
+                                confirmButtonText: "OK",
+                            });
+                        }
+                    });
+                });
             });
         </script>
-
     @endpush

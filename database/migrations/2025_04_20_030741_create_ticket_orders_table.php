@@ -13,16 +13,16 @@ return new class extends Migration
             $table->foreignId('destination_id')->constrained('destinations')->onDelete('cascade');
             $table->enum('visitor_type', ['individual', 'group']);
             $table->date('visit_date');
-            $table->string('visitor_name', 255);
-            $table->text('visitor_address');
-            $table->string('visitor_phone', 20);
+            $table->string('visitor_name', 255)->nullable();
+            $table->text('visitor_address')->nullable();
+            $table->string('visitor_phone', 20)->nullable();
             $table->text('visitor_origin_description')->nullable();
             $table->string('visitor_email', 255)->nullable();
             $table->integer('visitor_age')->nullable();
 
-            $table->integer('id_kecamatan');
-            $table->integer('id_kabupaten');
-            $table->integer('id_provinsi');
+            $table->integer('id_kecamatan')->nullable();
+            $table->integer('id_kabupaten')->nullable();
+            $table->integer('id_provinsi')->nullable();
 
             $table->integer('visitor_male_count')->nullable()->default(0);
             $table->integer('visitor_female_count')->nullable()->default(0);

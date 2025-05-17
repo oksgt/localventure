@@ -545,4 +545,11 @@ class BookingController extends Controller
 
         return view('landing-page.cek', compact('transaction', 'selectedImage', 'billing', 'destination', 'confirmation'));
     }
+
+
+    public function storeTicketPurchase(Request $request)
+    {
+        return response()->json($request->all(), 200);
+    }
+
 }
