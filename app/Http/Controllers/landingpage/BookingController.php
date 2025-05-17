@@ -556,7 +556,11 @@ class BookingController extends Controller
             'destination_id' => 'required|exists:destinations,id',
             'total_qty' => 'required|numeric|min:1',
             'total_price' => 'required|numeric|min:0',
+            'ticket_details' => 'required|array', // ✅ Ensures ticket_details is an array
+            'ticket_details.*.qty' => 'required|numeric|min:0', // ✅ Validates each ticket type
+            'ticket_details.*.price' => 'required|numeric|min:0', // ✅ Ensures valid prices
         ]);
+
 
         try {
             DB::beginTransaction(); // ✅ Ensures atomicity
@@ -594,50 +598,44 @@ class BookingController extends Controller
                 $price = $validatedData['ticket_details'][$guestTypeName]['price'] ?? 0;
 
                 $guestTypeId = DB::table('guest_types')->where('name', $guestTypeName)->value('id');
+                // ✅ Retrieve Guest Type ID
+                $guestTypeId = DB::table('guest_types')->where('name', $guestTypeName)->value('id');
 
-                if ($qty > 0) {
-                    // ✅ Retrieve Guest Type ID
-                    $guestTypeId = DB::table('guest_types')->where('name', $guestTypeName)->value('id');
+                // ✅ Determine day type
+                $dayType = (Carbon::parse($formattedDate)->isWeekend()) ? 'weekend' : 'weekday';
 
-                    // ✅ Determine day type
-                    $dayType = (Carbon::parse($formattedDate)->isWeekend()) ? 'weekend' : 'weekday';
-
-                    // ✅ Retrieve pricing
-                    $pricing = DB::table('pricing')
-                        ->where('destination_id', $validatedData['destination_id'])
-                        ->where('guest_type_id', $guestTypeId)
-                        ->where('day_type', $dayType)
-                        ->first();
+                // ✅ Retrieve pricing
+                $pricing = DB::table('pricing')
+                    ->where('destination_id', $validatedData['destination_id'])
+                    ->where('guest_type_id', $guestTypeId)
+                    ->where('day_type', $dayType)
+                    ->first();
 
 
-                    if ($pricing) {
-                        $insurancePrice = $pricing->insurance_price ?? 0;
-                        $basePrice = $pricing->base_price;
-                        $totalPrice = $insurancePrice + $basePrice;
+                if ($pricing) {
+                    $insurancePrice = $pricing->insurance_price ?? 0;
+                    $basePrice = $pricing->base_price;
+                    $totalPrice = $insurancePrice + $basePrice;
 
-                        // ✅ Store each guest type individually
-                        for ($i = 0; $i < $qty; $i++) {
-                            TicketOrderDetail::create([
-                                'ticket_code' => $this->generateTicketCode(), // ✅ Generate unique ticket code
-                                'order_id' => $ticketOrder->id,
-                                'guest_type_id' => $guestTypeId,
-                                'day_type' => $dayType,
-                                'visit_date' => $formattedDate,
-                                'insurance_price' => $insurancePrice,
-                                'base_price' => $basePrice,
-                                'total_price' => $totalPrice,
-                                'qty' => 1, // ✅ Always store individual tickets per row
-                                'created_by' => auth()->id(),
-                            ]);
-                        }
+                    // ✅ Store each guest type individually
+                    for ($i = 0; $i < $qty; $i++) {
+                        TicketOrderDetail::create([
+                            'ticket_code' => $this->generateTicketCode(), // ✅ Generate unique ticket code
+                            'order_id' => $ticketOrder->id,
+                            'guest_type_id' => $guestTypeId,
+                            'day_type' => $dayType,
+                            'visit_date' => $formattedDate,
+                            'insurance_price' => $insurancePrice,
+                            'base_price' => $basePrice,
+                            'total_price' => $totalPrice,
+                            'qty' => 1, // ✅ Always store individual tickets per row
+                            'created_by' => auth()->id(),
+                        ]);
                     }
                 }
             }
 
             DB::commit(); // ✅ Confirm transaction
-
-
-            // dd($result);
 
             return response()->json([
                 'message' => 'Booking created successfully!',

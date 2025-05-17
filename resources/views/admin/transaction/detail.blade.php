@@ -107,6 +107,8 @@
                                                 <p class="fs-30 mb-2">{{ $transaction->paymentType->payment_type_name }}</p>
                                                 @if ($transaction->payment_type_id == 3)
                                                     <p>{{ $transaction->bank_name }}</p>
+                                                @elseif ($transaction->payment_type_id == 4)
+                                                    <p>Onsite</p>
                                                 @endif
                                             </div>
                                         </div>
