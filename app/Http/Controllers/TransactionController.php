@@ -9,6 +9,7 @@ use Carbon\Carbon;
 use DOMDocument;
 use DOMXPath;
 use Illuminate\Http\Request;
+use PhpOffice\PhpSpreadsheet\Reader\Xls\RC4;
 use Yajra\DataTables\Facades\DataTables;
 
 class TransactionController extends Controller
@@ -193,4 +194,26 @@ class TransactionController extends Controller
         return response()->json(['error' => 'Ticket content not found'], 404);
     }
 
+    public function history(Request $request)
+    {
+        $transactions = TicketOrder::with('destination')
+            ->where('created_by', auth()->id())
+            ->where('purchasing_type', 'onsite')
+            ->orderBy('created_at', 'desc')
+            ->paginate(2); // ✅ Limits to 5 items per page
+
+        return view('admin.home.history', compact('transactions'));
+    }
+
+    public function delete(Request $request, $id)
+    {
+        try {
+            $ticketOrder = TicketOrder::findOrFail($id);
+            $ticketOrder->delete(); // ✅ Soft deletes the record
+
+            return response()->json(['message' => 'Transaction deleted successfully!'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Error deleting transaction', 'error' => $e->getMessage()], 500);
+        }
+    }
 }

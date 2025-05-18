@@ -49,16 +49,14 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3 stretch-card transparent">
-                        <div class="card card-inverse-success" style="height: 142px">
+                    <div class="col-md-3 mb-4 stretch-card transparent">
+                        <a href="{{ route('history') }}" class="card card-inverse-success"
+                            style="height: 142px; text-decoration: none; color: inherit;">
                             <div class="card-body d-flex flex-column align-items-center justify-content-center">
                                 <p class="fs-30 mb-2">History</p>
                             </div>
-                        </div>
+                        </a>
                     </div>
-                </div>
-                <div class="row">
-
                 </div>
             </div>
         </div>
