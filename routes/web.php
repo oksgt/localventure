@@ -162,7 +162,9 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
             Route::get('/ticket-purchase', [AdminHomeController::class, 'ticketPurchase'])->name('ticket-purchase.index');
             Route::get('/form-ticket-purchase/{destinationId}', [AdminHomeController::class, 'formTicketPurchase'])->name('form-ticket-purchase.index');
             Route::post('/ticket-purchase', [BookingController::class, 'storeTicketPurchase'])->name('ticket.purchase');
-
+            Route::get('/admin/online-transaction/scan/{billing}', [TransactionController::class, 'detailOperator']);
+            Route::get('/download/ticket/{billing}', [TransactionController::class, 'downloadTicket'])->name('download.ticket');
+            Route::get('/download/ticket/{billing}', [TransactionController::class, 'downloadTicket'])->name('download.ticket');
         });
 
         Route::post('/logout', [AuthController::class, 'logout'])->name('logout.process');

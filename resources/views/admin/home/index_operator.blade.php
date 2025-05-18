@@ -89,7 +89,7 @@
                 var scanner = new Instascan.Scanner({ video: document.getElementById('qr-video') });
 
                 scanner.addListener('scan', function(content) {
-                    console.log(content);
+                    window.location.href = "{{ url('/admin/online-transaction/scan/') }}/" + encodeURIComponent(content);
                 });
 
                 $('#qrModal').on('shown.bs.modal', function() {

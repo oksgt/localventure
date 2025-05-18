@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\TicketOrder;
 use App\Models\TicketOrderDetail;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
+use DOMDocument;
+use DOMXPath;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -93,6 +96,15 @@ class TransactionController extends Controller
         return view('admin.transaction.detail', compact('transaction', 'transactionDetail'));
     }
 
+    public function detailOperator($billing)
+    {
+        $transaction = TicketOrder::with('destination', 'paymentType')->where('billing_number', $billing)->firstOrFail();
+
+        $transactionDetail = TicketOrderDetail::with('guestType')->where('order_id', $transaction->id)->get();
+
+        return view('admin.transaction.cek-detail', compact('transaction', 'transactionDetail'));
+    }
+
     public function transactionOnsite()
     {
         return view('admin.transaction.index-onsite');
@@ -160,4 +172,25 @@ class TransactionController extends Controller
         $transactionDetail = TicketOrderDetail::where('order_id', $transaction->id)->get();
         return view('admin.transaction.detail', compact('transaction', 'transactionDetail'));
     }
+
+    public function downloadTicket(Request $request)
+    {
+        $html = view('admin.transaction.ticket')->render();
+
+        // ✅ Extract only the div with class 'ticket-wrap'
+        $dom = new DOMDocument();
+        @$dom->loadHTML($html);
+        $xpath = new DOMXPath($dom);
+        $ticketWrap = $xpath->query("//div[contains(@class, 'ticket-wrap')]")->item(0);
+
+        if ($ticketWrap) {
+            $pdf = Pdf::loadHTML($ticketWrap->C14N()) // ✅ Converts only the grey box into PDF
+                ->setPaper('A5', 'portrait'); // ✅ Fits thermal print width
+
+            return $pdf->download('ticket.pdf');
+        }
+
+        return response()->json(['error' => 'Ticket content not found'], 404);
+    }
+
 }
