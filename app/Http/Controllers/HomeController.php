@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Destination;
 use App\Models\Pricing;
+use App\Models\User;
 use App\Models\UserMapping;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Casts\Json;
@@ -22,8 +23,16 @@ class HomeController extends Controller
         } else {
 
             $userMapping = UserMapping::where('user_id', Auth::id())->first();
-            $destinations = Destination::where('id', $userMapping->destination_id)->get();
-            return view('admin.home.index_operator', compact('destinations'));
+
+            $destinations = [];
+            if($userMapping){
+                $destinations = Destination::where('id', $userMapping->destination_id)->get();
+            }
+
+            $user = Auth::user();
+            $parent = User::where('id', $user->parent_id)->first();
+
+            return view('admin.home.index_operator', compact('destinations', 'parent'));
         }
     }
 

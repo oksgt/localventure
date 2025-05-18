@@ -196,14 +196,19 @@ class TransactionController extends Controller
 
     public function history(Request $request)
     {
-        $transactions = TicketOrder::with('destination')
+        $query = TicketOrder::with('destination')
             ->where('created_by', auth()->id())
-            ->where('purchasing_type', 'onsite')
-            ->orderBy('created_at', 'desc')
-            ->paginate(2); // ✅ Limits to 5 items per page
+            ->where('purchasing_type', 'onsite');
+
+        if ($request->has('param') && $request->param != '') {
+            $query->where('billing_number', 'like', '%' . $request->param . '%'); // ✅ Enables search by billing number
+        }
+
+        $transactions = $query->orderBy('created_at', 'desc')->paginate(2)->appends(['param' => $request->param]);
 
         return view('admin.home.history', compact('transactions'));
     }
+
 
     public function delete(Request $request, $id)
     {

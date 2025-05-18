@@ -24,66 +24,86 @@
         </div>
 
         <div class="row">
-            @foreach ($transactions as $item)
-                @php
-                    $visitDate = \Carbon\Carbon::parse($item->visit_date);
-                    $dayType = $visitDate->isWeekend() ? 'weekend' : 'weekday';
-                @endphp
-                <div class="col-md-12 stretch-card grid-margin grid-margin-md-0">
-                    <div class="card data-icon-card-primary">
-                        <div class="card-body">
-                            <p class="card-title text-white">{{ $item->destination->name }}</p>
-                            <div class="row">
-                                <div class="col-8 text-white">
-                                    <h3>Rp. {{ number_format($item->total_price, 0, ',', '.') }}</h3>
-                                    <p class="text-white font-weight-500 mb-0">Visit:
-                                        {{ \Carbon\Carbon::parse($item->visit_date)->format('d/m/Y') }}</p>
-                                    <p class="text-white font-weight-500 mb-0">{{ ucwords($dayType) }} -
-                                        {{ $item->total_visitor }} People</p>
-                                    <span class="badge badge-success mt-2">Paid</span>
-                                </div>
-                                <div class="col-4 background-icon">
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-12 mt-2 ">
-                                    <div class="btn-group w-100" role="group" aria-label="Basic example">
-                                        <a type="button" class="btn btn-rounded btn-sm btn-dark" title="Detail"
-                                        href="{{ url('/admin/online-transaction/scan/' . $item->billing_number) }}">
-                                            <i class="fa fa-file-text"></i>
-                                        </a>
-                                        <button type="button" class="btn btn-rounded btn-sm btn-dark" title="Print">
-                                            <i class="fa fa-print"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-rounded btn-sm btn-danger btn-delete" title="Delete"  data-id="{{ $item->id }}">
-                                            <i class="fa fa-trash"></i>
-                                        </button>
+
+            <div class="col-12">
+                <div class="form-group">
+                    <div class="input-group">
+                        <input type="text" id="search-input" class="form-control" placeholder="Invoice Number"
+                            value="{{ request('param') }}"> <!-- ✅ Keeps previous search value -->
+                        <div class="input-group-append">
+                            <button class="btn btn-sm btn-primary" id="search-button" type="button">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div id="transaction-container" class="w-100">
+                @foreach ($transactions as $item)
+                    @php
+                        $visitDate = \Carbon\Carbon::parse($item->visit_date);
+                        $dayType = $visitDate->isWeekend() ? 'weekend' : 'weekday';
+                    @endphp
+                    <div class="col-md-12 stretch-card grid-margin grid-margin-md-0">
+                        <div class="card data-icon-card-primary">
+                            <div class="card-body">
+                                <p class="card-title text-white">{{ $item->destination->name }}</p>
+                                <div class="row">
+                                    <div class="col-8 text-white">
+                                        <h3>Rp. {{ number_format($item->total_price, 0, ',', '.') }}</h3>
+                                        <p class="text-white font-weight-500 mb-0">Visit:
+                                            {{ \Carbon\Carbon::parse($item->visit_date)->format('d/m/Y') }}</p>
+                                        <p class="text-white font-weight-500 mb-0">{{ ucwords($dayType) }} -
+                                            {{ $item->total_visitor }} People</p>
+                                        <span class="badge badge-success mt-2">Paid</span>
+                                        <small>{{ $item->billing_number }}</small>
+                                    </div>
+                                    <div class="col-4 background-icon">
                                     </div>
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-12">
-                                    <small>Created at {{ $item->created_at->diffForHumans() }}</small>
+                                <div class="row">
+                                    <div class="col-12 mt-2 ">
+                                        <div class="btn-group w-100" role="group" aria-label="Basic example">
+                                            <a type="button" class="btn btn-rounded btn-sm btn-dark" title="Detail"
+                                                href="{{ url('/admin/online-transaction/scan/' . $item->billing_number) }}">
+                                                <i class="fa fa-file-text"></i>
+                                            </a>
+                                            <button type="button" class="btn btn-rounded btn-sm btn-dark" title="Print">
+                                                <i class="fa fa-print"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-rounded btn-sm btn-danger btn-delete"
+                                                title="Delete" data-id="{{ $item->id }}">
+                                                <i class="fa fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <small>Created at {{ $item->created_at->diffForHumans() }}</small>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            @endforeach
-            {{-- <div class="d-flex justify-content-center mt-3">
-                {{ $transactions->links() }} <!-- ✅ Laravel auto-pagination -->
-            </div> --}}
+                @endforeach
+            </div>
+
         </div>
         <div class="row">
             <div class="col-12">
                 <div class="btn-group w-100" role="group" aria-label="Basic example">
                     <!-- First Page -->
-                    <a href="{{ $transactions->url(1) }}" class="btn btn-primary {{ $transactions->currentPage() == 1 ? 'disabled' : '' }}">
+                    <a href="{{ $transactions->url(1) }}"
+                        class="btn btn-primary {{ $transactions->currentPage() == 1 ? 'disabled' : '' }}">
                         <i class="fa fa-angle-double-left"></i>
                     </a>
 
                     <!-- Previous Page -->
-                    <a href="{{ $transactions->previousPageUrl() }}" class="btn btn-primary {{ $transactions->onFirstPage() ? 'disabled' : '' }}">
+                    <a href="{{ $transactions->previousPageUrl() }}"
+                        class="btn btn-primary {{ $transactions->onFirstPage() ? 'disabled' : '' }}">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
@@ -93,12 +113,14 @@
                     </button>
 
                     <!-- Next Page -->
-                    <a href="{{ $transactions->nextPageUrl() }}" class="btn btn-primary {{ $transactions->currentPage() == $transactions->lastPage() ? 'disabled' : '' }}">
+                    <a href="{{ $transactions->nextPageUrl() }}"
+                        class="btn btn-primary {{ $transactions->currentPage() == $transactions->lastPage() ? 'disabled' : '' }}">
                         <i class="fa fa-angle-right"></i>
                     </a>
 
                     <!-- Last Page -->
-                    <a href="{{ $transactions->url($transactions->lastPage()) }}" class="btn btn-primary {{ $transactions->currentPage() == $transactions->lastPage() ? 'disabled' : '' }}">
+                    <a href="{{ $transactions->url($transactions->lastPage()) }}"
+                        class="btn btn-primary {{ $transactions->currentPage() == $transactions->lastPage() ? 'disabled' : '' }}">
                         <i class="fa fa-angle-double-right"></i>
                     </a>
                 </div>
@@ -137,6 +159,13 @@
                 $('#qrModal').on('hidden.bs.modal', function() {
                     scanner.stop(); // ✅ Stop scanning when modal closes
                 });
+
+                $('#search-button').on('click', function() {
+                    var billingNumber = $('#search-input').val();
+                    var newUrl = "{{ route('history') }}?param=" + encodeURIComponent(billingNumber); // ✅ Updates URL
+
+                    window.location.href = newUrl; // ✅ Redirects to the updated URL (triggers full page reload)
+                });
             });
         </script>
         <script>
@@ -152,9 +181,12 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         $.ajax({
-                            url: "{{ route('transaction.delete', ':id') }}".replace(':id', transactionId),
+                            url: "{{ route('transaction.delete', ':id') }}".replace(':id',
+                                transactionId),
                             type: "DELETE",
-                            data: { _token: "{{ csrf_token() }}" },
+                            data: {
+                                _token: "{{ csrf_token() }}"
+                            },
                             success: function(response) {
                                 Swal.fire({
                                     text: response.message,
@@ -176,5 +208,4 @@
                 });
             });
         </script>
-
     @endpush
