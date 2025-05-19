@@ -43,18 +43,20 @@
                             </div>
                         </div>
 
-                        <div class="col-md-3 mb-4 mb-lg-0 stretch-card transparent">
-                            <div class="card card-light-blue" style="height: 142px">
+                        <div class="col-md-3 mb-4 stretch-card transparent">
+                            <a href="{{ route('operator-billing') }}" class="card card-light-blue"
+                                style="height: 142px; text-decoration: none; color: inherit;">
                                 <div class="card-body d-flex flex-column align-items-center justify-content-center">
-                                    <p class="fs-30 mb-2">Billing</p>
+                                    <p class="fs-30 mb-2 text-white">Billing</p>
                                 </div>
-                            </div>
+                            </a>
                         </div>
+
                         <div class="col-md-3 mb-4 stretch-card transparent">
                             <a href="{{ route('history') }}" class="card card-inverse-success"
                                 style="height: 142px; text-decoration: none; color: inherit;">
                                 <div class="card-body d-flex flex-column align-items-center justify-content-center">
-                                    <p class="fs-30 mb-2">History</p>
+                                    <p class="fs-30 mb-2 text-success">History</p>
                                 </div>
                             </a>
                         </div>
@@ -62,12 +64,12 @@
                 </div>
             </div>
         @else
-        <div class="alert alert-warning" role="alert">
-            <h4 class="alert-heading">Oups!</h4>
-            <p>It looks like you haven't mapped to any destinations yet</p>
-            <hr>
-            <p class="mb-0">Please contact to your administrator <strong>{{ Auth::user()->parent->name }}</strong></p>
-        </div>
+            <div class="alert alert-warning" role="alert">
+                <h4 class="alert-heading">Oups!</h4>
+                <p>It looks like you haven't mapped to any destinations yet</p>
+                <hr>
+                <p class="mb-0">Please contact to your administrator <strong>{{ Auth::user()->parent->name }}</strong></p>
+            </div>
         @endif
 
 

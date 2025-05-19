@@ -196,17 +196,7 @@ class TransactionController extends Controller
 
     public function history(Request $request)
     {
-        $query = TicketOrder::with('destination')
-            ->where('created_by', auth()->id())
-            ->where('purchasing_type', 'onsite');
-
-        if ($request->has('param') && $request->param != '') {
-            $query->where('billing_number', 'like', '%' . $request->param . '%'); // ✅ Enables search by billing number
-        }
-
-        $transactions = $query->orderBy('created_at', 'desc')->paginate(2)->appends(['param' => $request->param]);
-
-        return view('admin.home.history', compact('transactions'));
+        return "oek";
     }
 
 
@@ -220,5 +210,20 @@ class TransactionController extends Controller
         } catch (\Exception $e) {
             return response()->json(['message' => 'Error deleting transaction', 'error' => $e->getMessage()], 500);
         }
+    }
+
+    public function OperatorBilling(Request $request)
+    {
+        $query = TicketOrder::with(['destination', 'groupedDetails'])
+            ->where('created_by', auth()->id())
+            ->where('purchasing_type', 'onsite')
+            ->where('payment_status', 'received');
+
+        if ($request->has('param') && $request->param != '') {
+            $query->where('billing_number', 'like', '%' . $request->param . '%');
+        }
+
+        $transactions = $query->orderBy('created_at', 'desc')->get();
+        return view('admin.home.operator-billing', compact('transactions'));
     }
 }

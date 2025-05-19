@@ -561,7 +561,6 @@ class BookingController extends Controller
             'ticket_details.*.price' => 'required|numeric|min:0', // ✅ Ensures valid prices
         ]);
 
-
         try {
             DB::beginTransaction(); // ✅ Ensures atomicity
 
@@ -574,7 +573,7 @@ class BookingController extends Controller
                 'total_visitor' => $validatedData['total_qty'],
                 'total_price' => $validatedData['total_price'],
                 'billing_number' => $this->generateInvoiceNumber($formattedDate),
-                'payment_status' => 'paid',
+                'payment_status' => 'received',
                 'purchasing_type' => 'onsite',
                 'notes' => null,
                 'created_by' => auth()->id(),

@@ -51,16 +51,16 @@
                             <div class="card-body">
                                 <p class="card-title text-white">{{ $item->destination->name }}</p>
                                 <div class="row">
-                                    <div class="col-8 text-white">
+                                    <div class="col-9 text-white">
                                         <h3>Rp. {{ number_format($item->total_price, 0, ',', '.') }}</h3>
                                         <p class="text-white font-weight-500 mb-0">Visit:
                                             {{ \Carbon\Carbon::parse($item->visit_date)->format('d/m/Y') }}</p>
                                         <p class="text-white font-weight-500 mb-0">{{ ucwords($dayType) }} -
                                             {{ $item->total_visitor }} People</p>
-                                        <span class="badge badge-success mt-2">Paid</span>
+                                        <span class="badge badge-{{ ($item->payment_status == 'paid') ? 'success' : 'warning' }} mt-2">{{ ucwords($item->payment_status) }}</span>
                                         <small>{{ $item->billing_number }}</small>
                                     </div>
-                                    <div class="col-4 background-icon">
+                                    <div class="col-2 background-icon">
                                     </div>
                                 </div>
                                 <div class="row">

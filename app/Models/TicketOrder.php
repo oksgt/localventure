@@ -49,4 +49,17 @@ class TicketOrder extends Model
     {
         return $this->belongsTo(User::class, 'deleted_by');
     }
+
+    public function details()
+    {
+        return $this->hasMany(TicketOrderDetail::class, 'order_id');
+    }
+
+    public function groupedDetails()
+    {
+        return $this->hasMany(TicketOrderDetail::class, 'order_id')
+            ->selectRaw('order_id, guest_types.name as guest_type_name, guest_type_id, SUM(qty) as total_qty, SUM(total_price) as total_price')
+            ->join('guest_types', 'guest_types.id', '=', 'ticket_order_details.guest_type_id') // ✅ Ensure correct table reference
+            ->groupBy('order_id', 'guest_type_id', 'guest_types.name');
+    }
 }
