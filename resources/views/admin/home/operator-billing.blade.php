@@ -113,7 +113,7 @@
                     </div>
                     <div class="d-block text-right card-footer">
                         <button class="mr-2 btn btn-link btn-sm">Clear</button>
-                        <button class="btn btn-primary">Create Billing</button>
+                        <button class="btn btn-primary" id="create-billing-btn">Create Billing</button>
                     </div>
                 </div>
             </div>
@@ -144,6 +144,49 @@
                 var isChecked = $(this).prop('checked');
                 $('.custom-control-input').not('#select_all').prop('checked', isChecked).trigger('change');
             });
+
+            $('#create-billing-btn').on('click', function() {
+                var selectedTransactions = [];
+
+                $('.custom-control-input:checked').not('#select_all').each(function() {
+                    selectedTransactions.push($(this).attr('id'));
+                });
+
+                if (selectedTransactions.length > 0) {
+                    $.ajax({
+                        url: "{{ route('operator.createBilling') }}",
+                        type: "POST",
+                        data: {
+                            selected_transactions: selectedTransactions,
+                            _token: "{{ csrf_token() }}"
+                        },
+                        success: function(response) {
+                            Swal.fire({
+                                text: response.message,
+                                icon: "success",
+                                confirmButtonText: "OK"
+                            }).then(() => {
+                                location.reload();
+                            });
+                        },
+                        error: function(xhr) {
+                            Swal.fire({
+                                text: "Error processing billing!",
+                                icon: "error",
+                                confirmButtonText: "OK"
+                            });
+                        }
+                    });
+                } else {
+                    Swal.fire({
+                        text: "Please select at least one transaction!",
+                        icon: "warning",
+                        confirmButtonText: "OK"
+                    });
+                }
+            });
+
+
         });
     </script>
     @endpush

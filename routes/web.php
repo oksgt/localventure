@@ -166,8 +166,8 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
             Route::get('/download/ticket/{billing}', [TransactionController::class, 'downloadTicket'])->name('download.ticket');
             Route::get('/history', [TransactionController::class, 'history'])->name('history');
             Route::delete('/admin/online-transaction/delete/{id}', [TransactionController::class, 'delete'])->name('transaction.delete');
-
             Route::get('/operator-billing', [TransactionController::class, 'OperatorBilling'])->name('operator-billing');
+            Route::post('/operator/create-billing', [TransactionController::class, 'createBilling'])->name('operator.createBilling');
         });
 
         Route::post('/logout', [AuthController::class, 'logout'])->name('logout.process');

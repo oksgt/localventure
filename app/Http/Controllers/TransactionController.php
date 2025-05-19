@@ -226,4 +226,14 @@ class TransactionController extends Controller
         $transactions = $query->orderBy('created_at', 'desc')->get();
         return view('admin.home.operator-billing', compact('transactions'));
     }
+
+    public function createBilling(Request $request)
+    {
+        return response()->json([
+            'selected_transactions' => $request->selected_transactions,
+            'message' => 'Billing data created successfully!'
+        ]);
+    }
+
+
 }
