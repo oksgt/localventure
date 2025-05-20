@@ -202,7 +202,6 @@ class TransactionController extends Controller
         // ✅ Validate `daterange` format
         $request->validate([
             'daterange' => [
-                'required',
                 'regex:/^\d{4}-\d{2}-\d{2} - \d{4}-\d{2}-\d{2}$/', // ✅ Strict format: YYYY-MM-DD - YYYY-MM-DD
             ]
         ]);
