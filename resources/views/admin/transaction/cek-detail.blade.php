@@ -31,8 +31,39 @@
                         <div class="row">
                             <div class="col-12 col-md-6 mb-3">
                                 <p class="card-title">Detail Transaction : {{ $transaction->billing_number }}</p>
+
+                                <div class="card card-tale mb-3">
+                                    <div class="card-body">
+                                        <p class="mb-4">Total Visitor</p>
+                                        <p class="fs-30 mb-2">{{ $transaction->total_visitor }}</p>
+                                        <p>People</p>
+                                    </div>
+                                </div>
+
+                                <div class="card card-dark-blue mb-3">
+                                    <div class="card-body">
+                                        <p class="mb-4">Total Transaction</p>
+                                        <p class="fs-30 mb-2">
+                                            {{ 'Rp ' . number_format($transaction->total_price, 2, ',', '.') }}</p>
+                                        <p>{{ \Carbon\Carbon::parse($transaction->visit_date)->isWeekend() ? 'Weekend' : 'Weekday' }}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="card card-inverse-info mb-3">
+                                    <div class="card-body">
+                                        <p class="mb-4">Payment Channel</p>
+                                        <p class="fs-30 mb-2">{{ $transaction->paymentType->payment_type_name }}
+                                        </p>
+                                        @if ($transaction->payment_type_id == 3)
+                                            <p>{{ $transaction->bank_name }}</p>
+                                        @elseif ($transaction->payment_type_id == 4)
+                                            <p>Onsite</p>
+                                        @endif
+                                    </div>
+                                </div>
                                 @if ($transaction->payment_status == 'pending')
-                                    <div class="card card-inverse-warning" style="cursor: pointer"
+                                    <div class="card card-inverse-warning mb-3" style="cursor: pointer"
                                         data-id="{{ $transaction->billing_number }}">
                                         <div class="card-body">
                                             <p class="mb-4">Payment Status</p>
@@ -40,7 +71,7 @@
                                         </div>
                                     </div>
                                 @elseif ($transaction->payment_status == 'paid')
-                                    <div class="card card-inverse-success mb-4" style="cursor: pointer"
+                                    <div class="card card-inverse-success mb-3" style="cursor: pointer"
                                         data-id="{{ $transaction->billing_number }}">
                                         <div class="card-body">
                                             <p class="mb-4">Payment Status</p>
@@ -49,12 +80,22 @@
                                     </div>
 
                                     <button class="btn btn-block btn-primary mb-4">Download Ticket</button>
-                                @else
-                                    <div class="card card-inverse-danger" style="cursor: pointer"
+                                @elseif ($transaction->payment_status == 'received')
+                                    <div class="card card-inverse-info mb-3" style="cursor: pointer"
                                         data-id="{{ $transaction->billing_number }}">
                                         <div class="card-body">
                                             <p class="mb-4">Payment Status</p>
-                                            <p class="fs-30 mb-2">{{ ucwords($transaction->payment_status) }}</p>
+                                            <p class="fs-30 mb-2">Cash {{ ucwords($transaction->payment_status) }}</p>
+                                        </div>
+                                    </div>
+
+                                    <button class="btn btn-block btn-primary mb-4">Download Ticket</button>
+                                @else
+                                    <div class="card card-inverse-danger mb-3" style="cursor: pointer"
+                                        data-id="{{ $transaction->billing_number }}">
+                                        <div class="card-body">
+                                            <p class="mb-4">Payment Status</p>
+                                            <p class="fs-30 mb-2">Cash {{ ucwords($transaction->payment_status) }}</p>
                                         </div>
                                     </div>
                                 @endif
@@ -108,79 +149,7 @@
                                     </table>
                                 </div>
                             </div>
-                            <div class="col-md-6 grid-margin transparent">
-                                <div class="row">
-                                    <div class="col-md-6 mb-4 stretch-card transparent">
-                                        <div class="card card-tale">
-                                            <div class="card-body">
-                                                <p class="mb-4">Total Visitor</p>
-                                                <p class="fs-30 mb-2">{{ $transaction->total_visitor }}</p>
-                                                <p>People</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 mb-4 stretch-card transparent">
-                                        <div class="card card-dark-blue">
-                                            <div class="card-body">
-                                                <p class="mb-4">Total Transaction</p>
-                                                <p class="fs-30 mb-2">
-                                                    {{ 'Rp ' . number_format($transaction->total_price, 2, ',', '.') }}</p>
-                                                <p>{{ \Carbon\Carbon::parse($transaction->visit_date)->isWeekend() ? 'Weekend' : 'Weekday' }}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-6 mb-4 stretch-card transparent">
-                                        <div class="card card-inverse-info">
-                                            <div class="card-body">
-                                                <p class="mb-4">Payment Channel</p>
-                                                <p class="fs-30 mb-2">{{ $transaction->paymentType->payment_type_name }}
-                                                </p>
-                                                @if ($transaction->payment_type_id == 3)
-                                                    <p>{{ $transaction->bank_name }}</p>
-                                                @elseif ($transaction->payment_type_id == 4)
-                                                    <p>Onsite</p>
-                                                @endif
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 mb-4 stretch-card transparent">
 
-                                        @if ($transaction->payment_status == 'pending')
-                                            <div class="card card-inverse-warning" style="cursor: pointer"
-                                                data-id="{{ $transaction->billing_number }}">
-                                                <div class="card-body">
-                                                    <p class="mb-4">Payment Status</p>
-                                                    <p class="fs-30 mb-2">{{ ucwords($transaction->payment_status) }}</p>
-                                                    <p>Click to check </p>
-                                                </div>
-                                            </div>
-                                        @elseif ($transaction->payment_status == 'paid')
-                                            <div class="card card-inverse-success" style="cursor: pointer"
-                                                data-id="{{ $transaction->billing_number }}">
-                                                <div class="card-body">
-                                                    <p class="mb-4">Payment Status</p>
-                                                    <p class="fs-30 mb-2">{{ ucwords($transaction->payment_status) }}</p>
-                                                    <p>Click to check </p>
-                                                </div>
-                                            </div>
-                                        @else
-                                            <div class="card card-inverse-danger" style="cursor: pointer"
-                                                data-id="{{ $transaction->billing_number }}">
-                                                <div class="card-body">
-                                                    <p class="mb-4">Payment Status</p>
-                                                    <p class="fs-30 mb-2">{{ ucwords($transaction->payment_status) }}</p>
-                                                    <p>Click to check </p>
-                                                </div>
-                                            </div>
-                                        @endif
-
-
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                         <div class="row">
                             <div class="col-12 mt-4">
