@@ -350,6 +350,32 @@ class TransactionController extends Controller
         }
     }
 
+    public function historyDetail(Request $request)
+    {
+        // ✅ Validate billing number format & existence
+        $request->validate([
+            'billing_number' => 'required|string|exists:operator_transaction,billing_number',
+        ]);
+
+        // ✅ Fetch transaction by billing number
+        $operatorTransaction = OperatorTransaction::where('billing_number', $request->billing_number)
+            ->leftJoin('destinations', 'operator_transaction.destination_id', '=', 'destinations.id')
+            ->select('operator_transaction.*', 'destinations.name AS destination_name')
+            ->first();
+
+        // ✅ Redirect back if billing number does not exist
+        if (!$operatorTransaction) {
+            return redirect()->back()->with('error', 'Billing number not found!');
+        }
+
+        // ✅ Fetch related transaction details
+        $transactionDetails = OperatorTransactionDetail::where('operator_transaction_id', $operatorTransaction->id)
+            ->leftJoin('ticket_orders', 'operator_transaction_detail.ticket_order_id', '=', 'ticket_orders.id')
+            ->select('operator_transaction_detail.*', 'ticket_orders.billing_number AS ticket_order_billing_number')
+            ->get();
+
+        return view('admin.transaction.history-billing-detail', compact('operatorTransaction', 'transactionDetails'));
+    }
 
 
 }

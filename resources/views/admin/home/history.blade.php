@@ -64,7 +64,7 @@
                                         <div class="col-12 mt-2 ">
                                             <div class="btn-group w-100" role="group" aria-label="Basic example">
                                                 <a type="button" class="btn btn-rounded btn-sm btn-dark" title="Detail"
-                                                    href="{{ url('/admin/online-transaction/scan/' . $item->billing_number) }}">
+                                                    href="{{ route('operator.historyDetail', ['billing_number' => $item->billing_number]) }}">
                                                     <i class="fa fa-file-text"></i>
                                                 </a>
                                                 <button type="button" class="btn btn-rounded btn-sm btn-dark"
