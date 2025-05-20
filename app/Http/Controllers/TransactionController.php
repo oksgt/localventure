@@ -199,6 +199,14 @@ class TransactionController extends Controller
 
     public function history(Request $request)
     {
+        // ✅ Validate `daterange` format
+        $request->validate([
+            'daterange' => [
+                'required',
+                'regex:/^\d{4}-\d{2}-\d{2} - \d{4}-\d{2}-\d{2}$/', // ✅ Strict format: YYYY-MM-DD - YYYY-MM-DD
+            ]
+        ]);
+
         // ✅ Parse the date range from the request
         $dateRange = explode(' - ', $request->daterange ?? '');
         $startDate = isset($dateRange[0]) ? Carbon::parse($dateRange[0])->startOfDay() : Carbon::now()->subDays(7)->startOfDay();
@@ -313,6 +321,35 @@ class TransactionController extends Controller
         }
     }
 
+    public function deleteOperatorBilling(Request $request)
+    {
+        try {
+            DB::beginTransaction(); // ✅ Start transaction for safe deletion
+
+            // ✅ Validate input
+            $request->validate([
+                'operator_transaction_id' => 'required|exists:operator_transaction,id',
+            ]);
+
+            // ✅ Delete all related details first (cascading behavior)
+            OperatorTransactionDetail::where('operator_transaction_id', $request->operator_transaction_id)->delete();
+
+            // ✅ Delete the transaction
+            OperatorTransaction::where('id', $request->operator_transaction_id)->delete();
+
+            DB::commit(); // ✅ Confirm deletion
+
+            return response()->json([
+                'message' => 'Transaction deleted successfully!',
+            ], 200);
+        } catch (\Exception $e) {
+            DB::rollBack(); // ✅ Undo changes on failure
+            return response()->json([
+                'message' => 'Error deleting transaction!',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
 
 
 

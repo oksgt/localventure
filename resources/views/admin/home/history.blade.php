@@ -71,8 +71,8 @@
                                                     title="Print">
                                                     <i class="fa fa-print"></i>
                                                 </button>
-                                                <button type="button" class="btn btn-rounded btn-sm btn-danger btn-delete"
-                                                    title="Delete" data-id="{{ $item->id }}">
+                                                <button type="button" class="btn btn-rounded btn-sm btn-danger delete-transaction-btn"
+                                                    title="Delete" data-transaction-id="{{ $item->id }}">
                                                     <i class="fa fa-trash"></i>
                                                 </button>
                                             </div>
@@ -195,36 +195,52 @@
             });
         </script>
         <script>
-            $(document).on('click', '.btn-delete', function() {
-                var transactionId = $(this).data('id'); // ✅ Get transaction ID
+            $('.delete-transaction-btn').on('click', function() {
+                var transactionId = $(this).data('transaction-id');
 
+                // ✅ Show confirmation popup before deleting
                 Swal.fire({
-                    text: "Are you sure you want to delete this transaction?",
+                    title: "Are you sure?",
+                    text: "This action cannot be undone!",
                     icon: "warning",
                     showCancelButton: true,
-                    confirmButtonText: "Yes, delete",
+                    confirmButtonText: "Yes, delete!",
                     cancelButtonText: "Cancel"
                 }).then((result) => {
                     if (result.isConfirmed) {
+                        // ✅ Show loading while deleting
+                        Swal.fire({
+                            title: "Deleting...",
+                            text: "Please wait while the transaction is being removed.",
+                            icon: "info",
+                            showConfirmButton: false,
+                            allowOutsideClick: false,
+                            didOpen: () => {
+                                Swal.showLoading();
+                            }
+                        });
+
                         $.ajax({
-                            url: "{{ route('transaction.delete', ':id') }}".replace(':id',
-                                transactionId),
+                            url: "{{ route('operator.deleteTransaction') }}",
                             type: "DELETE",
                             data: {
+                                operator_transaction_id: transactionId,
                                 _token: "{{ csrf_token() }}"
                             },
                             success: function(response) {
                                 Swal.fire({
+                                    title: "Success!",
                                     text: response.message,
                                     icon: "success",
                                     confirmButtonText: "OK"
                                 }).then(() => {
-                                    location.reload(); // ✅ Refresh after deletion
+                                    location.reload(); // ✅ Refresh page after deletion
                                 });
                             },
                             error: function(xhr) {
                                 Swal.fire({
-                                    text: "Error deleting transaction!",
+                                    title: "Error!",
+                                    text: "Failed to delete transaction!",
                                     icon: "error",
                                     confirmButtonText: "OK"
                                 });
@@ -233,5 +249,6 @@
                     }
                 });
             });
+
         </script>
     @endpush
