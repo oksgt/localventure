@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\OperatorTransaction;
+use App\Models\OperatorTransactionDetail;
 use App\Models\TicketOrder;
 use App\Models\TicketOrderDetail;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -9,6 +11,7 @@ use Carbon\Carbon;
 use DOMDocument;
 use DOMXPath;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\Reader\Xls\RC4;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -214,26 +217,72 @@ class TransactionController extends Controller
 
     public function OperatorBilling(Request $request)
     {
-        $query = TicketOrder::with(['destination', 'groupedDetails'])
-            ->where('created_by', auth()->id())
-            ->where('purchasing_type', 'onsite')
-            ->where('payment_status', 'received');
+        $transactions = TicketOrder::with(['destination', 'groupedDetails'])
+        ->where('created_by', auth()->id())
+        ->where('purchasing_type', 'onsite')
+        ->where('payment_status', 'received')
+        ->whereNotIn('id', function($subquery) {
+            $subquery->select('ticket_order_id')
+                    ->from('operator_transaction_detail');
+        })
+        ->orderBy('created_at', 'desc') // ✅ Must be before `get()`
+        ->get();
 
-        if ($request->has('param') && $request->param != '') {
-            $query->where('billing_number', 'like', '%' . $request->param . '%');
-        }
-
-        $transactions = $query->orderBy('created_at', 'desc')->get();
+        // $transactions = $query->orderBy('created_at', 'desc')->get();
         return view('admin.home.operator-billing', compact('transactions'));
     }
 
     public function createBilling(Request $request)
     {
-        return response()->json([
-            'selected_transactions' => $request->selected_transactions,
-            'message' => 'Billing data created successfully!'
-        ]);
+        try {
+            DB::beginTransaction(); // ✅ Start transaction for atomic operations
+
+            // ✅ Generate unique billing number
+            $billingNumber = 'OT-' . now()->format('YmdHis') . rand(1000, 9999);
+
+            // ✅ Calculate total ticket orders & total amount
+            $totalOrders = count($request->selected_transactions);
+            $totalAmount = TicketOrder::whereIn('id', $request->selected_transactions)->sum('total_price');
+
+            // ✅ Insert data into `operator_transaction`
+            $operatorTransaction = OperatorTransaction::create([
+                'billing_number' => $billingNumber,
+                'total_ticket_order' => $totalOrders,
+                'total_amount' => $totalAmount,
+                'transfer_amount' => null, // Transfer amount will be updated later
+                'created_by' => auth()->id(),
+            ]);
+
+            // ✅ Insert related transaction details
+            foreach ($request->selected_transactions as $ticketOrderId) {
+                $ticketOrder = TicketOrder::find($ticketOrderId);
+                OperatorTransactionDetail::create([
+                    'operator_transaction_id' => $operatorTransaction->id,
+                    'ticket_order_id' => $ticketOrderId,
+                    'qty' => 1, // Assuming each ticket order counts as 1
+                    'amount' => $ticketOrder->total_price,
+                    'created_by' => auth()->id(),
+                ]);
+            }
+
+            DB::commit(); // ✅ Commit transaction
+
+            return response()->json([
+                'message' => 'Billing created successfully!',
+                'billing_number' => $billingNumber,
+                'total_ticket_order' => $totalOrders,
+                'total_amount' => number_format($totalAmount, 0, ',', '.'),
+            ], 200);
+        } catch (\Exception $e) {
+            DB::rollBack(); // ✅ Rollback on error
+            return response()->json([
+                'message' => 'Error creating billing!',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
+
+
 
 
 }

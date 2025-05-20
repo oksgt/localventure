@@ -75,7 +75,8 @@
                                                                         for="{{ $item->id }}">&nbsp;</label></div>
                                                             </div>
                                                             <div class="widget-content-left flex2">
-                                                                <input type="hidden" id="price" name="price" value="{{ (int) number_format($item->total_price, 0, ',', '') }}">
+                                                                <input type="hidden" id="price" name="price"
+                                                                    value="{{ (int) number_format($item->total_price, 0, ',', '') }}">
                                                                 <div class="widget-heading"
                                                                     style="font-weight: bold; font-size: 16px">
                                                                     Rp {{ number_format($item->total_price, 0, ',', '.') }}
@@ -112,8 +113,7 @@
                         Selected 0 total price Rp 0
                     </div>
                     <div class="d-block text-right card-footer">
-                        <button class="mr-2 btn btn-link btn-sm">Clear</button>
-                        <button class="btn btn-primary" id="create-billing-btn">Create Billing</button>
+                        <button class="btn btn-block btn-primary" id="create-billing-btn">Create Billing</button>
                     </div>
                 </div>
             </div>
@@ -121,72 +121,82 @@
     @endsection
 
     @push('scripts')
-    <script>
-        $(document).ready(function() {
-            $('.custom-control-input').prop('checked', false);
+        <script>
+            $(document).ready(function() {
+                $('.custom-control-input').prop('checked', false);
 
-            $('.custom-control-input').on('change', function() {
-                var totalSelected = $('.custom-control-input:checked').not('#select_all').length; // ✅ Excludes "Select All"
-                var totalPrice = 0;
+                $('.custom-control-input').on('change', function() {
+                    var totalSelected = $('.custom-control-input:checked').not('#select_all')
+                    .length; // ✅ Excludes "Select All"
+                    var totalPrice = 0;
 
-                $('.custom-control-input:checked').not('#select_all').each(function() { // ✅ Excludes "Select All"
-                    var priceElement = $(this).closest('.list-group-item').find('#price');
-                    if (priceElement.length) { // ✅ Ensure price element exists before accessing `.val()`
-                        totalPrice += parseFloat(priceElement.val().replace(/[^\d]/g, ''));
+                    $('.custom-control-input:checked').not('#select_all').each(
+                function() { // ✅ Excludes "Select All"
+                        var priceElement = $(this).closest('.list-group-item').find('#price');
+                        if (priceElement
+                            .length) { // ✅ Ensure price element exists before accessing `.val()`
+                            totalPrice += parseFloat(priceElement.val().replace(/[^\d]/g, ''));
+                        }
+                    });
+
+                    $('.card-footer.text-center').html(
+                        `Selected ${totalSelected} total price Rp ${totalPrice.toLocaleString()}`);
+                });
+
+                // ✅ Handle "Select All" functionality
+                $('#select_all').on('change', function() {
+                    var isChecked = $(this).prop('checked');
+                    $('.custom-control-input').not('#select_all').prop('checked', isChecked).trigger('change');
+                });
+
+                $('#create-billing-btn').on('click', function() {
+                    var selectedTransactions = [];
+
+                    $('.custom-control-input:checked').not('#select_all').each(function() {
+                        selectedTransactions.push($(this).attr('id'));
+                    });
+
+                    if (selectedTransactions.length > 0) {
+                        $.ajax({
+                            url: "{{ route('operator.createBilling') }}",
+                            type: "POST",
+                            data: {
+                                selected_transactions: selectedTransactions,
+                                _token: "{{ csrf_token() }}"
+                            },
+                            success: function(response) {
+                                Swal.fire({
+                                    title: "Success!",
+                                    text: "Billing created: " + response.billing_number +
+                                        "\nTotal Orders: " + response.total_ticket_order +
+                                        "\nTotal Amount: Rp " + response.total_amount,
+                                    icon: "success",
+                                    confirmButtonText: "OK"
+                                }).then(() => {
+                                    location.reload();
+                                });
+                            },
+                            error: function(xhr) {
+                                Swal.fire({
+                                    title: "Error!",
+                                    text: "Failed to create billing!",
+                                    icon: "error",
+                                    confirmButtonText: "OK"
+                                });
+                            }
+                        });
+                    } else {
+                        Swal.fire({
+                            text: "Please select at least one transaction!",
+                            icon: "warning",
+                            confirmButtonText: "OK"
+                        });
                     }
                 });
 
-                $('.card-footer.text-center').html(`Selected ${totalSelected} total price Rp ${totalPrice.toLocaleString()}`);
+
+
+
             });
-
-            // ✅ Handle "Select All" functionality
-            $('#select_all').on('change', function() {
-                var isChecked = $(this).prop('checked');
-                $('.custom-control-input').not('#select_all').prop('checked', isChecked).trigger('change');
-            });
-
-            $('#create-billing-btn').on('click', function() {
-                var selectedTransactions = [];
-
-                $('.custom-control-input:checked').not('#select_all').each(function() {
-                    selectedTransactions.push($(this).attr('id'));
-                });
-
-                if (selectedTransactions.length > 0) {
-                    $.ajax({
-                        url: "{{ route('operator.createBilling') }}",
-                        type: "POST",
-                        data: {
-                            selected_transactions: selectedTransactions,
-                            _token: "{{ csrf_token() }}"
-                        },
-                        success: function(response) {
-                            Swal.fire({
-                                text: response.message,
-                                icon: "success",
-                                confirmButtonText: "OK"
-                            }).then(() => {
-                                location.reload();
-                            });
-                        },
-                        error: function(xhr) {
-                            Swal.fire({
-                                text: "Error processing billing!",
-                                icon: "error",
-                                confirmButtonText: "OK"
-                            });
-                        }
-                    });
-                } else {
-                    Swal.fire({
-                        text: "Please select at least one transaction!",
-                        icon: "warning",
-                        confirmButtonText: "OK"
-                    });
-                }
-            });
-
-
-        });
-    </script>
+        </script>
     @endpush

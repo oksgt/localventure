@@ -14,6 +14,7 @@ return new class extends Migration
             $table->integer('total_ticket_order');
             $table->decimal('total_amount', 10, 2);
             $table->string('transfer_receipt', 255)->nullable();
+            $table->decimal('transfer_amount', 10, 2);
             $table->datetime('transfer_date')->nullable();
             $table->boolean('transfer_approval')->default(false);
             $table->datetime('transfer_approval_date')->nullable();
