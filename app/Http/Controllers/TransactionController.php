@@ -199,7 +199,26 @@ class TransactionController extends Controller
 
     public function history(Request $request)
     {
-        return "oek";
+        // ✅ Parse the date range from the request
+        $dateRange = explode(' - ', $request->daterange ?? '');
+        $startDate = isset($dateRange[0]) ? Carbon::parse($dateRange[0])->startOfDay() : Carbon::now()->subDays(7)->startOfDay();
+        $endDate = isset($dateRange[1]) ? Carbon::parse($dateRange[1])->endOfDay() : Carbon::now()->endOfDay();
+
+        // ✅ Fetch filtered transactions
+        $transactions = OperatorTransaction::leftJoin('operator_transaction_detail', 'operator_transaction.id', '=', 'operator_transaction_detail.operator_transaction_id')
+            ->leftJoin('destinations', 'operator_transaction.destination_id', '=', 'destinations.id')
+            ->select(
+                'operator_transaction.*',
+                'destinations.name AS name',
+                DB::raw('COUNT(operator_transaction_detail.id) AS total_details')
+            )
+            ->where('operator_transaction.created_by', auth()->id())
+            ->whereBetween('operator_transaction.created_at', [$startDate, $endDate]) // ✅ Apply date filter
+            ->groupBy('operator_transaction.id', 'destinations.name')
+            ->paginate(10)
+            ->appends($request->query());
+
+        return view('admin.home.history', compact('transactions'));
     }
 
 
@@ -244,7 +263,6 @@ class TransactionController extends Controller
             $totalOrders = count($request->selected_transactions);
             $totalAmount = TicketOrder::whereIn('id', $request->selected_transactions)->sum('total_price');
 
-            // ✅ Insert data into `operator_transaction`
             $operatorTransaction = OperatorTransaction::create([
                 'billing_number' => $billingNumber,
                 'total_ticket_order' => $totalOrders,
@@ -253,7 +271,8 @@ class TransactionController extends Controller
                 'created_by' => auth()->id(),
             ]);
 
-            // ✅ Insert related transaction details
+            $destinationId = null; // ✅ Store the first destination_id
+
             foreach ($request->selected_transactions as $ticketOrderId) {
                 $ticketOrder = TicketOrder::find($ticketOrderId);
                 OperatorTransactionDetail::create([
@@ -263,7 +282,19 @@ class TransactionController extends Controller
                     'amount' => $ticketOrder->total_price,
                     'created_by' => auth()->id(),
                 ]);
+
+                if (!$destinationId) {
+                    $destinationId = $ticketOrder->destination_id; // ✅ Assign only the first destination_id
+                }
             }
+
+            // ✅ Perform the update **AFTER** the loop completes
+            DB::table('operator_transaction')
+            ->where('id', $operatorTransaction->id)
+            ->update([
+                'destination_id' => $destinationId
+            ]);
+
 
             DB::commit(); // ✅ Commit transaction
 

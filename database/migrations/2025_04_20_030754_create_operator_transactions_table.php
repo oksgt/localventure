@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::create('operator_transaction', function (Blueprint $table) {
             $table->id();
+            $table->integer('destination_id');
             $table->string('billing_number', 50)->unique();
             $table->integer('total_ticket_order');
             $table->decimal('total_amount', 10, 2);

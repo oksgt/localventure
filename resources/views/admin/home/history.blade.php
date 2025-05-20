@@ -24,109 +24,118 @@
         </div>
 
         <div class="row">
-
             <div class="col-12">
                 <div class="form-group">
-                    <div class="input-group">
-                        <input type="text" id="search-input" class="form-control" placeholder="Invoice Number"
-                            value="{{ request('param') }}"> <!-- ✅ Keeps previous search value -->
-                        <div class="input-group-append">
-                            <button class="btn btn-sm btn-primary" id="search-button" type="button">
-                                <i class="fa fa-search"></i>
-                            </button>
-                        </div>
-                    </div>
+                    <h4 class="my-1 mr-2" for="daterange">Filter Periode:</h4>
+                    <input type="text" id="daterange" class="form-control my-1 mr-sm-2" readonly
+                        style="cursor: pointer; background: white">
                 </div>
             </div>
+        </div>
 
+        @if ($transactions->count() > 0)
+            <div class="row">
 
-            <div id="transaction-container" class="w-100">
-                @foreach ($transactions as $item)
-                    @php
-                        $visitDate = \Carbon\Carbon::parse($item->visit_date);
-                        $dayType = $visitDate->isWeekend() ? 'weekend' : 'weekday';
-                    @endphp
-                    <div class="col-md-12 stretch-card grid-margin grid-margin-md-0">
-                        <div class="card data-icon-card-primary">
-                            <div class="card-body">
-                                <p class="card-title text-white">{{ $item->destination->name }}</p>
-                                <div class="row">
-                                    <div class="col-9 text-white">
-                                        <h3>Rp. {{ number_format($item->total_price, 0, ',', '.') }}</h3>
-                                        <p class="text-white font-weight-500 mb-0">Visit:
-                                            {{ \Carbon\Carbon::parse($item->visit_date)->format('d/m/Y') }}</p>
-                                        <p class="text-white font-weight-500 mb-0">{{ ucwords($dayType) }} -
-                                            {{ $item->total_visitor }} People</p>
-                                        <span class="badge badge-{{ ($item->payment_status == 'paid') ? 'success' : 'warning' }} mt-2">{{ ucwords($item->payment_status) }}</span>
-                                        <small>{{ $item->billing_number }}</small>
-                                    </div>
-                                    <div class="col-2 background-icon">
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-12 mt-2 ">
-                                        <div class="btn-group w-100" role="group" aria-label="Basic example">
-                                            <a type="button" class="btn btn-rounded btn-sm btn-dark" title="Detail"
-                                                href="{{ url('/admin/online-transaction/scan/' . $item->billing_number) }}">
-                                                <i class="fa fa-file-text"></i>
-                                            </a>
-                                            <button type="button" class="btn btn-rounded btn-sm btn-dark" title="Print">
-                                                <i class="fa fa-print"></i>
-                                            </button>
-                                            <button type="button" class="btn btn-rounded btn-sm btn-danger btn-delete"
-                                                title="Delete" data-id="{{ $item->id }}">
-                                                <i class="fa fa-trash"></i>
-                                            </button>
+                <div id="transaction-container" class="w-100">
+                    @foreach ($transactions as $item)
+                        @php
+                            $visitDate = \Carbon\Carbon::parse($item->visit_date);
+                            $dayType = $visitDate->isWeekend() ? 'weekend' : 'weekday';
+                        @endphp
+                        <div class="col-md-12 stretch-card grid-margin grid-margin-md-0">
+                            <div class="card data-icon-card-primary">
+                                <div class="card-body">
+                                    <p class="card-title text-white">{{ $item->billing_number }}</p>
+                                    <div class="row">
+                                        <div class="col-9 text-white">
+                                            <h3>Rp. {{ number_format($item->total_amount, 0, ',', '.') }}</h3>
+                                            <p class="text-white font-weight-500 mb-0">
+                                                {{ \Carbon\Carbon::parse($item->created_at)->format('d/m/Y') }}</p>
+                                            <p class="text-white font-weight-500 mb-0">{{ $item->name }}</p>
+                                            <p
+                                                class="badge badge-{{ $item->transfer_approval == 1 ? 'success' : 'warning' }}">
+                                                {{ $item->transfer_approval == 1 ? 'Paid' : 'Unpaid' }}</p> -
+                                            <small>{{ $item->total_details }} Items</small>
+                                        </div>
+                                        <div class="col-2 background-icon">
                                         </div>
                                     </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-12">
-                                        <small>Created at {{ $item->created_at->diffForHumans() }}</small>
+                                    <div class="row">
+                                        <div class="col-12 mt-2 ">
+                                            <div class="btn-group w-100" role="group" aria-label="Basic example">
+                                                <a type="button" class="btn btn-rounded btn-sm btn-dark" title="Detail"
+                                                    href="{{ url('/admin/online-transaction/scan/' . $item->billing_number) }}">
+                                                    <i class="fa fa-file-text"></i>
+                                                </a>
+                                                <button type="button" class="btn btn-rounded btn-sm btn-dark"
+                                                    title="Print">
+                                                    <i class="fa fa-print"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-rounded btn-sm btn-danger btn-delete"
+                                                    title="Delete" data-id="{{ $item->id }}">
+                                                    <i class="fa fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <small>Created at {{ $item->created_at->diffForHumans() }}</small>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                @endforeach
-            </div>
-
-        </div>
-        <div class="row">
-            <div class="col-12">
-                <div class="btn-group w-100" role="group" aria-label="Basic example">
-                    <!-- First Page -->
-                    <a href="{{ $transactions->url(1) }}"
-                        class="btn btn-primary {{ $transactions->currentPage() == 1 ? 'disabled' : '' }}">
-                        <i class="fa fa-angle-double-left"></i>
-                    </a>
-
-                    <!-- Previous Page -->
-                    <a href="{{ $transactions->previousPageUrl() }}"
-                        class="btn btn-primary {{ $transactions->onFirstPage() ? 'disabled' : '' }}">
-                        <i class="fa fa-angle-left"></i>
-                    </a>
-
-                    <!-- Current Page -->
-                    <button type="button" class="btn btn-inverse-primary">
-                        Page {{ $transactions->currentPage() }} of {{ $transactions->lastPage() }}
-                    </button>
-
-                    <!-- Next Page -->
-                    <a href="{{ $transactions->nextPageUrl() }}"
-                        class="btn btn-primary {{ $transactions->currentPage() == $transactions->lastPage() ? 'disabled' : '' }}">
-                        <i class="fa fa-angle-right"></i>
-                    </a>
-
-                    <!-- Last Page -->
-                    <a href="{{ $transactions->url($transactions->lastPage()) }}"
-                        class="btn btn-primary {{ $transactions->currentPage() == $transactions->lastPage() ? 'disabled' : '' }}">
-                        <i class="fa fa-angle-double-right"></i>
-                    </a>
+                    @endforeach
                 </div>
 
             </div>
-        </div>
+            <div class="row">
+                <div class="col-12 mt-md-2">
+                    <div class="btn-group w-100" role="group" aria-label="Basic example">
+                        <!-- First Page -->
+                        <a href="{{ $transactions->url(1) }}"
+                            class="btn btn-primary {{ $transactions->currentPage() == 1 ? 'disabled' : '' }}">
+                            <i class="fa fa-angle-double-left"></i>
+                        </a>
+
+                        <!-- Previous Page -->
+                        <a href="{{ $transactions->previousPageUrl() }}"
+                            class="btn btn-primary {{ $transactions->onFirstPage() ? 'disabled' : '' }}">
+                            <i class="fa fa-angle-left"></i>
+                        </a>
+
+                        <!-- Current Page -->
+                        <button type="button" class="btn btn-inverse-primary">
+                            Page {{ $transactions->currentPage() }} of {{ $transactions->lastPage() }}
+                        </button>
+
+                        <!-- Next Page -->
+                        <a href="{{ $transactions->nextPageUrl() }}"
+                            class="btn btn-primary {{ $transactions->currentPage() == $transactions->lastPage() ? 'disabled' : '' }}">
+                            <i class="fa fa-angle-right"></i>
+                        </a>
+
+                        <!-- Last Page -->
+                        <a href="{{ $transactions->url($transactions->lastPage()) }}"
+                            class="btn btn-primary {{ $transactions->currentPage() == $transactions->lastPage() ? 'disabled' : '' }}">
+                            <i class="fa fa-angle-double-right"></i>
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+        @else
+            <div class="alert alert-info" role="alert">
+                <h4 class="alert-heading">Oups!</h4>
+                <p>Nothing shown here!</p>
+                <hr>
+                <p class="mb-0">Create billing payments here: <a href="{{ url('/operator-billing') }}"
+                        class="alert-link">Billing</a> </p>
+            </div>
+        @endif
+
+
     @endsection
 
     @push('scripts')
@@ -134,6 +143,22 @@
         <script src="{{ asset('landing-page') }}/js/instascan_.min.js"></script>
         <script>
             $(document).ready(function() {
+                $('#daterange').daterangepicker({
+                    opens: 'left',
+                    locale: {
+                        format: 'YYYY-MM-DD'
+                    },
+                    startDate: moment().subtract(7, 'days'),
+                    endDate: moment()
+                });
+
+                // ✅ Auto-submit on change
+                $('#daterange').on('apply.daterangepicker', function(ev, picker) {
+                    var start = picker.startDate.format('YYYY-MM-DD');
+                    var end = picker.endDate.format('YYYY-MM-DD');
+                    window.location.href = "{{ route('history') }}?daterange=" + start + " - " + end;
+                });
+
                 var scanner = new Instascan.Scanner({
                     video: document.getElementById('qr-video')
                 });
@@ -162,7 +187,8 @@
 
                 $('#search-button').on('click', function() {
                     var billingNumber = $('#search-input').val();
-                    var newUrl = "{{ route('history') }}?param=" + encodeURIComponent(billingNumber); // ✅ Updates URL
+                    var newUrl = "{{ route('history') }}?param=" + encodeURIComponent(
+                        billingNumber); // ✅ Updates URL
 
                     window.location.href = newUrl; // ✅ Redirects to the updated URL (triggers full page reload)
                 });

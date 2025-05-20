@@ -157,31 +157,55 @@
                     });
 
                     if (selectedTransactions.length > 0) {
-                        $.ajax({
-                            url: "{{ route('operator.createBilling') }}",
-                            type: "POST",
-                            data: {
-                                selected_transactions: selectedTransactions,
-                                _token: "{{ csrf_token() }}"
-                            },
-                            success: function(response) {
+                        // ✅ Show confirmation dialog before executing
+                        Swal.fire({
+                            title: "Are you sure?",
+                            text: "Do you want to create a billing for these transactions?",
+                            icon: "question",
+                            showCancelButton: true,
+                            confirmButtonText: "Yes, create!",
+                            cancelButtonText: "Cancel"
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                // ✅ Show loading indicator while processing
                                 Swal.fire({
-                                    title: "Success!",
-                                    text: "Billing created: " + response.billing_number +
-                                        "\nTotal Orders: " + response.total_ticket_order +
-                                        "\nTotal Amount: Rp " + response.total_amount,
-                                    icon: "success",
-                                    confirmButtonText: "OK"
-                                }).then(() => {
-                                    location.reload();
+                                    title: "Processing...",
+                                    text: "Please wait while the billing is created.",
+                                    icon: "info",
+                                    showConfirmButton: false,
+                                    allowOutsideClick: false,
+                                    didOpen: () => {
+                                        Swal.showLoading();
+                                    }
                                 });
-                            },
-                            error: function(xhr) {
-                                Swal.fire({
-                                    title: "Error!",
-                                    text: "Failed to create billing!",
-                                    icon: "error",
-                                    confirmButtonText: "OK"
+
+                                $.ajax({
+                                    url: "{{ route('operator.createBilling') }}",
+                                    type: "POST",
+                                    data: {
+                                        selected_transactions: selectedTransactions,
+                                        _token: "{{ csrf_token() }}"
+                                    },
+                                    success: function(response) {
+                                        Swal.fire({
+                                            title: "Success!",
+                                            text: "Billing created: " + response.billing_number +
+                                                "\nTotal Orders: " + response.total_ticket_order +
+                                                "\nTotal Amount: Rp " + response.total_amount,
+                                            icon: "success",
+                                            confirmButtonText: "OK"
+                                        }).then(() => {
+                                            location.reload(); // ✅ Reload page after confirmation
+                                        });
+                                    },
+                                    error: function(xhr) {
+                                        Swal.fire({
+                                            title: "Error!",
+                                            text: "Failed to create billing!",
+                                            icon: "error",
+                                            confirmButtonText: "OK"
+                                        });
+                                    }
                                 });
                             }
                         });
@@ -193,6 +217,8 @@
                         });
                     }
                 });
+
+
 
 
 

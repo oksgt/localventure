@@ -14,6 +14,7 @@ class OperatorTransaction extends Model
 
     protected $fillable = [
         'billing_number',
+        'destination_id',
         'total_ticket_order',
         'total_amount',
         'transfer_receipt',
