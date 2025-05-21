@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BankAccountController;
+use App\Http\Controllers\BillingOperatorController;
 use App\Http\Controllers\DestinationController;
 use App\Http\Controllers\GuestTypeController;
 use App\Http\Controllers\HomeController as AdminHomeController;
@@ -140,6 +141,13 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
             Route::get('/admin', [AdminHomeController::class, 'index'])->name('admin.home');
             Route::get('/get-visitor-chart-data', [AdminHomeController::class, 'getVisitorDataChart'])->name('admin.visitor.chart.data');
         });
+
+        Route::middleware([RoleMiddleware::class . ':1,2'])->group(function () {
+            Route::get('/admin/billing-operator', [BillingOperatorController::class, 'index'])->name('admin.billing.operator');
+            Route::get('/operator/billing-history', [BillingOperatorController::class, 'billingHistory'])->name('operator.billingHistory');
+            Route::get('/operator/billing-operator-detail', [BillingOperatorController::class, 'billingOperatorDetail'])->name('operator.billingOperatorDetail');
+        });
+
 
         Route::middleware([RoleMiddleware::class . ':1'])->group(function () {
             Route::prefix('admin/payment-option')->group(function () {

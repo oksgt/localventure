@@ -50,6 +50,8 @@
                         </li>
                         <li class="nav-item"> <a class="nav-link" href="{{ route('admin.transaction-onsite.index') }}">On The Spot</a>
                         </li>
+                        <li class="nav-item"> <a class="nav-link" href="{{ route('admin.billing.operator') }}">Billing Operator</a>
+                        </li>
                     </ul>
                 </div>
             </li>
