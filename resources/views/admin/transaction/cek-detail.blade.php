@@ -79,7 +79,6 @@
                                         </div>
                                     </div>
 
-                                    <button class="btn btn-block btn-primary mb-4">Download Ticket</button>
                                 @elseif ($transaction->payment_status == 'received')
                                     <div class="card card-inverse-info mb-3" style="cursor: pointer"
                                         data-id="{{ $transaction->billing_number }}">
@@ -159,6 +158,7 @@
                                         <thead>
                                             <tr>
                                                 <th>#</th>
+                                                <th>Action</th>
                                                 <th>Ticket Code</th>
                                                 <th>Visit Date</th>
                                                 <th>Guest Type</th>
@@ -170,6 +170,10 @@
                                             @foreach ($transactionDetail as $item)
                                                 <tr></tr>
                                                 <td>{{ $loop->iteration }}</td>
+                                                <td>
+                                                    <a href="#" class="btn btn-sm btn-primary"
+                                                        onclick="openTicketModal('{{ url('/download/ticket/' . $item->ticket_code) }}')">Print</a>
+                                                </td>
                                                 <td>{{ $item->ticket_code }}</td>
                                                 <td>{{ \Carbon\Carbon::parse($item->visit_date)->format('d F Y') }}</td>
                                                 <td>{{ $item->guestType->name }}</td>
@@ -187,6 +191,21 @@
             </div>
         </div>
 
+    </div>
+
+    <!-- Bootstrap Modal -->
+    <div class="modal fade" id="ticketModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Ticket Preview</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <iframe id="ticketFrame" src="" style="width:100%; height:500px; border:none;"></iframe>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- ✅ Modal -->
@@ -315,5 +334,11 @@
                 });
             });
         });
+
+        function openTicketModal(url) {
+            document.getElementById("ticketFrame").src = url; // Load the ticket link into the iframe
+            var ticketModal = new bootstrap.Modal(document.getElementById("ticketModal"));
+            ticketModal.show();
+        }
     </script>
 @endpush

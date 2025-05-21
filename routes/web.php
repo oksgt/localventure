@@ -138,6 +138,7 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
         });
 
         Route::middleware([RoleMiddleware::class . ':1,2,3'])->group(function () {
+            Route::get('/download/ticket/{billing}', [TransactionController::class, 'downloadTicket'])->name('download.ticket');
             Route::get('/admin', [AdminHomeController::class, 'index'])->name('admin.home');
             Route::get('/get-visitor-chart-data', [AdminHomeController::class, 'getVisitorDataChart'])->name('admin.visitor.chart.data');
         });
@@ -172,7 +173,7 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
             Route::get('/form-ticket-purchase/{destinationId}', [AdminHomeController::class, 'formTicketPurchase'])->name('form-ticket-purchase.index');
             Route::post('/ticket-purchase', [BookingController::class, 'storeTicketPurchase'])->name('ticket.purchase');
             Route::get('/admin/online-transaction/scan/{billing}', [TransactionController::class, 'detailOperator']);
-            Route::get('/download/ticket/{billing}', [TransactionController::class, 'downloadTicket'])->name('download.ticket');
+
             Route::get('/history', [TransactionController::class, 'history'])->name('history');
             Route::delete('/admin/online-transaction/delete/{id}', [TransactionController::class, 'delete'])->name('transaction.delete');
             Route::get('/operator-billing', [TransactionController::class, 'OperatorBilling'])->name('operator-billing');

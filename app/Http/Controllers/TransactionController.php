@@ -233,22 +233,25 @@ class TransactionController extends Controller
 
     public function downloadTicket(Request $request)
     {
-        $html = view('admin.transaction.ticket')->render();
+        // dd($request->billing);
 
-        // ✅ Extract only the div with class 'ticket-wrap'
-        $dom = new DOMDocument();
-        @$dom->loadHTML($html);
-        $xpath = new DOMXPath($dom);
-        $ticketWrap = $xpath->query("//div[contains(@class, 'ticket-wrap')]")->item(0);
+        return view('admin.transaction.ticket');
+        // $html = view('admin.transaction.ticket')->render();
 
-        if ($ticketWrap) {
-            $pdf = Pdf::loadHTML($ticketWrap->C14N()) // ✅ Converts only the grey box into PDF
-                ->setPaper('A5', 'portrait'); // ✅ Fits thermal print width
+        // // ✅ Extract only the div with class 'ticket-wrap'
+        // $dom = new DOMDocument();
+        // @$dom->loadHTML($html);
+        // $xpath = new DOMXPath($dom);
+        // $ticketWrap = $xpath->query("//div[contains(@class, 'ticket-wrap')]")->item(0);
 
-            return $pdf->download('ticket.pdf');
-        }
+        // if ($ticketWrap) {
+        //     $pdf = Pdf::loadHTML($ticketWrap->C14N()) // ✅ Converts only the grey box into PDF
+        //         ->setPaper('A5', 'portrait'); // ✅ Fits thermal print width
 
-        return response()->json(['error' => 'Ticket content not found'], 404);
+        //     return $pdf->download('ticket.pdf');
+        // }
+
+        // return response()->json(['error' => 'Ticket content not found'], 404);
     }
 
     public function history(Request $request)

@@ -42,7 +42,8 @@
                                             <tr>
                                                 <td><strong>Visit Date</strong></td>
                                                 <td>:</td>
-                                                <td>{{ \Carbon\Carbon::parse($transaction->visit_date)->format('d F Y') }}</td>
+                                                <td>{{ \Carbon\Carbon::parse($transaction->visit_date)->format('d F Y') }}
+                                                </td>
                                             </tr>
                                             <tr>
                                                 <td><strong>Name</strong></td>
@@ -72,7 +73,8 @@
                                             <tr>
                                                 <td><strong>Order At</strong></td>
                                                 <td>:</td>
-                                                <td>{{ \Carbon\Carbon::parse($transaction->created_at)->format('d F Y H:i:s') }}</td>
+                                                <td>{{ \Carbon\Carbon::parse($transaction->created_at)->format('d F Y H:i:s') }}
+                                                </td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -93,8 +95,10 @@
                                         <div class="card card-dark-blue">
                                             <div class="card-body">
                                                 <p class="mb-4">Total Transaction</p>
-                                                <p class="fs-30 mb-2">{{ 'Rp ' . number_format($transaction->total_price, 2, ',', '.') }}</p>
-                                                <p>{{ \Carbon\Carbon::parse($transaction->visit_date)->isWeekend() ? 'Weekend' : 'Weekday' }}</p>
+                                                <p class="fs-30 mb-2">
+                                                    {{ 'Rp ' . number_format($transaction->total_price, 2, ',', '.') }}</p>
+                                                <p>{{ \Carbon\Carbon::parse($transaction->visit_date)->isWeekend() ? 'Weekend' : 'Weekday' }}
+                                                </p>
                                             </div>
                                         </div>
                                     </div>
@@ -104,7 +108,8 @@
                                         <div class="card card-inverse-info">
                                             <div class="card-body">
                                                 <p class="mb-4">Payment Channel</p>
-                                                <p class="fs-30 mb-2">{{ $transaction->paymentType->payment_type_name }}</p>
+                                                <p class="fs-30 mb-2">{{ $transaction->paymentType->payment_type_name }}
+                                                </p>
                                                 @if ($transaction->payment_type_id == 3)
                                                     <p>{{ $transaction->bank_name }}</p>
                                                 @elseif ($transaction->payment_type_id == 4)
@@ -116,7 +121,8 @@
                                     <div class="col-md-6 mb-4 stretch-card transparent">
 
                                         @if ($transaction->payment_status == 'pending')
-                                            <div class="card card-inverse-warning" style="cursor: pointer" id="showPayment" data-id="{{ $transaction->billing_number }}">
+                                            <div class="card card-inverse-warning" style="cursor: pointer" id="showPayment"
+                                                data-id="{{ $transaction->billing_number }}">
                                                 <div class="card-body">
                                                     <p class="mb-4">Payment Status</p>
                                                     <p class="fs-30 mb-2">{{ ucwords($transaction->payment_status) }}</p>
@@ -124,7 +130,8 @@
                                                 </div>
                                             </div>
                                         @elseif ($transaction->payment_status == 'paid')
-                                            <div class="card card-inverse-success" style="cursor: pointer" id="showPayment" data-id="{{ $transaction->billing_number }}">
+                                            <div class="card card-inverse-success" style="cursor: pointer" id="showPayment"
+                                                data-id="{{ $transaction->billing_number }}">
                                                 <div class="card-body">
                                                     <p class="mb-4">Payment Status</p>
                                                     <p class="fs-30 mb-2">{{ ucwords($transaction->payment_status) }}</p>
@@ -132,7 +139,8 @@
                                                 </div>
                                             </div>
                                         @else
-                                            <div class="card card-inverse-danger" style="cursor: pointer" id="showPayment" data-id="{{ $transaction->billing_number }}">
+                                            <div class="card card-inverse-danger" style="cursor: pointer" id="showPayment"
+                                                data-id="{{ $transaction->billing_number }}">
                                                 <div class="card-body">
                                                     <p class="mb-4">Payment Status</p>
                                                     <p class="fs-30 mb-2">{{ ucwords($transaction->payment_status) }}</p>
@@ -154,6 +162,7 @@
                                         <thead>
                                             <tr>
                                                 <th>#</th>
+                                                <th>Action</th>
                                                 <th>Ticket Code</th>
                                                 <th>Visit Date</th>
                                                 <th>Guest Type</th>
@@ -165,6 +174,10 @@
                                             @foreach ($transactionDetail as $item)
                                                 <tr></tr>
                                                 <td>{{ $loop->iteration }}</td>
+                                                <td>
+                                                    <a href="#" class="btn btn-sm btn-primary"
+                                                        onclick="openTicketModal('{{ url('/download/ticket/' . $item->ticket_code) }}')">Print</a>
+                                                </td>
                                                 <td>{{ $item->ticket_code }}</td>
                                                 <td>{{ \Carbon\Carbon::parse($item->visit_date)->format('d F Y') }}</td>
                                                 <td>{{ $item->guestType->name }}</td>
@@ -182,6 +195,21 @@
             </div>
         </div>
 
+    </div>
+
+    <!-- Bootstrap Modal -->
+    <div class="modal fade" id="ticketModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Ticket Preview</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <iframe id="ticketFrame" src="" style="width:100%; height:500px; border:none;"></iframe>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- ✅ Modal -->
@@ -219,39 +247,40 @@
 
     <!-- ✅ Image Modal -->
     <div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Proof of Payment</h5>
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-            </div>
-            <div class="modal-body text-center">
-                <div class="row">
-                    <div class="col-12 col-md-6">
-                        <img id="modalImage" src="" class="img-fluid" alt="Bukti Transfer">
-                    </div>
-                    <div class="col-12 col-md-6">
-                        <form method="post">
-                            <input type="hidden" id="paymentId"> <!-- ✅ Hidden input for Payment ID -->
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Proof of Payment</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body text-center">
+                    <div class="row">
+                        <div class="col-12 col-md-6">
+                            <img id="modalImage" src="" class="img-fluid" alt="Bukti Transfer">
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <form method="post">
+                                <input type="hidden" id="paymentId"> <!-- ✅ Hidden input for Payment ID -->
 
-                            <div class="form-group">
-                                <label for="status">Status</label>
-                                <select name="status" id="status" class="custom-select">
-                                    <option value="">-- Select Status --</option>
-                                    <option value="0">Pending</option>
-                                    <option value="1">Approve</option>
-                                    <option value="2">Reject</option>
-                                </select>
-                            </div>
+                                <div class="form-group">
+                                    <label for="status">Status</label>
+                                    <select name="status" id="status" class="custom-select">
+                                        <option value="">-- Select Status --</option>
+                                        <option value="0">Pending</option>
+                                        <option value="1">Approve</option>
+                                        <option value="2">Reject</option>
+                                    </select>
+                                </div>
 
-                            <button type="button" class="btn btn-primary btn-block" id="btnApprovePayment">Submit</button>
-                        </form>
+                                <button type="button" class="btn btn-primary btn-block"
+                                    id="btnApprovePayment">Submit</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 @endsection
 
 @push('scripts')
@@ -260,6 +289,8 @@
 
     <script>
         $(document).ready(function() {
+
+
 
             // ✅ Handle image modal
             $('#imageModal').on('show.bs.modal', function(event) {
@@ -287,7 +318,11 @@
                 $.ajax({
                     url: "{{ route('admin.payment.update') }}",
                     type: "POST",
-                    data: { id: paymentId, status: newStatus, _token: "{{ csrf_token() }}" },
+                    data: {
+                        id: paymentId,
+                        status: newStatus,
+                        _token: "{{ csrf_token() }}"
+                    },
                     success: function(response) {
                         Swal.fire({
                             text: response.message,
@@ -312,24 +347,32 @@
                 var billingNumber = $(this).data('id');
 
                 // ✅ Show loading spinner
-                $('#modalContent').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-2x"></i></div>');
+                $('#modalContent').html(
+                    '<div class="text-center"><i class="fa fa-spinner fa-spin fa-2x"></i></div>');
                 $('#paymentModal').modal('show');
 
                 $.ajax({
                     url: "{{ route('admin.payment.show') }}",
                     type: "POST",
-                    data: { billing_number: billingNumber, _token: "{{ csrf_token() }}" },
+                    data: {
+                        billing_number: billingNumber,
+                        _token: "{{ csrf_token() }}"
+                    },
                     success: function(response) {
                         var payments = response.data;
                         var rows = '';
 
                         // ✅ Loop through multiple records
                         payments.forEach(function(payment) {
-                            var statusBadge = '<span class="badge badge-warning p-2">Oncheck</span>';
-                            if (payment.status == 1) statusBadge = '<span class="badge badge-success p-2">Approved</span>';
-                            if (payment.status == 2) statusBadge = '<span class="badge badge-danger p-2">Rejected</span>';
+                            var statusBadge =
+                                '<span class="badge badge-warning p-2">Oncheck</span>';
+                            if (payment.status == 1) statusBadge =
+                                '<span class="badge badge-success p-2">Approved</span>';
+                            if (payment.status == 2) statusBadge =
+                                '<span class="badge badge-danger p-2">Rejected</span>';
 
-                            var imageUrl = payment.image ? "{{ asset('storage') }}/" + payment.image : '#';
+                            var imageUrl = payment.image ? "{{ asset('storage') }}/" +
+                                payment.image : '#';
 
                             rows += `
                                 <tr>
@@ -340,8 +383,8 @@
                                     <td>
                                         ${payment.image
                                             ? `<a href="#" data-toggle="modal" data-target="#imageModal" data-image="${imageUrl}" data-id="${payment.id}">
-                                                <img src="${imageUrl}" class="img-fluid" style="max-width: 100px;">
-                                            </a>`
+                                                    <img src="${imageUrl}" class="img-fluid" style="max-width: 100px;">
+                                                </a>`
                                             : '-'}
                                     </td>
                                     <td>${statusBadge}</td>
@@ -352,10 +395,18 @@
                         $('#modalContent').html(rows);
                     },
                     error: function() {
-                        $('#modalContent').html('<p class="text-center text-danger">Error loading data. Please try again.</p>');
+                        $('#modalContent').html(
+                            '<p class="text-center text-danger">Error loading data. Please try again.</p>'
+                            );
                     }
                 });
             });
         });
+
+        function openTicketModal(url) {
+            document.getElementById("ticketFrame").src = url; // Load the ticket link into the iframe
+            var ticketModal = new bootstrap.Modal(document.getElementById("ticketModal"));
+            ticketModal.show();
+        }
     </script>
 @endpush
