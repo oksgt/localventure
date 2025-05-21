@@ -20,6 +20,10 @@ class HomeController extends Controller
         if (session('role_id') == 1) {
             $destinations = Destination::all();
             return view('admin.home.index', compact('destinations'));
+        } else if (session('role_id') == 2) {
+            $userMapping = UserMapping::where('user_id', Auth::id())->first();
+            $destinations = Destination::where('id', $userMapping->destination_id)->get();
+            return view('admin.home.index', compact('destinations'));
         } else {
 
             $userMapping = UserMapping::where('user_id', Auth::id())->first();

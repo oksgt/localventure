@@ -31,9 +31,31 @@ class TransactionController extends Controller
     public function getData(Request $request)
     {
         if ($request->ajax()) {
-            $query = TicketOrder::join('destinations', 'ticket_orders.destination_id', '=', 'destinations.id')
+
+            if(auth()->user()->role_id == 1){
+                $query = TicketOrder::join('destinations', 'ticket_orders.destination_id', '=', 'destinations.id')
+                    ->join('payment_type', 'ticket_orders.payment_type_id', '=', 'payment_type.id')
+                    ->where('ticket_orders.purchasing_type', 'online')
+                    ->orderBy('ticket_orders.created_at', 'desc')
+                    ->select([
+                        'ticket_orders.id',
+                        'ticket_orders.visit_date',
+                        'ticket_orders.billing_number',
+                        'destinations.name AS destination_name', // ✅ Aliased column
+                        'ticket_orders.visitor_name',
+                        'ticket_orders.total_visitor',
+                        'ticket_orders.notes',
+                        'ticket_orders.total_price',
+                        'payment_type.payment_type_name AS payment_name',
+                        'ticket_orders.payment_status',
+                        'ticket_orders.created_at'
+                    ]);
+            } else if(auth()->user()->role_id == 2){
+                $query = TicketOrder::join('destinations', 'ticket_orders.destination_id', '=', 'destinations.id')
                 ->join('payment_type', 'ticket_orders.payment_type_id', '=', 'payment_type.id')
+                ->join('user_mapping', 'ticket_orders.destination_id', '=', 'user_mapping.destination_id')
                 ->where('ticket_orders.purchasing_type', 'online')
+                ->where('user_mapping.user_id', auth()->user()->id)
                 ->orderBy('ticket_orders.created_at', 'desc')
                 ->select([
                     'ticket_orders.id',
@@ -48,6 +70,7 @@ class TransactionController extends Controller
                     'ticket_orders.payment_status',
                     'ticket_orders.created_at'
                 ]);
+            }
 
             return DataTables::of($query)
                 ->filterColumn('destination_name', function ($query, $keyword) {
@@ -88,6 +111,10 @@ class TransactionController extends Controller
     {
         $transaction = TicketOrder::with('destination', 'paymentType')->findOrFail($id);
 
+        if (!is_user_mapped(auth()->id(), $transaction->destination_id)) {
+            return abort(403);
+        }
+
         if ($transaction->payment_type_id == 3) {
             $transaction = TicketOrder::with('destination', 'paymentType')
                 ->leftJoin('bank_accounts', 'ticket_orders.bank_id', '=', 'bank_accounts.id')
@@ -117,7 +144,8 @@ class TransactionController extends Controller
     public function getDataOnsite(Request $request)
     {
         if ($request->ajax()) {
-            $query = TicketOrder::join('destinations', 'ticket_orders.destination_id', '=', 'destinations.id')
+            if(auth()->user()->role_id == 1){
+                $query = TicketOrder::join('destinations', 'ticket_orders.destination_id', '=', 'destinations.id')
                 ->join('payment_type', 'ticket_orders.payment_type_id', '=', 'payment_type.id')
                 ->where('ticket_orders.purchasing_type', 'onsite')
                 ->orderBy('ticket_orders.created_at', 'desc')
@@ -134,6 +162,27 @@ class TransactionController extends Controller
                     'ticket_orders.payment_status',
                     'ticket_orders.created_at'
                 ]);
+            } else if (auth()->user()->role_id == 2) {
+                $query = TicketOrder::join('destinations', 'ticket_orders.destination_id', '=', 'destinations.id')
+                ->join('user_mapping', 'ticket_orders.destination_id', '=', 'user_mapping.destination_id')
+                ->join('payment_type', 'ticket_orders.payment_type_id', '=', 'payment_type.id')
+                ->where('user_mapping.user_id', auth()->user()->id)
+                ->where('ticket_orders.purchasing_type', 'onsite')
+                ->orderBy('ticket_orders.created_at', 'desc')
+                ->select([
+                    'ticket_orders.id',
+                    'ticket_orders.visit_date',
+                    'ticket_orders.billing_number',
+                    'destinations.name AS destination_name', // ✅ Aliased column
+                    'ticket_orders.visitor_name',
+                    'ticket_orders.total_visitor',
+                    'ticket_orders.notes',
+                    'ticket_orders.total_price',
+                    'payment_type.payment_type_name AS payment_name',
+                    'ticket_orders.payment_status',
+                    'ticket_orders.created_at'
+                ]);
+            }
 
             return DataTables::of($query)
                 ->filterColumn('destination_name', function ($query, $keyword) {
@@ -173,6 +222,11 @@ class TransactionController extends Controller
     public function detailOnSite($id)
     {
         $transaction = TicketOrder::with('destination', 'paymentType')->findOrFail($id);
+
+        if (!is_user_mapped(auth()->id(), $transaction->destination_id)) {
+            return abort(403);
+        }
+
         $transactionDetail = TicketOrderDetail::where('order_id', $transaction->id)->get();
         return view('admin.transaction.detail', compact('transaction', 'transactionDetail'));
     }
