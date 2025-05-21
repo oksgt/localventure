@@ -69,7 +69,16 @@
                 serverSide: true,
                 ajax: "{{ route('operator.billingHistory') }}",
                 columns: [
-                    { data: 'id', name: 'id' },
+                    {
+                        data: null,
+                        name: 'row_number',
+                        render: function (data, type, row, meta) {
+                            return meta.row + 1; // ✅ Auto-increment row number
+                        },
+                        orderable: false,
+                        searchable: false
+                    },
+
                     { data: 'action', name: 'action', orderable: false, searchable: false },
                     { data: 'created_by', name: 'created_by' },
                     { data: 'destination_name', name: 'destination_name' },

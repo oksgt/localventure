@@ -19,7 +19,7 @@ return new class extends Migration
             $table->datetime('transfer_date')->nullable();
             $table->boolean('transfer_approval')->default(false);
             $table->datetime('transfer_approval_date')->nullable();
-            $table->foreignId('transfer_approval_user')->nullable()->constrained('user_mapping')->onDelete('set null');
+            $table->foreignId('transfer_approval_user')->nullable();
             $table->timestamps();
             $table->softDeletes();
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();

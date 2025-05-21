@@ -8,6 +8,7 @@ use App\Models\TicketOrder;
 use App\Models\TicketOrderDetail;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
 
 class BillingOperatorController extends Controller
@@ -57,36 +58,71 @@ class BillingOperatorController extends Controller
                 ->make(true);
         }
 
-        return view('admin.billing-history');
     }
 
     public function billingOperatorDetail(Request $request)
     {
-        $operatorTransaction = OperatorTransaction::find($request->id);
+        $operatorTransaction = OperatorTransaction::
+        join('destinations', 'operator_transaction.destination_id', '=', 'destinations.id')
+        ->where('operator_transaction.id', $request->id)->first();
+
+        // dd($operatorTransaction);
 
         if (!$operatorTransaction) {
             return abort(404);
         }
 
-        // ✅ Get ticket_order_ids from `operator_transaction_detail`
-        $ticketOrderIds = OperatorTransactionDetail::where('operator_transaction_id', $request->id)
-            ->pluck('ticket_order_id');
+        $OperatorTransactionDetail = OperatorTransactionDetail::
+        join('ticket_orders', 'operator_transaction_detail.ticket_order_id', '=', 'ticket_orders.id')
+        ->where('operator_transaction_id', $request->id)
+        ->select('operator_transaction_detail.*', 'ticket_orders.billing_number AS invoice', 'ticket_orders.created_at as order_date')
+        ->get();
 
-        // ✅ Fetch ticket_orders while avoiding ambiguous column names
-        $ticketOrders = TicketOrder::whereIn('ticket_orders.id', $ticketOrderIds) // 🔹 Explicitly reference `ticket_orders.id`
-            ->leftJoin('destinations', 'ticket_orders.destination_id', '=', 'destinations.id')
-            ->select('ticket_orders.*', 'destinations.name AS destination_name')
-            ->get();
+        // dd($OperatorTransactionDetail);
 
-        // ✅ Fetch related ticket_order_details
-        $ticketOrderDetails = TicketOrderDetail::whereIn('order_id', $ticketOrders->pluck('id'))
-            ->leftJoin('guest_types', 'ticket_order_details.guest_type_id', '=', 'guest_types.id')
-            ->select('ticket_order_details.*', 'guest_types.name')
-            ->get();
+        // // ✅ Get ticket_order_ids from `operator_transaction_detail`
+        // $ticketOrderIds = OperatorTransactionDetail::where('operator_transaction_id', $request->id)
+        //     ->pluck('ticket_order_id');
 
-        dump($ticketOrders);
-        dd($ticketOrderDetails);
+        // // ✅ Fetch ticket_orders while avoiding ambiguous column names
+        // $ticketOrders = TicketOrder::whereIn('ticket_orders.id', $ticketOrderIds) // 🔹 Explicitly reference `ticket_orders.id`
+        //     ->leftJoin('destinations', 'ticket_orders.destination_id', '=', 'destinations.id')
+        //     ->select('ticket_orders.*', 'destinations.name AS destination_name')
+        //     ->first();
 
-        return view('admin.billing-operator-detail', compact('ticketOrders', 'ticketOrderDetails'));
+        // // ✅ Fetch related ticket_order_details
+        // $ticketOrderDetails = TicketOrderDetail::whereIn('order_id', $ticketOrders->pluck('id'))
+        //     ->leftJoin('guest_types', 'ticket_order_details.guest_type_id', '=', 'guest_types.id')
+        //     ->select('ticket_order_details.*', 'guest_types.name')
+        //     ->get();
+
+        // dump($ticketOrders);
+        // dd($ticketOrderDetails);
+
+        return view('admin.billing.detail', compact('operatorTransaction', 'OperatorTransactionDetail'));
     }
+
+    public function approvePayment(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+
+            DB::table('operator_transaction')
+            ->where('billing_number', $request->billing_number)
+            ->update([
+                'transfer_approval' => 1,
+                'transfer_approval_date' => now(),
+                'transfer_approval_user' => auth()->id(),
+            ]);
+
+
+            DB::commit();
+
+            return response()->json(['message' => 'Payment approved successfully!'], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['message' => 'Error approving payment!', 'error' => $e->getMessage()], 500);
+        }
+    }
+
 }

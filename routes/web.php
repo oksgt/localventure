@@ -146,6 +146,7 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
             Route::get('/admin/billing-operator', [BillingOperatorController::class, 'index'])->name('admin.billing.operator');
             Route::get('/operator/billing-history', [BillingOperatorController::class, 'billingHistory'])->name('operator.billingHistory');
             Route::get('/operator/billing-operator-detail', [BillingOperatorController::class, 'billingOperatorDetail'])->name('operator.billingOperatorDetail');
+            Route::post('/operator/approve-payment', [BillingOperatorController::class, 'approvePayment'])->name('operator.approvePayment');
         });
 
 
