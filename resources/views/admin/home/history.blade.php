@@ -67,10 +67,10 @@
                                                     href="{{ route('operator.historyDetail', ['billing_number' => $item->billing_number]) }}">
                                                     <i class="fa fa-file-text"></i>
                                                 </a>
-                                                <button type="button" class="btn btn-rounded btn-sm btn-dark"
+                                                {{-- <button type="button" class="btn btn-rounded btn-sm btn-dark"
                                                     title="Print">
                                                     <i class="fa fa-print"></i>
-                                                </button>
+                                                </button> --}}
                                                 <button type="button" class="btn btn-rounded btn-sm btn-danger delete-transaction-btn"
                                                     title="Delete" data-transaction-id="{{ $item->id }}">
                                                     <i class="fa fa-trash"></i>
