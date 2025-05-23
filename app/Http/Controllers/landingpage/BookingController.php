@@ -15,6 +15,7 @@ use App\Models\TicketOrderDetail;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Illuminate\Support\Str;
@@ -692,4 +693,32 @@ class BookingController extends Controller
 
         return $pdf->download($filename);
     }
+
+    public function updateCheckIn(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+
+            $updatedRows = DB::table('ticket_order_details')
+                ->where('ticket_code', $request->ticket_code)
+                ->update([
+                    'check_in_at' => now(),
+                    'check_in_by' => Auth::id(),
+                ]);
+
+            DB::commit();
+
+            if ($updatedRows > 0) {
+                return response()->json(['message' => 'Check-in updated successfully!'], 200);
+            } else {
+                return response()->json(['message' => 'Ticket not found or already checked in!'], 404);
+            }
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['message' => 'Error updating check-in!', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+
 }
