@@ -82,9 +82,15 @@
                             <p>* Note: Download Invoice atau Screenshot halaman ini</p>
                         </div>
                     @endif
+                    <div style="display: flex; gap: 10px;">
+                        <button onclick="window.open('{{ url('/') }}', '_self')"
+                            style="margin-top: 20px; width: 200px;">Kembali ke Beranda <i
+                            class="zmdi zmdi-arrow-left"></i></button>
 
-                    <button id="downloadPdf" data-id="{{ $result['id'] }}" style="margin-top: 20px; width: 200px;">Download Invoice <i
+                        <button id="downloadPdf" data-id="{{ $result['id'] }}"
+                            style="margin-top: 20px; width: 200px;">Download Invoice <i
                             class="zmdi zmdi-download"></i></button>
+                    </div>
                 </div>
             </div>
         </div>

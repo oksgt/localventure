@@ -20,14 +20,14 @@ class PaymentConfirmationController extends Controller
             'bank_name' => 'required|string',
             'account_name' => 'required|string',
             'account_number' => 'required|string',
-            'image' => 'required|image|mimes:jpeg,png,jpg|max:5120',
+            'image' => 'required|image|mimes:jpeg,jpg|max:5120',
         ], [
             'ticket_order_id.required' => 'Ticket order ID harus diisi.',
             'billing_number.required' => 'Invoice number harus diisi.',
             'transfer_amount.required' => 'Jumlah transfer harus diisi.',
             'transfer_amount.numeric' => 'Jumlah transfer harus berupa angka.',
             'image.image' => 'File harus berupa gambar.',
-            'image.mimes' => 'Format gambar harus JPG, JPEG, atau PNG.',
+            'image.mimes' => 'Format gambar harus JPG, JPEG. File yang Anda unggah adalah: ' . ($request->file('image') ? $request->file('image')->getClientOriginalExtension() : 'Tidak valid'),
             'image.max' => 'Ukuran gambar tidak boleh lebih dari 5MB.'
         ]);
 

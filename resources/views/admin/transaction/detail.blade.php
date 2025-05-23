@@ -383,7 +383,7 @@
                                             ? `<a href="#" data-toggle="modal" data-target="#imageModal" data-image="${imageUrl}" data-id="${payment.id}">
                                                     <img src="${imageUrl}" class="img-fluid" style="max-width: 100px;">
                                                 </a>`
-                                            : '-'}
+                                            : '-'} <i class="fa fa-arrow-left"></i> <span class="badge badge-info p-2">Click image to view</span>
                                     </td>
                                     <td>${statusBadge}</td>
                                     <td>${new Date(payment.created_at).toLocaleString()}</td>

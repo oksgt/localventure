@@ -21,8 +21,18 @@ class HomeController extends Controller
             $destinations = Destination::all();
             return view('admin.home.index', compact('destinations'));
         } else if (session('role_id') == 2) {
+            $destinations = collect(); // ✅ Default to an empty collection
+
             $userMapping = UserMapping::where('user_id', Auth::id())->first();
-            $destinations = Destination::where('id', $userMapping->destination_id)->get();
+
+            if ($userMapping) {
+                $destinations = Destination::where('id', $userMapping->destination_id)->get();
+            }
+
+            // if ($destinations->isEmpty()) {
+            //     return view('admin.home.index')->with('info', 'No destinations found!');
+            // }
+
             return view('admin.home.index', compact('destinations'));
         } else {
 

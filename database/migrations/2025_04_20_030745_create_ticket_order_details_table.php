@@ -24,6 +24,8 @@ return new class extends Migration
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignId('deleted_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->dateTime('check_in_at')->nullable();
+            $table->integer('check_in_by')->nullable();
         });
     }
 

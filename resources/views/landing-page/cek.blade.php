@@ -112,9 +112,11 @@
                         <li>Jumlah: {{ $transaction->total_visitor }} orang</li>
                         <li>Status:
                             @if ($transaction->payment_status == 'pending')
-                                <span class="badge badge-warning p-2">{{ ucwords($transaction->payment_status) }}</span>
+                                <span
+                                    class="badge badge-warning p-2">{{ ucwords($transaction->payment_status) }}</span>
                             @elseif ($transaction->payment_status == 'paid')
-                                <span class="badge badge-success p-2">{{ ucwords($transaction->payment_status) }}</span>
+                                <span
+                                    class="badge badge-success p-2">{{ ucwords($transaction->payment_status) }}</span>
                             @else
                                 <span class="badge badge-danger p-2">{{ ucwords($transaction->payment_status) }}</span>
                             @endif
@@ -122,13 +124,42 @@
                         </li>
                     </ul>
 
-                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                        <strong>Oups!</strong> Nampaknya kamu belum selesaikan pembayarannya ya? <br> Konfirmasi yuk
-                        kalau sudah :)
-                    </div>
 
-                    <p><a href="#" class="btn btn-primary" data-toggle="modal"
-                            data-target="#paymentModal">Konfirmasi</a></p>
+                    @if ($confirmation !== null)
+                        @foreach ($confirmation as $item)
+                            @if ($item->status == 2) <!-- jika rejected -->
+                                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                    <strong>Oups!</strong> Nampaknya kamu belum selesaikan pembayarannya ya? <br> Konfirmasi yuk
+                                    kalau sudah :)
+                                </div>
+                                <p><a href="#" class="btn btn-primary" data-toggle="modal"
+                                        data-target="#paymentModal">Konfirmasi</a></p>
+
+                            @elseif ($item->status == 0) <!-- jika pending -->
+                                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                                    Mohon ditunggu yaa, konfirmasi kamu sedang diproses :)
+                                </div>
+                            @elseif ($item->status == 1) <!-- jika approve -->
+                                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                    <strong>Selamat!</strong> Konfirmasi kamu telah disetujui
+                                </div>
+                                <div class="btn-group w-100" role="group" aria-label="Basic example">
+                                    <a type="button" class="btn btn-outline-success" href="{{ url('/download-invoice/'.$transaction->id) }}">Download Invoice</a>
+                                    <button type="button" class="btn btn-success">Download Ticket</button>
+                                </div>
+                            @endif
+                        @endforeach
+                    @else
+                        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                            <strong>Oups!</strong> Nampaknya kamu belum selesaikan pembayarannya ya? <br> Konfirmasi yuk
+                            kalau sudah :)
+                        </div>
+
+                        <p><a href="#" class="btn btn-primary" data-toggle="modal"
+                                data-target="#paymentModal">Konfirmasi</a></p>
+                    @endif
+
+
                 </div>
             </div>
 
@@ -335,6 +366,7 @@
     <script src="{{ asset('landing-page') }}/js/typed.js"></script>
     <script src="{{ asset('landing-page') }}/js/custom.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.7/inputmask.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
         $(document).ready(function() {
@@ -361,7 +393,12 @@
                     contentType: false,
                     processData: false,
                     success: function(response) {
-                        alert(response.message);
+                        Swal.fire({
+                            title: "Success!",
+                            text: response.message,
+                            icon: "success",
+                            confirmButtonText: "OK"
+                        });
                         $('#paymentModal').modal('hide');
                     },
                     error: function(response) {

@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Session;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Illuminate\Support\Str;
 
 class BookingController extends Controller
 {
@@ -541,10 +542,14 @@ class BookingController extends Controller
 
         $confirmation = null;
 
-        $confirmationData = PaymentConfirmation::where('billing_number', $billing)->get();
+        $confirmationData = PaymentConfirmation::where('billing_number', $billing)
+            ->orderBy('created_at', 'desc')
+            ->limit(1)->get();
         if ($confirmationData) {
             $confirmation = $confirmationData;
         }
+
+        // dd($confirmation);
 
         return view('landing-page.cek', compact('transaction', 'selectedImage', 'billing', 'destination', 'confirmation'));
     }
@@ -647,5 +652,37 @@ class BookingController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
+
+    public function downloadTicketBaru(Request $request)
+    {
+        // $qrcode = base64_encode(QrCode::format('svg')->size(200)->errorCorrection('H')->generate('string'));
+        $ticketOrderDetails = TicketOrderDetail::where('order_id', 77)->get();
+        foreach ($ticketOrderDetails as $ticketOrderDetail) {
+            $ticketOrderDetail->qrcode = base64_encode(QrCode::format('svg')->size(200)
+            ->color(26, 55, 77) // 🔹 Converted hex #1a374d to RGB (26, 55, 77)
+            ->backgroundColor(255, 255, 255)
+            ->errorCorrection('H')->generate($ticketOrderDetail->ticket_code));
+        }
+
+        $ticketOrder = TicketOrder::with('destination', 'paymentType')
+            ->where('id', 77)->first();
+
+        $imagePath = public_path("storage/assets/image/ticket-bg.png");
+        $base64Image = $this->processImage($imagePath);
+
+        $data = [
+            'title' => $ticketOrder->destination->name,
+            'ticketOrderDetails' => $ticketOrderDetails,
+            'base64Image' => $base64Image,
+            'destination_image' =>$this->processImage(public_path("storage/destination/" . $ticketOrder->destination->images[0]->filename)),
+        ];
+
+        $pdf = Pdf::loadView('pdf_template', $data)
+            ->setPaper('A6', 'portrait');
+
+        Pdf::setOption(['isRemoteEnabled' => true]);
+
+        return $pdf->stream('ticket_background.pdf');
     }
 }

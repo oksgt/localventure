@@ -23,145 +23,151 @@
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-md-12 mb-3">
-                <div class="card">
-                    <div class="card-body">
-                        <h4 class="card-title">Filter data</h4>
-                        <form class="form-inline mb-4">
-                            <div class="form-group">
-                                <label class="my-1 mr-2" for="daterange">Periode:</label>
-                                <input type="text" id="daterange" class="form-control my-1 mr-sm-2" readonly
-                                    style="cursor: pointer; background: white">
-                            </div>
-
-                            <div class="form-group mx-sm-3">
-                                <label class="my-1 mr-2" for="destinationSelect">Destination:</label>
-                                <select class="form-control my-1" id="destinationSelect">
-                                    @foreach ($destinations as $item)
-                                        <option selected value="{{ $item->id }}">{{ $item->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <button type="button" class="btn btn-primary my-1" id="filterButton">Submit</button>
-                        </form>
-                    </div>
-                </div>
+        @if($destinations->count() == 0)
+            <div class="alert alert-info alert-dismissible fade show" role="alert">
+                <strong>Oups!</strong> It looks like you haven't mapped to any destinations yet
             </div>
-        </div>
+        @else
+            <div class="row">
+                <div class="col-md-12 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title">Filter data</h4>
+                            <form class="form-inline mb-4">
+                                <div class="form-group">
+                                    <label class="my-1 mr-2" for="daterange">Periode:</label>
+                                    <input type="text" id="daterange" class="form-control my-1 mr-sm-2" readonly
+                                        style="cursor: pointer; background: white">
+                                </div>
 
-        <div class="row">
-            <div class="col-md-12 grid-margin stretch-card">
-                <div class="card">
-                    <div class="card-body">
-                        <p class="card-title mb-4 line-chart-title">Visitor Graphics</p>
-                        <canvas id="lineChart" height="100"></canvas>
+                                <div class="form-group mx-sm-3">
+                                    <label class="my-1 mr-2" for="destinationSelect">Destination:</label>
+                                    <select class="form-control my-1" id="destinationSelect">
+                                        @foreach ($destinations as $item)
+                                            <option selected value="{{ $item->id }}">{{ $item->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <button type="button" class="btn btn-primary my-1" id="filterButton">Submit</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <div class="row">
                 <div class="col-md-12 grid-margin stretch-card">
-                    <div class="card position-relative">
+                    <div class="card">
                         <div class="card-body">
-                            <div id="detailedReports" class="carousel slide detailed-report-carousel position-static pt-2"
-                                data-ride="carousel">
-                                <div class="carousel-inner">
-                                    <div class="carousel-item active">
-                                        <div class="row">
-                                            <div class="col-md-4 d-flex flex-column justify-content-start mb-3">
-                                                <div class="ml-xl-4 mt-3">
-                                                    <p class="card-title summary-report-title">Summary Reports</p>
-                                                    <h2 class="text-primary" id="totalRevenueLabel">Rp. 121.000.000</h2>
-                                                    <h5 class="font-weight-500 mb-xl-4 text-primary" id="selectedPeriod">Periode 18-06-2021</h5>
-                                                    <p class="mb-2 mb-xl-0">
-                                                        Description: Total pendapatan pada periode diatas
-                                                    </p>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-8">
-                                                <div class="row">
-                                                    <div class="col-md-6 border-right">
-                                                        <div class="table-responsive mb-3 mb-md-0">
-                                                            <table class="table table-borderless report-table" id="visitorTable">
-                                                                <thead>
-                                                                    <tr>
-                                                                        <th>Category</th>
-                                                                        <th>Qty</th>
-                                                                        <th>Revenue</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    <tr>
-                                                                        <td class="text-muted">Anak-anak</td>
-                                                                        <td>
-                                                                            <h5 class="font-weight-bold mb-0">713</h5>
-                                                                        </td>
-                                                                        <td>
-                                                                            <h5 class="font-weight-bold mb-0">Rp. 100.000
-                                                                            </h5>
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td class="text-muted">Dewasa</td>
-                                                                        <td>
-                                                                            <h5 class="font-weight-bold mb-0">713</h5>
-                                                                        </td>
-                                                                        <td>
-                                                                            <h5 class="font-weight-bold mb-0">Rp. 100.000
-                                                                            </h5>
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td class="text-muted">Mancanegara</td>
-                                                                        <td>
-                                                                            <h5 class="font-weight-bold mb-0">713</h5>
-                                                                        </td>
-                                                                        <td>
-                                                                            <h5 class="font-weight-bold mb-0">Rp. 100.000
-                                                                            </h5>
-                                                                        </td>
-                                                                    </tr>
+                            <p class="card-title mb-4 line-chart-title">Visitor Graphics</p>
+                            <canvas id="lineChart" height="100"></canvas>
+                        </div>
+                    </div>
+                </div>
 
-                                                                </tbody>
-                                                            </table>
-                                                        </div>
+                <div class="row">
+                    <div class="col-md-12 grid-margin stretch-card">
+                        <div class="card position-relative">
+                            <div class="card-body">
+                                <div id="detailedReports" class="carousel slide detailed-report-carousel position-static pt-2"
+                                    data-ride="carousel">
+                                    <div class="carousel-inner">
+                                        <div class="carousel-item active">
+                                            <div class="row">
+                                                <div class="col-md-4 d-flex flex-column justify-content-start mb-3">
+                                                    <div class="ml-xl-4 mt-3">
+                                                        <p class="card-title summary-report-title">Summary Reports</p>
+                                                        <h2 class="text-primary" id="totalRevenueLabel">Rp. 121.000.000</h2>
+                                                        <h5 class="font-weight-500 mb-xl-4 text-primary" id="selectedPeriod">Periode 18-06-2021</h5>
+                                                        <p class="mb-2 mb-xl-0">
+                                                            Description: Total pendapatan pada periode diatas
+                                                        </p>
                                                     </div>
-                                                    <div class="col-md-6 mt-3">
-                                                        <div class="chartjs-size-monitor">
-                                                            <div class="chartjs-size-monitor-expand">
-                                                                <div class=""></div>
-                                                            </div>
-                                                            <div class="chartjs-size-monitor-shrink">
-                                                                <div class=""></div>
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <div class="row">
+                                                        <div class="col-md-6 border-right">
+                                                            <div class="table-responsive mb-3 mb-md-0">
+                                                                <table class="table table-borderless report-table" id="visitorTable">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th>Category</th>
+                                                                            <th>Qty</th>
+                                                                            <th>Revenue</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        <tr>
+                                                                            <td class="text-muted">Anak-anak</td>
+                                                                            <td>
+                                                                                <h5 class="font-weight-bold mb-0">713</h5>
+                                                                            </td>
+                                                                            <td>
+                                                                                <h5 class="font-weight-bold mb-0">Rp. 100.000
+                                                                                </h5>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td class="text-muted">Dewasa</td>
+                                                                            <td>
+                                                                                <h5 class="font-weight-bold mb-0">713</h5>
+                                                                            </td>
+                                                                            <td>
+                                                                                <h5 class="font-weight-bold mb-0">Rp. 100.000
+                                                                                </h5>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td class="text-muted">Mancanegara</td>
+                                                                            <td>
+                                                                                <h5 class="font-weight-bold mb-0">713</h5>
+                                                                            </td>
+                                                                            <td>
+                                                                                <h5 class="font-weight-bold mb-0">Rp. 100.000
+                                                                                </h5>
+                                                                            </td>
+                                                                        </tr>
+
+                                                                    </tbody>
+                                                                </table>
                                                             </div>
                                                         </div>
-                                                        <canvas id="purchasingSalesChart"
-                                                            style="display: block; height: 195px; width: 390px;"
-                                                            width="780" height="390"
-                                                            class="chartjs-render-monitor"></canvas>
-                                                        <div id="pieChartLegend">
-                                                            <div class="report-chart">
-                                                                <div
-                                                                    class="d-flex justify-content-between mx-4 mx-xl-5 mt-3">
-                                                                    <div class="d-flex align-items-center">
-                                                                        <div class="mr-3"
-                                                                            style="width:20px; height:20px; border-radius: 50%; background-color: #4B49AC">
-                                                                        </div>
-                                                                        <p class="mb-0">Offline sales</p>
-                                                                    </div>
-                                                                    <p class="mb-0">88333</p>
+                                                        <div class="col-md-6 mt-3">
+                                                            <div class="chartjs-size-monitor">
+                                                                <div class="chartjs-size-monitor-expand">
+                                                                    <div class=""></div>
                                                                 </div>
-                                                                <div
-                                                                    class="d-flex justify-content-between mx-4 mx-xl-5 mt-3">
-                                                                    <div class="d-flex align-items-center">
-                                                                        <div class="mr-3"
-                                                                            style="width:20px; height:20px; border-radius: 50%; background-color: #FFC100">
+                                                                <div class="chartjs-size-monitor-shrink">
+                                                                    <div class=""></div>
+                                                                </div>
+                                                            </div>
+                                                            <canvas id="purchasingSalesChart"
+                                                                style="display: block; height: 195px; width: 390px;"
+                                                                width="780" height="390"
+                                                                class="chartjs-render-monitor"></canvas>
+                                                            <div id="pieChartLegend">
+                                                                <div class="report-chart">
+                                                                    <div
+                                                                        class="d-flex justify-content-between mx-4 mx-xl-5 mt-3">
+                                                                        <div class="d-flex align-items-center">
+                                                                            <div class="mr-3"
+                                                                                style="width:20px; height:20px; border-radius: 50%; background-color: #4B49AC">
+                                                                            </div>
+                                                                            <p class="mb-0">Offline sales</p>
                                                                         </div>
-                                                                        <p class="mb-0">Online sales</p>
+                                                                        <p class="mb-0">88333</p>
                                                                     </div>
-                                                                    <p class="mb-0">66093</p>
+                                                                    <div
+                                                                        class="d-flex justify-content-between mx-4 mx-xl-5 mt-3">
+                                                                        <div class="d-flex align-items-center">
+                                                                            <div class="mr-3"
+                                                                                style="width:20px; height:20px; border-radius: 50%; background-color: #FFC100">
+                                                                            </div>
+                                                                            <p class="mb-0">Online sales</p>
+                                                                        </div>
+                                                                        <p class="mb-0">66093</p>
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -175,9 +181,11 @@
                         </div>
                     </div>
                 </div>
-            </div>
 
-        </div>
+            </div>
+        @endif
+
+
     @endsection
 
     @push('scripts')
