@@ -97,12 +97,12 @@
                     </div>
                 </div>
                 <div class="ticket__body">
-                    <p class="ticket__route">Winter Wonderland</p>
-                    <p class="ticket__description">Weekend - 1 Person</p>
+                    <p class="ticket__route">{{ $ticketOrder->destination->name }}</p>
+                    <p class="ticket__description">{{ ucwords($transactionDetail->day_type) }} - {{ $transactionDetail->qty }} Person</p>
                     <div class="ticket__timing">
                         <p>
                             <span>Date</span>
-                            <span>27 May 2025</span>
+                            <span>{{ \Carbon\Carbon::parse($transactionDetail->visit_date)->format('d F Y') }}</span>
                         </p>
                         <p>
                             <span>Guest</span>
@@ -111,7 +111,7 @@
                     </div>
                     <p>This ticket is valid for one person</p>
                     <div id="qrcode"></div>
-                    <p class="ticket__admit">#345345</p>
+                    <p class="ticket__admit">#{{ $transactionDetail->ticket_code }}</p>
                 </div>
             </div>
         </div>

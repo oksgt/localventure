@@ -235,7 +235,15 @@ class TransactionController extends Controller
     {
         // dd($request->billing);
 
-        return view('admin.transaction.ticket');
+        $transactionDetail = TicketOrderDetail::with('guestType')->where('ticket_code', $request->billing)->first();
+        if(!$transactionDetail){
+            return abort(404);
+        }
+
+        $ticketOrder = TicketOrder::with('destination', 'paymentType')
+        ->where('id', $transactionDetail->order_id)->first();
+
+        return view('admin.transaction.ticket', compact('transactionDetail', 'ticketOrder'));
         // $html = view('admin.transaction.ticket')->render();
 
         // // ✅ Extract only the div with class 'ticket-wrap'

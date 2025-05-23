@@ -290,8 +290,6 @@
     <script>
         $(document).ready(function() {
 
-
-
             // ✅ Handle image modal
             $('#imageModal').on('show.bs.modal', function(event) {
                 var button = $(event.relatedTarget);
