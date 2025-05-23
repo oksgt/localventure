@@ -48,7 +48,7 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
     Route::get('/cek/{billing?}', [BookingController::class, 'cek'])->name('cek');
     Route::post('/payment-confirmation/store', [PaymentConfirmationController::class, 'store'])->name('payment.store');
 
-    Route::get('/download/ticket/baru', [BookingController::class, 'downloadTicketBaru']);
+    Route::get('/download/ticket/baru/{id}', [BookingController::class, 'downloadTicketBaru']);
 
     Route::middleware(['auth'])->group(function () {
 

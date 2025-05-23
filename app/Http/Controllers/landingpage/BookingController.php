@@ -486,8 +486,11 @@ class BookingController extends Controller
             'qrcodeBase64' => $qrcodeBase64
         ]);
 
+        $filename = 'Invoice - ['.$ticketOrder->total_visitor.' visitor] - '.$ticketOrder->destination->name.' - ' .$ticketOrder->billing_number. '.pdf';
+
+
         Pdf::setOption(['isRemoteEnabled' => true]);
-        return $pdf->download('invoice.pdf',);
+        return $pdf->download($filename);
     }
 
     private function processImage($imagePath)
@@ -654,19 +657,23 @@ class BookingController extends Controller
         }
     }
 
-    public function downloadTicketBaru(Request $request)
+    public function downloadTicketBaru(Request $request, $id)
     {
-        // $qrcode = base64_encode(QrCode::format('svg')->size(200)->errorCorrection('H')->generate('string'));
-        $ticketOrderDetails = TicketOrderDetail::where('order_id', 77)->get();
+        $ticketOrder = TicketOrder::with('destination', 'paymentType')
+            ->where('id', $id)->first();
+        $filename = 'e-Ticket - ['.$ticketOrder->total_visitor.' visitor] - '.$ticketOrder->destination->name.' - ' .$ticketOrder->billing_number. '.pdf';
+
+        if($ticketOrder->payment_status !== 'paid'){
+            return response()->json(['error' => 'Payment not completed'], 403);
+        }
+
+        $ticketOrderDetails = TicketOrderDetail::where('order_id', $id)->get();
         foreach ($ticketOrderDetails as $ticketOrderDetail) {
             $ticketOrderDetail->qrcode = base64_encode(QrCode::format('svg')->size(200)
             ->color(26, 55, 77) // 🔹 Converted hex #1a374d to RGB (26, 55, 77)
             ->backgroundColor(255, 255, 255)
             ->errorCorrection('H')->generate($ticketOrderDetail->ticket_code));
         }
-
-        $ticketOrder = TicketOrder::with('destination', 'paymentType')
-            ->where('id', 77)->first();
 
         $imagePath = public_path("storage/assets/image/ticket-bg.png");
         $base64Image = $this->processImage($imagePath);
@@ -683,6 +690,6 @@ class BookingController extends Controller
 
         Pdf::setOption(['isRemoteEnabled' => true]);
 
-        return $pdf->stream('ticket_background.pdf');
+        return $pdf->download($filename);
     }
 }

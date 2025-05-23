@@ -32,6 +32,10 @@
                             <div class="col-12 col-md-6 mb-3">
                                 <p class="card-title">Detail Transaction : {{ $transaction->billing_number }}</p>
 
+                                <a href="{{ url('/download/ticket/baru/'.$transaction->id) }}" class="btn btn-block btn-primary mb-3">Download Ticket</a>
+                                <a href="{{ url('/download-invoice/'.$transaction->id) }}" class="btn btn-border btn-block btn-outline-primary mb-3">Download Invoice</a>
+
+
                                 <div class="card card-tale mb-3">
                                     <div class="card-body">
                                         <p class="mb-4">Total Visitor</p>
@@ -158,7 +162,6 @@
                                         <thead>
                                             <tr>
                                                 <th>#</th>
-                                                <th>Action</th>
                                                 <th>Ticket Code</th>
                                                 <th>Visit Date</th>
                                                 <th>Guest Type</th>
@@ -170,10 +173,6 @@
                                             @foreach ($transactionDetail as $item)
                                                 <tr></tr>
                                                 <td>{{ $loop->iteration }}</td>
-                                                <td>
-                                                    <a href="#" class="btn btn-sm btn-primary"
-                                                        onclick="openTicketModal('{{ url('/download/ticket/' . $item->ticket_code) }}')">Print</a>
-                                                </td>
                                                 <td>{{ $item->ticket_code }}</td>
                                                 <td>{{ \Carbon\Carbon::parse($item->visit_date)->format('d F Y') }}</td>
                                                 <td>{{ $item->guestType->name }}</td>
