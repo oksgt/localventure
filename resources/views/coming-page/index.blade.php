@@ -9,7 +9,7 @@
     Document Title
     =============================================
     -->
-    <title>LocalVenture</title>
+    <title>{{ env('APP_NAME') }}</title>
     <!--
     Favicons
     =============================================
@@ -46,12 +46,12 @@
 </head>
 
 <body data-spy="scroll" data-target=".onpage-navigation" data-offset="60">
-    <main><img id="image-background" src="{{ asset('coming-page') }}/assets/images/3.jpg">
+    <main><img id="image-background" class="img-responsive" src="{{ asset('coming-page') }}/assets/images/hammock.jpg">
         <section class="main">
             <div class="content">
                 <div class="container">
                     <div class="content2">
-                        <h1>LocalVenture</h1>
+                        <h1>{{ env('APP_NAME') }}</h1>
                     </div>
                     <div class="counter" id="countdown">
                         <h2>We're really sorry..</h2>

@@ -26,7 +26,8 @@ class MasterTicketController extends Controller
                 'pricing.final_price'
             )
             ->join('destinations', 'destinations.id', '=', 'pricing.destination_id')
-            ->join('guest_types', 'guest_types.id', '=', 'pricing.guest_type_id');
+            ->join('guest_types', 'guest_types.id', '=', 'pricing.guest_type_id')
+            ->where('destinations.deleted_at', null);
 
             return datatables()->of($pricing)
             ->filterColumn('destination_name', function ($query, $keyword) {

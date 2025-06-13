@@ -28,7 +28,7 @@
             <div class="col-lg-12 grid-margin stretch-card">
                 <div class="card">
                     <div class="card-body">
-                        <h4 class="card-title">Data Master Wisata</h4>
+                        <h4 class="card-title">Data Master Ticket</h4>
                         <p class="card-description d-none">
                             Add class <code>.table-striped</code>
                         </p>
@@ -63,7 +63,7 @@
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="formDestinationLabel">Add New Destination</h5>
+                    <h5 class="modal-title" id="formDestinationLabel">Add New Ticket</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -79,7 +79,7 @@
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <div class="form-group">
-                                                    <label for="name">Destination Name</label>
+                                                    <label for="name">Ticket Name</label>
                                                     <input type="text" class="form-control" id="name" name="name"
                                                         placeholder="Enter destination name">
                                                     <small class="form-text text-danger" id="name_error_label"></small>
@@ -156,12 +156,18 @@
                         <div class="form-group text-center">
                             <img id="imagePreview" src="#" class="img-fluid rounded d-none" style="max-width: 100%; max-height: 300px;">
                             <p id="noImageText" class="text-muted">No image available</p>
+                            <div class="col-12 mt-3">
+                                <button type="button" class="btn btn-danger d-none" id="btn-remove-image">Remove Image</button>
+                                <button type="button" class="btn btn-primary" id="btn-upload-image">Upload Image</button>
+                            </div>
                         </div>
 
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-light" data-dismiss="modal">Cancel</button>
-                            <button type="button" class="btn btn-danger d-none" id="btn-remove-image">Remove Image</button>
-                            <button type="button" class="btn btn-primary" id="btn-upload-image">Upload Image</button>
+                        <div class="modal-footer d-flex justify-content-center">
+                            <div class="row">
+                                <div class="col-12 w-100 d-flex justify-content-center">
+                                    <button type="button" class="btn btn-light" data-dismiss="modal">Cancel</button>
+                                </div>
+                            </div>
                         </div>
                     </form>
                 </div>
@@ -179,11 +185,14 @@
 
             $('#add-destination-btn').click(function() {
                 $('#destinationForm')[0].reset();
-                $('#formDestinationLabel').text("Add New Destination");
+                $('#formDestinationLabel').text("Add New Ticket");
                 clearValidationErrors(); // Clear previous errors
                 $('#formDestination').modal('show');
                 $('#btn-save-destination').text('Save'); // Reset button text
-                initializeMap();
+
+                $('#formDestination').on('shown.bs.modal', function () {
+                    initializeMap();
+                });
             });
 
             $(document).on('click', '.edit-destination', function() {
@@ -194,15 +203,10 @@
                     type: "GET",
                     success: function(response) {
                         if (response.success) {
-                            if (response.success && response.data.latlon) {
-                                initializeMap(response.data.latlon.split(',')[0], response.data.latlon.split(',')[1]); // Pass lat/lon
-                            } else {
-                                initializeMap(); // Default to Indonesia if no data is found
-                            }
 
                             clearValidationErrors(); // Clear previous errors
                             $('#destinationForm')[0].reset(); // Reset form fields
-                            $('#formDestinationLabel').text("Edit Destination");
+                            $('#formDestinationLabel').text("Edit Ticket");
                             $('#formDestination').modal('show'); // Open modal
                             $('#name').val(response.data.name);
                             $('#description').val(response.data.description);
@@ -211,6 +215,13 @@
                             $('#available').val(response.data.available);
                             $('#btn-save-destination').attr('data-id',id); // Store ID for update
                             $('#btn-save-destination').text('Update'); // Change button text to Update
+                            $('#formDestination').on('shown.bs.modal', function () {
+                                if (response.success && response.data.latlon) {
+                                    initializeMap(response.data.latlon.split(',')[0], response.data.latlon.split(',')[1]); // Pass lat/lon
+                                } else {
+                                    initializeMap(); // Default to Indonesia if no data is found
+                                }
+                            });
                         } else {
                             toastr.error("Failed to load destination data", "Error", {
                                 timeOut: 3000,
@@ -505,24 +516,13 @@
 
         function initializeMap(lat = -0.789275, lon = 113.921327) {
 
-            // map = L.map('map').setView([lat, lon], 4);
-
-            // L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            //     maxZoom: 19,
-            //     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-            // }).addTo(map);
-
-            // var marker = L.marker([lat, lon]).addTo(map);
-
             if (map && map instanceof L.Map) {
                 map.setView([lat, lon], 5); // If map exists, just update view
                 return;
             }
 
-
             // Initialize map only if it does not exist
             map = L.map('map').setView([lat, lon], 5);
-
 
             let marker = L.marker([lat, lon], { draggable: true }).addTo(map);
 
@@ -533,23 +533,6 @@
 
             // Set initial input field value
             $('#latlon').val(lat + ', ' + lon);
-
-            // Try to locate user's position
-            map.locate({ setView: true, maxZoom: 13 });
-
-            map.on('locationfound', function(e) {
-                let userLat = e.latitude;
-                let userLon = e.longitude;
-
-                map.setView([userLat, userLon], 13); // Center map on user's location
-                marker.setLatLng([userLat, userLon]); // Move marker
-                $('#latlon').val(userLat + ', ' + userLon);
-            });
-
-            // Handle geolocation errors
-            map.on('locationerror', function() {
-                toastr.error("Failed to get your location", "Error", { timeOut: 3000, progressBar: true });
-            });
 
             // Update input field when marker is dragged
             marker.on('dragend', function(event) {

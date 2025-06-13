@@ -30,7 +30,7 @@
             </div>
             <div id="wizard">
                 <!-- SECTION 1 -->
-                <h4>Date & Destination</h4>
+                <h4>Date & Ticket</h4>
                 <section>
                     <div class="form-group">
                         <div class="form-row">
@@ -40,7 +40,7 @@
                                     <input type="hidden" name="selectDestinationId" id="selectDestinationId"
                                         value="{{ $searchData['destination_id'] }}" />
                                     <span class="lnr lnr-chevron-down"></span>
-                                    <span class="placeholder">Destination:</span>
+                                    <span class="placeholder">Ticket for :</span>
                                 </div>
 
                             </div>

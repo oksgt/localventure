@@ -25,11 +25,9 @@
                                     href="{{ route('admin.mapping-user.index') }}">Mapping
                                     User</a></li>
                             <li class="nav-item"> <a class="nav-link"
-                                    href="{{ route('admin.master-ticket.index') }}">Master
-                                    Ticket</a></li>
+                                    href="{{ route('admin.master-ticket.index') }}">Pricing</a></li>
                             <li class="nav-item"> <a class="nav-link"
-                                    href="{{ route('admin.destinations.index') }}">Master
-                                    Destination</a></li>
+                                    href="{{ route('admin.destinations.index') }}">Master Ticket</a></li>
                             <li class="nav-item"> <a class="nav-link"
                                     href="{{ route('admin.bank-accounts.index') }}">Bank Accounts</a></li>
                         @endif

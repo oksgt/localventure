@@ -95,11 +95,10 @@
                                     @csrf
                                     <div class="row mb-2">
                                         <div class="col-sm-12 col-md-6 mb-3 mb-lg-0 col-lg-4">
-                                            <label class="form-text text-muted" for="destination-select">Destinasi
-                                                Wisata</label>
+                                            <label class="form-text text-muted" for="destination-select">Tiket Wisata</label>
                                             <select name="destination_id" id="destination-select"
                                                 class="form-control custom-select">
-                                                <option value="">-- Pilih Destinasi --</option>
+                                                <option value="">-- Pilih Tiket --</option>
                                                 @foreach ($destinations as $destination)
                                                     <option value="{{ $destination->id }}">{{ $destination->name }}
                                                     </option>
@@ -144,7 +143,7 @@
                         @foreach ($destinations as $destination)
                             @foreach ($destination->images as $image)
                                 <img src="{{ asset('storage/destination/' . basename($image->image_url)) }}"
-                                    alt="Image" class="img-fluid {{ $loop->first ? 'active' : '' }}">
+                                    alt="Image" class="img-fluid">
                             @endforeach
                         @endforeach
                     </div>

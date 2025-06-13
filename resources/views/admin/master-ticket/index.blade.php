@@ -27,7 +27,7 @@
             <div class="col-lg-12 grid-margin stretch-card">
                 <div class="card">
                     <div class="card-body">
-                        <h4 class="card-title">Master Ticket</h4>
+                        <h4 class="card-title">Pricing</h4>
                         <p class="card-description d-none">
                             Add class <code>.table-striped</code>
                         </p>

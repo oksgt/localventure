@@ -24,9 +24,16 @@
         </div>
 
         @if($destinations->count() == 0)
-            <div class="alert alert-info alert-dismissible fade show" role="alert">
-                <strong>Oups!</strong> It looks like you haven't mapped to any destinations yet
-            </div>
+            @if (session('role_id') == 1)
+                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                    <strong>Oups!</strong> There is nothing to show you right now.
+                </div>
+            @else
+                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                    <strong>Oups!</strong> It looks like you haven't mapped to any destinations yet
+                </div>
+            @endif
+
         @else
             <div class="row">
                 <div class="col-md-12 mb-3">
