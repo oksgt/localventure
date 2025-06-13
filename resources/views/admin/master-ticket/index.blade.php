@@ -76,7 +76,7 @@
                         <div class="row">
                             <div class="col-6">
                                 <div class="form-group">
-                                    <label>Destination</label>
+                                    <label>Select Ticket</label>
                                     <select id="destination_id" name = "destination_id" class="form-control"></select>
                                     <small class="form-text text-danger" id="destination_id_error"></small>
                                 </div>
@@ -326,7 +326,7 @@
                 url: "{{ route('destinations.list') }}",
                 type: "GET",
                 success: function(response) {
-                    $('#destination_id').empty().append('<option value="">Select Destination</option>');
+                    $('#destination_id').empty().append('<option value="">Select Ticket</option>');
                     response.data.forEach(destination => {
                         $('#destination_id').append(`<option value="${destination.id}">${destination.name}</option>`);
                     });

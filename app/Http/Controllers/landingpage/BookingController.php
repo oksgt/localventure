@@ -467,6 +467,7 @@ class BookingController extends Controller
         $imagePath = public_path('booking/images/logo.png');
         $base64Image = $this->processImage($imagePath);
 
+        $base64ImageQRIS = null;
 
         if ($ticketOrder->paymentType->payment_type_name == 'QRIS') {
             $qris = DB::table('payment_type')
