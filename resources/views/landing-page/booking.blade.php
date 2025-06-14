@@ -30,7 +30,7 @@
     <div class="wrapper">
         <div class="inner">
             <div class="image-holder">
-                <img id="selectedImage" src="{{ $selectedImage }}" alt="">
+                <img id="selectedImage" src="{{ asset('/landing-page/images/camping.jpg') }}" alt="">
                 <h3>ticket reservation</h3>
             </div>
             <div id="wizard">
@@ -539,7 +539,7 @@
             $(".forwardThird").click(function(event) {
                 event.preventDefault(); // ✅ Prevent default submission
 
-                if (validateSecondSection()) {
+                if (validateTicketOptionValue()) {
                     console.log("Validation passed: All fields are valid!");
                     $("#wizard").steps('next'); // ✅ Proceed to next step
                 }
@@ -930,6 +930,15 @@
             // Attach event listeners to number input fields
             $("input[type='number']").on("input", updateTicketSummary);
 
+            function validateTicketOptionValue(){
+                if(totalPrice == 0){
+                    toastr.error("Error: Please select at least one ticket option.", "Error", {
+                        timeOut: 3000,
+                        progressBar: true
+                    });
+                    return false;
+                }
+            }
 
             function renderPurchaseDetails(data) {
                 let kategoriTiket = data.people_count > 1 ? "Group" : "Single"; // ✅ Group if >1, else Single

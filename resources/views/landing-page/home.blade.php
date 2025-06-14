@@ -95,7 +95,8 @@
                                     @csrf
                                     <div class="row mb-2">
                                         <div class="col-sm-12 col-md-6 mb-3 mb-lg-0 col-lg-4">
-                                            <label class="form-text text-muted" for="destination-select">Tiket Wisata</label>
+                                            <label class="form-text text-muted" for="destination-select">Tiket
+                                                Wisata</label>
                                             <select name="destination_id" id="destination-select"
                                                 class="form-control custom-select">
                                                 <option value="">-- Pilih Tiket --</option>
@@ -141,10 +142,15 @@
                 <div class="col-lg-5">
                     <div class="slides">
                         @foreach ($destinations as $destination)
-                            @foreach ($destination->images as $image)
-                                <img src="{{ asset('storage/destination/' . basename($image->image_url)) }}"
-                                    alt="Image" class="img-fluid">
-                            @endforeach
+                            @if ($destination->images->isNotEmpty())
+                                @foreach ($destination->images as $image)
+                                    <img src="{{ asset('storage/destination/' . basename($image->image_url)) }}"
+                                        alt="Image" class="img-fluid {{ $loop->first ? 'active' : '' }}">
+                                @endforeach
+                            @else
+                                <img src="{{ asset('assets/image/no-img.png') }}" alt="Image"
+                                    class="img-fluid {{ $loop->first ? 'active' : '' }}">
+                            @endif
                         @endforeach
                     </div>
                 </div>
@@ -165,12 +171,36 @@
             </div>
             <div class="row justify-content-center ">
                 @foreach ($destinations as $destination)
-                    @foreach ($destination->images as $image)
+                    @if ($destination->images->isNotEmpty())
+                        @foreach ($destination->images as $image)
+                            <div class="col-6 col-sm-6 col-md-6 col-lg-3 mb-4 ">
+                                <div class="media-1">
+                                    <a href="#" class="d-block mb-3"><img
+                                            src="{{ $image->image_url ? asset('storage/destination/' . basename($image->image_url)) : asset('assets/image/no-img-square.png') }}"
+                                            alt="Image" class="img-fluid"></a>
+                                    <span class="d-flex align-items-center loc mb-2">
+                                        <span class="icon-room mr-3"></span>
+                                        <span>{{ $destination->address }}</span>
+                                    </span>,
+                                    <div class="d-flex align-items-center">
+                                        <div>
+                                            <h3><a href="#">{{ $destination->name }}</a></h3>
+                                            <div class="price ml-auto">
+                                                {{-- <span>$520.00</span> --}}
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            </div>
+                        @endforeach
+                    @else
                         <div class="col-6 col-sm-6 col-md-6 col-lg-3 mb-4 ">
                             <div class="media-1">
                                 <a href="#" class="d-block mb-3"><img
-                                        src="{{ asset('storage/destination/' . basename($image->image_url)) }}"
-                                        alt="Image" class="img-fluid"></a>
+                                src="{{ asset('assets/image/no-img-square.png') }}" alt="Image"
+                                class="img-fluid img-thumbnail"></a>
                                 <span class="d-flex align-items-center loc mb-2">
                                     <span class="icon-room mr-3"></span>
                                     <span>{{ $destination->address }}</span>
@@ -187,7 +217,7 @@
 
                             </div>
                         </div>
-                    @endforeach
+                    @endif
                 @endforeach
 
             </div>
@@ -220,18 +250,6 @@
                     <div id="map" class="rounded-20"
                         style="height: 400px; display: flex; align-items: center; justify-content: center; text-align: center;">
                         @if ($randomDestination->latlon)
-                            <script>
-                                document.addEventListener("DOMContentLoaded", function() {
-                                    var map = L.map('map').setView([{{ $randomDestination->latlon }}], 13);
-
-                                    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                                        maxZoom: 19,
-                                        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                                    }).addTo(map);
-
-                                    L.marker([{{ $randomDestination->latlon }}]).addTo(map);
-                                });
-                            </script>
                         @else
                             <span>Map not available</span>
                         @endif
@@ -240,8 +258,16 @@
 
                 <div class="col-lg-5">
                     <h2 class="section-title text-left mb-4">{{ $randomDestination->name }}</h2>
-                    <img src="{{ asset('storage/destination/' . basename($randomDestination->images->first()->image_url)) }}"
+                    <br>
+                    @if ($randomDestination->images->isNotEmpty())
+                        <img src="{{ asset('storage/destination/' . basename($randomDestination->images->first()->image_url)) }}"
                         alt="Image" class="img-fluid rounded-20 mb-3">
+                    @else
+                        <img src="{{ asset('assets/image/no-img-square.png') }}" alt="Image"
+                            class="img-thumbnail rounded-20 mb-3" style="width: 300px">
+                    @endif
+
+
                     <p>{{ $randomDestination->description }}</p>
 
                 </div>
@@ -261,8 +287,9 @@
                 <div class="col-md-12 d-flex justify-content-center">
                     <div class="form-group w-50">
                         <div class="input-group mb-3">
-                            <input type="text" class="form-control" placeholder="Masukkan nomor invoice kamu" autocomplete="off"
-                                aria-label="Masukkan nomor invoice kamu" aria-describedby="basic-addon2" name="invoice_input" id="invoice_input">
+                            <input type="text" class="form-control" placeholder="Masukkan nomor invoice kamu"
+                                autocomplete="off" aria-label="Masukkan nomor invoice kamu"
+                                aria-describedby="basic-addon2" name="invoice_input" id="invoice_input">
                             <div class="input-group-append">
                                 <button class="btn text-white" type="button" id="cek-btn">Cek</button>
                             </div>
@@ -358,6 +385,8 @@
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script type="text/javascript" src="https://rawgit.com/schmich/instascan-builds/master/instascan.min.js"></script>
     <script src="{{ asset('landing-page') }}/js/typed.js"></script>
+    <script src="{{ asset('landing-page') }}/js/custom.js"></script>
+
     <script>
         $(function() {
             var slides = $('.slides'),
@@ -386,19 +415,14 @@
 
             });
         })
-    </script>
 
-    <script src="{{ asset('landing-page') }}/js/custom.js"></script>
-
-    <script>
         function scrollToTop() {
             document.body.scrollIntoView({
                 behavior: "smooth",
                 block: "start"
             }); // ✅ Ensures smooth scroll works across browsers
         }
-    </script>
-    <script>
+
         $(document).ready(function() {
             $('#booking-form').on('submit', function(e) {
                 e.preventDefault(); // ✅ Prevent default form submission
@@ -425,23 +449,20 @@
                     return;
                 }
 
-                window.location.href = "{{ url('/cek/') }}/" + encodeURIComponent(invoiceValue); // ✅ Redirect with encoded value
+                window.location.href = "{{ url('/cek/') }}/" + encodeURIComponent(
+                    invoiceValue); // ✅ Redirect with encoded value
             });
-
-
         });
-    </script>
-    <script>
+
         document.querySelector('input[name="people_count"]').addEventListener('input', function() {
             this.value = this.value.replace(/[^0-9]/g, ''); // ✅ Removes non-numeric characters
             if (this.value < 1) this.value = 1; // ✅ Forces minimum value of 1
         });
-    </script>
 
-    <script>
         document.addEventListener("DOMContentLoaded", function() {
-
-            map = L.map('map').setView([{{ $randomDestination->latlon }}], 13);
+            map = L.map('map', {
+                scrollWheelZoom: false // Disable default scroll zoom
+            }).setView([{{ $randomDestination->latlon }}], 13);
 
             L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 maxZoom: 19,
@@ -449,10 +470,21 @@
             }).addTo(map);
 
             var marker = L.marker([{{ $randomDestination->latlon }}]).addTo(map);
-        });
-    </script>
 
-    <script>
+            // Enable zoom only when "Ctrl" is pressed
+            document.addEventListener("keydown", function(event) {
+                if (event.ctrlKey) {
+                    map.scrollWheelZoom.enable();
+                }
+            });
+
+            document.addEventListener("keyup", function(event) {
+                if (!event.ctrlKey) {
+                    map.scrollWheelZoom.disable();
+                }
+            });
+        });
+
         document.getElementById('scan-btn').addEventListener('click', function() {
             let scanner = new Instascan.Scanner({
                 video: document.getElementById('preview'),
@@ -461,7 +493,8 @@
 
             scanner.addListener('scan', function(content) {
                 console.log("QR Code Scanned:", content);
-                document.getElementById('invoice_input').value = content; // ✅ Auto-fill input with scanned data
+                document.getElementById('invoice_input').value =
+                    content; // ✅ Auto-fill input with scanned data
                 scanner.stop(); // ✅ Stop scanner after successful scan
                 document.getElementById('preview').style.display = 'none';
                 setTimeout(function() {
@@ -472,7 +505,7 @@
             Instascan.Camera.getCameras().then(function(cameras) {
                 if (cameras.length > 0) {
                     let selectedCamera = cameras.length > 1 ? cameras[1] : cameras[
-                    0]; // ✅ Use the second camera if available (likely the back camera)
+                        0]; // ✅ Use the second camera if available (likely the back camera)
                     document.getElementById('preview').style.display = 'block';
                     scanner.start(selectedCamera);
                 } else {

@@ -95,20 +95,20 @@
     </div>
 
     <div class="untree_co-section">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-7">
+        <div class="container ">
+            <div class="row p-2">
+                <div class="col-lg-7 ">
                     <div class="owl-single dots-absolute owl-carousel">
-                        <img src="{{ $selectedImage }}" alt="Free HTML Template by Untree.co"
-                            class="img-fluid rounded-20">
+                        <img src="{{ $selectedImage }}" alt="Image" class="img-thumbnail p-0 rounded-20"
+                            style="width: {{ $img_width }}">
                     </div>
                 </div>
-                <div class="col-lg-5 pl-lg-5 ml-auto mt-4">
+                <div class="col-lg-5 p-0 pl-lg-5 ml-auto mt-4">
                     <h2 class="section-title mb-4">Tiket : {{ $destination->name }}</h2>
 
                     <ul class="list-unstyled two-col clearfix">
                         <li>Nama: {{ $transaction->visitor_name }}</li>
-                        <li>Tanggal: {{ Carbon\Carbon::parse($transaction->visit_date)->format('d F Y') }}</li>
+                        <li>Tanggal Visit: {{ Carbon\Carbon::parse($transaction->visit_date)->format('d F Y') }}</li>
                         <li>Jumlah: {{ $transaction->total_visitor }} orang</li>
                         <li>Status:
                             @if ($transaction->payment_status == 'pending')
@@ -125,27 +125,32 @@
                     </ul>
 
 
-                    @if ($confirmation !== null)
+                    @if ($confirmation->isNotEmpty())
                         @foreach ($confirmation as $item)
-                            @if ($item->status == 2) <!-- jika rejected -->
+                            @if ($item->status == 2)
+                                <!-- jika rejected -->
                                 <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                                    <strong>Oups!</strong> Nampaknya kamu belum selesaikan pembayarannya ya? <br> Konfirmasi yuk
+                                    <strong>Oups!</strong> Nampaknya kamu belum selesaikan pembayarannya ya? <br>
+                                    Konfirmasi yuk
                                     kalau sudah :)
                                 </div>
                                 <p><a href="#" class="btn btn-primary" data-toggle="modal"
                                         data-target="#paymentModal">Konfirmasi</a></p>
-
-                            @elseif ($item->status == 0) <!-- jika pending -->
+                            @elseif ($item->status == 0)
+                                <!-- jika pending -->
                                 <div class="alert alert-info alert-dismissible fade show" role="alert">
                                     Mohon ditunggu yaa, konfirmasi kamu sedang diproses :)
                                 </div>
-                            @elseif ($item->status == 1) <!-- jika approve -->
+                            @elseif ($item->status == 1)
+                                <!-- jika approve -->
                                 <div class="alert alert-success alert-dismissible fade show" role="alert">
                                     <strong>Selamat!</strong> Konfirmasi kamu telah disetujui
                                 </div>
                                 <div class="btn-group w-100" role="group" aria-label="Basic example">
-                                    <a type="button" class="btn btn-outline-success" href="{{ url('/download-invoice/'.$transaction->id) }}">Download Invoice</a>
-                                    <a type="button" class="btn btn-success" href="{{ url('/download/ticket/baru/'.$transaction->id) }}">Download Ticket</a>
+                                    <a type="button" class="btn btn-outline-success"
+                                        href="{{ url('/download-invoice/' . $transaction->id) }}">Download Invoice</a>
+                                    <a type="button" class="btn btn-success"
+                                        href="{{ url('/download/ticket/baru/' . $transaction->id) }}">Download Ticket</a>
                                 </div>
                             @endif
                         @endforeach
@@ -196,7 +201,7 @@
                                         <td>{{ $item->bank_name }}</td>
                                         <td>{{ $item->account_name }}</td>
                                         <td>{{ $item->account_number }}</td>
-                                        <td><a href="#" data-toggle="modal" data-target="#imageModal"
+                                        <td><a href="#" class="btn btn-link p-0" data-toggle="modal" data-target="#imageModal"
                                                 data-image="{{ asset('storage/' . $item->image) }}">
                                                 Lihat Bukti
                                             </a></td>
@@ -275,12 +280,9 @@
         </div>
     </div>
 
-    <!-- ✅ Modal Trigger Button -->
-    {{-- <button class="btn btn-primary" data-toggle="modal" data-target="#paymentModal">Konfirmasi Pembayaran</button> --}}
-
     <!-- ✅ Payment Confirmation Modal -->
     <div class="modal fade" id="paymentModal" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
+        <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <form id="paymentForm">
                     <div class="modal-header">
@@ -288,47 +290,56 @@
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
                     </div>
                     <div class="modal-body">
-                        <input type="hidden" name="ticket_order_id" id="ticket_order_id"
-                            value="{{ $transaction->id }}"> <!-- ✅ Hidden -->
+                        <div class="row">
+                            <div class="col-6">
+                                <input type="hidden" name="ticket_order_id" id="ticket_order_id"
+                                    value="{{ $transaction->id }}"> <!-- ✅ Hidden -->
 
-                        <div class="form-group">
-                            <label>Invoice Number</label>
-                            <input type="text" class="form-control" name="billing_number" id="billing_number"
-                                readonly required value="{{ $transaction->billing_number }}">
-                            <div class="invalid-feedback"></div>
+                                <div class="form-group">
+                                    <label>Invoice Number</label>
+                                    <input type="text" class="form-control" name="billing_number"
+                                        id="billing_number" readonly required
+                                        value="{{ $transaction->billing_number }}">
+                                    <div class="invalid-feedback"></div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Jumlah Transfer</label>
+                                    <input type="text" class="form-control" name="transfer_amount"
+                                        id="transfer_amount" required>
+                                    <div class="invalid-feedback"></div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Nama Bank</label>
+                                    <input type="text" class="form-control" name="bank_name">
+                                    <div class="invalid-feedback"></div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Nama Rekening</label>
+                                    <input type="text" class="form-control" name="account_name">
+                                    <div class="invalid-feedback"></div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Nomor Rekening</label>
+                                    <input type="text" class="form-control" name="account_number">
+                                    <div class="invalid-feedback"></div>
+                                </div>
+
+                            </div>
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label>Bukti Transfer</label>
+                                    <input type="file" class="form-control" name="image" id="imageUpload">
+                                    <div class="invalid-feedback"></div>
+                                    <img id="imagePreview" class="mt-2" style="max-width: 100%;">
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="form-group">
-                            <label>Jumlah Transfer</label>
-                            <input type="text" class="form-control" name="transfer_amount" id="transfer_amount"
-                                required>
-                            <div class="invalid-feedback"></div>
-                        </div>
 
-                        <div class="form-group">
-                            <label>Nama Bank</label>
-                            <input type="text" class="form-control" name="bank_name">
-                            <div class="invalid-feedback"></div>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Nama Rekening</label>
-                            <input type="text" class="form-control" name="account_name">
-                            <div class="invalid-feedback"></div>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Nomor Rekening</label>
-                            <input type="text" class="form-control" name="account_number">
-                            <div class="invalid-feedback"></div>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Bukti Transfer</label>
-                            <input type="file" class="form-control" name="image" id="imageUpload">
-                            <div class="invalid-feedback"></div>
-                            <img id="imagePreview" class="mt-2" style="max-width: 100%;">
-                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" id="btn-kirim" class="btn btn-primary">Kirim</button>
@@ -369,6 +380,14 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
+        document.getElementById('transfer_amount').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, ''); // Remove non-numeric characters
+            if (value) {
+                e.target.value = new Intl.NumberFormat('id-ID').format(
+                value); // Format as Indonesian currency (1.000, 10.000, etc.)
+            }
+        });
+
         $(document).ready(function() {
 
             $('#imageModal').on('show.bs.modal', function(event) {
@@ -377,7 +396,6 @@
 
                 $('#modalImage').attr('src', imageUrl); // Set modal image src
             });
-
 
             $('#btn-kirim').on('click', function(e) {
                 e.preventDefault();
@@ -398,6 +416,8 @@
                             text: response.message,
                             icon: "success",
                             confirmButtonText: "OK"
+                        }).then(() => {
+                            location.reload();
                         });
                         $('#paymentModal').modal('hide');
                     },

@@ -550,16 +550,22 @@ class BookingController extends Controller
             return redirect()->route('landing-page.home');
         }
 
+        $img_width = '100%';
+
         // ✅ Determine image source
         if (!$transaction) {
             // If billing is null, get random image from destination_gallery
-            $selectedImage = DestinationGallery::inRandomOrder()->first()->file_name ?? 'default.jpg';
+            $selectedImage = DestinationGallery::inRandomOrder()->first()->file_name ?? asset('assets/image/no-img-square.png');
         } else {
             // If billing exists, get destination image based on transaction's destination_id
             $destination = Destination::where('id', $transaction->destination_id)->with('images')->first();
             $selectedImage = $destination && $destination->images->isNotEmpty()
                 ? asset('storage/destination/' . basename($destination->images->first()->image_url))
-                : 'default.jpg';
+                : asset('assets/image/no-img-square.png');
+
+            $img_width = $destination && $destination->images->isNotEmpty()
+                ? '100%'
+                : '300px';
         }
 
         $destination = Destination::with('images')
@@ -577,7 +583,7 @@ class BookingController extends Controller
 
         // dd($confirmation);
 
-        return view('landing-page.cek', compact('transaction', 'selectedImage', 'billing', 'destination', 'confirmation'));
+        return view('landing-page.cek', compact('transaction', 'selectedImage', 'billing', 'destination', 'confirmation', 'img_width'));
     }
 
 

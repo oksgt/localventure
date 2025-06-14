@@ -47,7 +47,7 @@ class PaymentConfirmationController extends Controller
         PaymentConfirmation::create([
             'ticket_order_id' => $request->ticket_order_id,
             'billing_number' => $request->billing_number,
-            'transfer_amount' => $request->transfer_amount,
+            'transfer_amount' => str_replace('.', '', $request->transfer_amount),
             'bank_name' => $request->bank_name,
             'account_name' => $request->account_name,
             'account_number' => $request->account_number,
