@@ -87,7 +87,7 @@
                             style="margin-top: 20px; width: 200px;">Kembali ke Beranda <i
                             class="zmdi zmdi-arrow-left"></i></button>
 
-                        <button id="downloadPdf" data-id="{{ $result['id'] }}"
+                        <button id="downloadPdf" data-id="{{ $encrypted_id }}"
                             style="margin-top: 20px; width: 200px;">Download Invoice <i
                             class="zmdi zmdi-download"></i></button>
                     </div>

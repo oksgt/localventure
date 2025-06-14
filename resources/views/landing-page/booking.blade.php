@@ -16,6 +16,11 @@
     <!-- DATE-PICKER -->
     <link rel="stylesheet" href="{{ asset('booking') }}/vendor/date-picker/css/datepicker.min.css">
 
+    <!-- Toastr CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+
     <!-- STYLE CSS -->
     <link rel="stylesheet" href="{{ asset('booking') }}/css/style.css">
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
@@ -150,7 +155,7 @@
                             <i class="zmdi zmdi-long-arrow-left"></i>
                         </button>
 
-                        <button class="forwardSecond" >NEXT
+                        <button class="forwardSecond">NEXT
                             <i class="zmdi zmdi-long-arrow-right"></i>
                         </button>
                     </div>
@@ -222,7 +227,7 @@
                                     <i class="zmdi zmdi-long-arrow-left"></i>
                                 </button>
 
-                                <button class="forwardThird" >NEXT
+                                <button class="forwardThird">NEXT
                                     <i class="zmdi zmdi-long-arrow-right"></i>
                                 </button>
                             </div>
@@ -253,7 +258,7 @@
                                 <ul id="selectPayment" class="dropdown">
                                     @foreach ($paymentTypes as $paymentType)
                                         <li rel="{{ $paymentType->name }}" data-name="{{ $paymentType->name }}"
-                                            data-id="{{ $paymentType->id }}" class="payment-item">
+                                            data-id="{{ $paymentType->id }}" class="payment-item" style="color: black;">
                                             {{ $paymentType->name }}
                                         </li>
                                     @endforeach
@@ -314,7 +319,8 @@
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
     <!-- JQUERY STEP -->
     <script src="{{ asset('booking') }}/js/jquery.steps.js"></script>
-
+    <!-- Toastr JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <!-- DATE-PICKER -->
     <script src="{{ asset('booking') }}/vendor/date-picker/js/datepicker.js"></script>
     <script src="{{ asset('booking') }}/vendor/date-picker/js/datepicker.en.js"></script>
@@ -397,17 +403,28 @@
                 let peopleCount = $("input[name='people_count']").val().trim();
 
                 if (destination === "-- Please select --" || destination === "") {
-                    console.log("Error: Please select a destination!");
+                    toastr.error("Error: Please select a destination!", "Error", {
+                        timeOut: 3000,
+                        progressBar: true
+                    });
                     return false;
                 }
 
                 if (date === "") {
                     console.log("Error: Please select a date!");
+                    toastr.error("Error: Please select a date!", "Error", {
+                        timeOut: 3000,
+                        progressBar: true
+                    });
                     return false;
                 }
 
                 if (peopleCount === "" || isNaN(peopleCount) || peopleCount <= 0) {
                     console.log("Error: Please enter a valid number of people!");
+                    toastr.error("Error: Please enter a valid number of people!", "Error", {
+                        timeOut: 3000,
+                        progressBar: true
+                    });
                     return false;
                 }
 
@@ -427,41 +444,73 @@
 
                 if (name === "") {
                     console.log("Error: Name is required!");
+                    toastr.error("Error: Name is required!", "Error", {
+                        timeOut: 3000,
+                        progressBar: true
+                    })
                     return false;
                 }
 
                 if (address === "") {
                     console.log("Error: Address is required!");
+                    toastr.error("Error: Address is required!", "Error", {
+                        timeOut: 3000,
+                        progressBar: true
+                    })
                     return false;
                 }
 
                 if (province === "") {
                     console.log("Error: Province is required!");
+                    toastr.error("Error: Province is required!", "Error", {
+                        timeOut: 3000,
+                        progressBar: true
+                    })
                     return false;
                 }
 
                 if (regency === "") {
                     console.log("Error: Regency is required!");
+                    toastr.error("Error: Regency is required!", "Error", {
+                        timeOut: 3000,
+                        progressBar: true
+                    })
                     return false;
                 }
 
                 if (district === "") {
                     console.log("Error: District is required!");
+                    toastr.error("Error: District is required!", "Error", {
+                        timeOut: 3000,
+                        progressBar: true
+                    })
                     return false;
                 }
 
                 if (phone === "" || isNaN(phone) || phone.length < 6) {
                     console.log("Error: Please enter a valid phone number!");
+                    toastr.error("Error: Please enter a valid phone number!", "Error", {
+                        timeOut: 3000,
+                        progressBar: true
+                    })
                     return false;
                 }
 
                 if (email === "" || !email.includes("@")) {
                     console.log("Error: Please enter a valid email!");
+                    toastr.error("Error: Please enter a valid email!", "Error", {
+                        timeOut: 3000,
+                        progressBar: true
+                    })
                     return false;
                 }
 
                 if (origin === "") {
                     console.log("Error: Origin is required!");
+                    toastr.error("Error: Origin is required!", "Error", {
+                        timeOut: 3000,
+                        progressBar: true
+                    })
                     return false;
                 }
 
@@ -557,10 +606,11 @@
                         console.log("Payment finished successfully:", response);
 
                         // ✅ Extract 'id' from response.data
-                        let orderId = response.data.id;
+                        let orderId = response.encrypted_id;
 
                         // ✅ Redirect to the next page with correct order ID
-                        let url = "{{ route('finish.payment.view', ['id' => ':id']) }}".replace(':id', orderId);
+                        let url = "{{ route('finish.payment.view', ['id' => ':id']) }}".replace(':id',
+                            orderId);
                         window.location.href = url;
                     },
                     error: function(xhr, status, error) {
@@ -576,13 +626,13 @@
 
             //     if (pricingData.length === 0) {
             //         pricingBoard = `
-            //             <div class="board-wrapper" style="margin-bottom: 30px;">
-            //                 <div class="board-inner">
-            //                     <div class="board-item" style="font-weight: 600;">
-            //                         Tickets are not available.
-            //                     </div>
-            //                 </div>
-            //             </div>`;
+        //             <div class="board-wrapper" style="margin-bottom: 30px;">
+        //                 <div class="board-inner">
+        //                     <div class="board-item" style="font-weight: 600;">
+        //                         Tickets are not available.
+        //                     </div>
+        //                 </div>
+        //             </div>`;
             //     } else {
             //         pricingBoard += `<div class="board-wrapper" style="margin-bottom: 30px;">`;
 
@@ -591,17 +641,17 @@
 
             //             if (dayPrices.length) {
             //                 pricingBoard += `
-            //                     <div class="board-inner">
-            //                         <div class="board-item" style="font-weight: 600;">${dayType.charAt(0).toUpperCase() + dayType.slice(1)} :</div>
-            //                         <div class="board-line">`;
+        //                     <div class="board-inner">
+        //                         <div class="board-item" style="font-weight: 600;">${dayType.charAt(0).toUpperCase() + dayType.slice(1)} :</div>
+        //                         <div class="board-line">`;
 
             //                 dayPrices.forEach(price => {
             //                     pricingBoard += `
-            //                         <div class="board-item">
-            //                             ${price.guest_name} :
-            //                             <br>
-            //                             <span>Rp. ${parseFloat(price.final_price).toLocaleString()}</span>
-            //                         </div>`;
+        //                         <div class="board-item">
+        //                             ${price.guest_name} :
+        //                             <br>
+        //                             <span>Rp. ${parseFloat(price.final_price).toLocaleString()}</span>
+        //                         </div>`;
             //                 });
 
             //                 pricingBoard += `</div></div>`;
@@ -612,27 +662,27 @@
 
             //         // ✅ Add booking fields ONLY if pricing exists
             //         pricingBoard += `
-            //             <div class="form-row">
-            //                 <div class="form-holder w-100">
-            //                     <input type="number" class="form-control pl-85" value="0">
-            //                     <span class="placeholder">Kids:</span>
-            //                 </div>
-            //             </div>
-            //             <div class="form-row">
-            //                 <div class="form-holder w-100">
-            //                     <input type="number" class="form-control pl-85" value="0">
-            //                     <span class="placeholder">Adults:</span>
-            //                 </div>
-            //             </div>
-            //             <div class="form-row">
-            //                 <div class="form-holder w-100">
-            //                     <input type="number" class="form-control pl-85" value="0">
-            //                     <span class="placeholder">Foreigners:</span>
-            //                 </div>
-            //             </div>
-            //             <button class="forward" >Book by email
-            //                 <i class="zmdi zmdi-long-arrow-right"></i>
-            //             </button>`;
+        //             <div class="form-row">
+        //                 <div class="form-holder w-100">
+        //                     <input type="number" class="form-control pl-85" value="0">
+        //                     <span class="placeholder">Kids:</span>
+        //                 </div>
+        //             </div>
+        //             <div class="form-row">
+        //                 <div class="form-holder w-100">
+        //                     <input type="number" class="form-control pl-85" value="0">
+        //                     <span class="placeholder">Adults:</span>
+        //                 </div>
+        //             </div>
+        //             <div class="form-row">
+        //                 <div class="form-holder w-100">
+        //                     <input type="number" class="form-control pl-85" value="0">
+        //                     <span class="placeholder">Foreigners:</span>
+        //                 </div>
+        //             </div>
+        //             <button class="forward" >Book by email
+        //                 <i class="zmdi zmdi-long-arrow-right"></i>
+        //             </button>`;
             //     }
 
             //     $('#pricingBoard').html(pricingBoard); // ✅ Update the pricing board dynamically

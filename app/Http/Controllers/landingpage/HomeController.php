@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\landingpage;
 
 use App\Http\Controllers\Controller;
+use App\Mail\BookingEmail;
 use App\Models\Destination;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class HomeController extends Controller
 {
@@ -24,5 +26,8 @@ class HomeController extends Controller
         return view('landing-page.home', compact('destinations', 'destinationNames', 'randomDestination'));
     }
 
+    public function testEmail(){
+        Mail::to("oka.sigit9@gmail.com")->send(new BookingEmail());
+    }
 
 }

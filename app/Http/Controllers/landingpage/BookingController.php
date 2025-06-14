@@ -4,6 +4,7 @@ namespace App\Http\Controllers\landingpage;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Mail\BookingEmail;
 use App\Models\BankAccount;
 use App\Models\Destination;
 use App\Models\DestinationGallery;
@@ -16,6 +17,8 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Illuminate\Support\Str;
@@ -331,6 +334,7 @@ class BookingController extends Controller
 
             return response()->json([
                 'message' => 'Booking created successfully!',
+                'encrypted_id' => Crypt::encryptString($ticketOrder->id),
                 'data' => $result,
             ], 200);
         } catch (\Exception $e) {
@@ -344,6 +348,7 @@ class BookingController extends Controller
 
     public function showFinishPayment($id)
     {
+        $id = Crypt::decryptString($id);
         $ticketOrder = TicketOrder::findOrFail($id);
 
         if (!$ticketOrder) {
@@ -373,7 +378,7 @@ class BookingController extends Controller
             'invoice_number' => $ticketOrder->billing_number,
             'total_price' => $ticketOrder->total_price,
             'total_visitor' => $ticketOrder->total_visitor,
-            'notes' => $ticketOrder->notes,
+            'notes' => $ticketOrder->visitor_origin_description,
             'payment_status' => $ticketOrder->payment_status,
             'payment_type_id' => $ticketOrder->payment_type_id,
             'qris' => $qris,
@@ -385,7 +390,22 @@ class BookingController extends Controller
             ? asset('storage/destination/' . basename($destination->images->first()->image_url))
             : asset('storage/destination/bg-booking-header.png');
 
-        return view('landing-page.finish-payment', compact('destination', 'selectedImage', 'result'));
+        $email_check = DB::table('order_email')->where('ticket_order_id', $ticketOrder->id)
+        ->where('email_type', 'invoice_unpaid')
+        ->first();
+
+        if (!$email_check) {
+            $insert = DB::table('order_email')->insert([
+                'ticket_order_id' => $ticketOrder->id,
+                'email_type' => 'invoice_unpaid',
+                'sent_at' => now(),
+            ]);
+            Mail::to($ticketOrder->visitor_email)->send(new BookingEmail($destination, $selectedImage, $result));
+        }
+
+        $encrypted_id = Crypt::encryptString($ticketOrder->id);
+
+        return view('landing-page.finish-payment', compact('destination', 'selectedImage', 'result', 'encrypted_id'));
     }
 
     private function generateInvoiceNumber($formattedDate)
@@ -427,6 +447,7 @@ class BookingController extends Controller
 
     public function downloadInvoice($id)
     {
+        $id = Crypt::decryptString($id);
         //get ticket order by id
         $ticketOrder = TicketOrder::findOrFail($id);
 
