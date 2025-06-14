@@ -306,10 +306,10 @@
                 var newStatus = $('#status').val();
 
                 if (newStatus === '') {
-                    Swal.fire({
-                        text: "Silakan pilih status!",
-                        confirmButtonText: "OK",
-                    });
+                    toastr.error("Please select a status!", "Error", {
+                        timeOut: 3000,
+                        progressBar: true
+                    })
                     return;
                 }
 
@@ -322,18 +322,17 @@
                         _token: "{{ csrf_token() }}"
                     },
                     success: function(response) {
-                        Swal.fire({
-                            text: response.message,
-                            confirmButtonText: "OK",
-                        }).then(() => {
-                            location.reload(); // ✅ Refresh page after success
+                        toastr.success(response.message, "Success", {
+                            timeOut: 3000,
+                            progressBar: true
                         });
+                        location.reload();
                     },
                     error: function(xhr) {
-                        Swal.fire({
-                            text: "Terjadi kesalahan. Silakan coba lagi!",
-                            confirmButtonText: "OK",
-                        });
+                        toastr.error("Something went wrong! Please try again!", "Error", {
+                            timeOut: 3000,
+                            progressBar: true
+                        })
                     }
                 });
             });

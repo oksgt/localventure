@@ -181,7 +181,7 @@
                                     <span class="d-flex align-items-center loc mb-2">
                                         <span class="icon-room mr-3"></span>
                                         <span>{{ $destination->address }}</span>
-                                    </span>,
+                                    </span>
                                     <div class="d-flex align-items-center">
                                         <div>
                                             <h3><a href="#">{{ $destination->name }}</a></h3>
