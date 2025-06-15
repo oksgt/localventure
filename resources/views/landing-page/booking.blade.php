@@ -518,6 +518,18 @@
                 return true; // ✅ Validation passed
             }
 
+            function validatePaymentOption(){
+                let paymentOption = $("#selectPaymentId").val().trim();
+                if (paymentOption === "") {
+                    toastr.error("Error: Payment option is required!", "Error", {
+                        timeOut: 3000,
+                        progressBar: true
+                    })
+                    return false;
+                }
+                return true;
+            }
+
             // back-navigation
             $(".back-navigation").click(function(event) {
                 event.preventDefault();
@@ -567,31 +579,46 @@
             $(".forwardFourth").on("click", function(event) {
                 event.preventDefault(); // Prevent default button behavior (if it's inside a form)
 
-                let formData = {}; // Object to store collected inputs
+                if (validatePaymentOption()) {
+                    let formData = {}; // Object to store collected inputs
 
-                // Collect all input fields inside the four sections
-                $("section input, section textarea, section select").each(function() {
-                    let inputName = $(this).attr("name"); // Get input name attribute
+                    // Collect all input fields inside the four sections
+                    $("section input, section textarea, section select").each(function() {
+                        let inputName = $(this).attr("name"); // Get input name attribute
 
-                    // Special handling for radio buttons
-                    if ($(this).is(":radio")) {
-                        if ($(this).is(":checked")) {
+                        formData['bank_name'] = 'none';
+                        // Special handling for radio buttons
+                        if ($(this).is(":radio")) {
+                            if ($(this).is(":checked")) {
+                                formData[inputName] = $(this).val();
+                                formData['bank_name'] = $(this).data('bank-name'); // Get bank name from data attribute
+                                selectedPaymentName = $(this).data('bank-name');
+                                console.log('bank', $(this).data('bank-name'));
+                            }
+                        } else {
+                            // Standard inputs, textareas, and selects
                             formData[inputName] = $(this).val();
-                            formData['bank_name'] = $(this).data(
-                                'bank-name'); // Get bank name from data attribute
                         }
-                    } else {
-                        // Standard inputs, textareas, and selects
-                        formData[inputName] = $(this).val();
+                    });
+
+                    formData['total_price'] = totalPrice; // Add total price to form data
+
+                    console.log("Collected Form Data:", formData);
+                    renderPurchaseDetails(formData); // ✅ Call function to render purchase details
+                    finalFormData = formData; // Store final form data for later use
+
+                    if(formData['bank_name'] == 'none'){
+                        toastr.error("Error: Please select a bank transfer!", "Error", {
+                            timeOut: 3000,
+                            progressBar: true
+                        });
+                        return false;
                     }
-                });
 
-                formData['total_price'] = totalPrice; // Add total price to form data
+                    $("#wizard").steps('next');
+                }
 
-                console.log("Collected Form Data:", formData);
-                renderPurchaseDetails(formData); // ✅ Call function to render purchase details
-                finalFormData = formData; // Store final form data for later use
-                $("#wizard").steps('next');
+
             });
 
             function finishPayment() {
@@ -938,6 +965,7 @@
                     });
                     return false;
                 }
+                return true;
             }
 
             function renderPurchaseDetails(data) {

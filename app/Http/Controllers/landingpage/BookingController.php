@@ -394,16 +394,16 @@ class BookingController extends Controller
         ->where('email_type', 'invoice_unpaid')
         ->first();
 
+        $encrypted_id = Crypt::encryptString($ticketOrder->id);
+
         if (!$email_check) {
             $insert = DB::table('order_email')->insert([
                 'ticket_order_id' => $ticketOrder->id,
                 'email_type' => 'invoice_unpaid',
                 'sent_at' => now(),
             ]);
-            Mail::to($ticketOrder->visitor_email)->send(new BookingEmail($destination, $selectedImage, $result));
+            Mail::to($ticketOrder->visitor_email)->send(new BookingEmail($destination, $selectedImage, $result, $encrypted_id));
         }
-
-        $encrypted_id = Crypt::encryptString($ticketOrder->id);
 
         return view('landing-page.finish-payment', compact('destination', 'selectedImage', 'result', 'encrypted_id'));
     }
@@ -447,7 +447,8 @@ class BookingController extends Controller
 
     public function downloadInvoice($id)
     {
-        $id = Crypt::decryptString($id);
+        $id = Crypt::decrypt($id);
+        // dd($id);
         //get ticket order by id
         $ticketOrder = TicketOrder::findOrFail($id);
 
@@ -582,8 +583,9 @@ class BookingController extends Controller
         }
 
         // dd($confirmation);
+        $encrypted_id = Crypt::encryptString($transaction->id);
 
-        return view('landing-page.cek', compact('transaction', 'selectedImage', 'billing', 'destination', 'confirmation', 'img_width'));
+        return view('landing-page.cek', compact('transaction', 'selectedImage', 'billing', 'destination', 'confirmation', 'img_width', 'encrypted_id'));
     }
 
 
@@ -688,6 +690,7 @@ class BookingController extends Controller
 
     public function downloadTicketBaru(Request $request, $id)
     {
+        $id = Crypt::decrypt($id);
         $ticketOrder = TicketOrder::with('destination', 'paymentType')
             ->where('id', $id)->first();
         $filename = 'e-Ticket - ['.$ticketOrder->total_visitor.' visitor] - '.$ticketOrder->destination->name.' - ' .$ticketOrder->billing_number. '.pdf';

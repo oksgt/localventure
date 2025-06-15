@@ -148,9 +148,9 @@
                                 </div>
                                 <div class="btn-group w-100" role="group" aria-label="Basic example">
                                     <a type="button" class="btn btn-outline-success"
-                                        href="{{ url('/download-invoice/' . $transaction->id) }}">Download Invoice</a>
+                                        href="{{ url('/download-invoice/' . $encrypted_id) }}">Download Invoice</a>
                                     <a type="button" class="btn btn-success"
-                                        href="{{ url('/download/ticket/baru/' . $transaction->id) }}">Download Ticket</a>
+                                        href="{{ url('/download/ticket/baru/' . $encrypted_id) }}">Download Ticket</a>
                                 </div>
                             @endif
                         @endforeach

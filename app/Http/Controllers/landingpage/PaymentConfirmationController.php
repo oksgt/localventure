@@ -3,9 +3,13 @@
 namespace App\Http\Controllers\landingpage;
 
 use App\Http\Controllers\Controller;
+use App\Mail\PaymentConfirmed;
 use Illuminate\Http\Request;
 use App\Models\PaymentConfirmation;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
 class PaymentConfirmationController extends Controller
@@ -16,7 +20,7 @@ class PaymentConfirmationController extends Controller
         $validator = Validator::make($request->all(), [
             'ticket_order_id' => 'required|integer',
             'billing_number' => 'required|string',
-            'transfer_amount' => 'required|numeric',
+            'transfer_amount' => 'required',
             'bank_name' => 'required|string',
             'account_name' => 'required|string',
             'account_number' => 'required|string',
@@ -25,7 +29,6 @@ class PaymentConfirmationController extends Controller
             'ticket_order_id.required' => 'Ticket order ID harus diisi.',
             'billing_number.required' => 'Invoice number harus diisi.',
             'transfer_amount.required' => 'Jumlah transfer harus diisi.',
-            'transfer_amount.numeric' => 'Jumlah transfer harus berupa angka.',
             'image.image' => 'File harus berupa gambar.',
             'image.mimes' => 'Format gambar harus JPG, JPEG. File yang Anda unggah adalah: ' . ($request->file('image') ? $request->file('image')->getClientOriginalExtension() : 'Tidak valid'),
             'image.max' => 'Ukuran gambar tidak boleh lebih dari 5MB.'
@@ -43,18 +46,33 @@ class PaymentConfirmationController extends Controller
             $imagePath = null;
         }
 
-        // ✅ Save data
-        PaymentConfirmation::create([
-            'ticket_order_id' => $request->ticket_order_id,
-            'billing_number' => $request->billing_number,
-            'transfer_amount' => str_replace('.', '', $request->transfer_amount),
-            'bank_name' => $request->bank_name,
-            'account_name' => $request->account_name,
-            'account_number' => $request->account_number,
-            'image' => $imagePath,
-        ]);
+        try {
+            DB::beginTransaction();
 
-        return response()->json(['message' => 'Konfirmasi pembayaran berhasil disimpan!'], 200);
+            // ✅ Save data
+            PaymentConfirmation::create([
+                'ticket_order_id' => $request->ticket_order_id,
+                'billing_number' => $request->billing_number,
+                'transfer_amount' => str_replace('.', '', $request->transfer_amount),
+                'bank_name' => $request->bank_name,
+                'account_name' => $request->account_name,
+                'account_number' => $request->account_number,
+                'image' => $imagePath,
+            ]);
+
+            // ✅ Update related ticket_orders.payment_status
+            DB::table('ticket_orders')
+                ->where('id', $request->ticket_order_id)
+                ->update(['payment_status' => 'received']);
+
+            DB::commit();
+            return response()->json(['message' => 'Konfirmasi pembayaran berhasil disimpan!'], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json(['message' => 'Payment confirmation failed. Please try again.'], 500);
+        }
+
     }
 
     public function show(Request $request)
@@ -98,11 +116,26 @@ class PaymentConfirmationController extends Controller
                 ->where('id', $payment->ticket_order_id)
                 ->update(['payment_status' => $statusMap[$request->status]]);
 
+            $ticket_orders_data = DB::table('ticket_orders')
+                ->where('id', $payment->ticket_order_id)
+                ->first();
+
+            $encrypted_id = Crypt::encrypt($ticket_orders_data->id);
+
+            if($request->status == 1){
+                Mail::to($ticket_orders_data->visitor_email)->send(new PaymentConfirmed(
+                    $ticket_orders_data->visitor_email,
+                    $ticket_orders_data->billing_number,
+                    route('invoice', $encrypted_id),
+                    url('/download/ticket/baru', $encrypted_id)
+                ));
+            }
+
             DB::commit();
             return response()->json(['message' => 'Status berhasil diperbarui!'], 200);
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['message' => 'Terjadi kesalahan saat memperbarui status.'], 500);
+            return response()->json(['message' => 'Terjadi kesalahan saat memperbarui status.' . $e->getMessage()], 500);
         }
     }
 

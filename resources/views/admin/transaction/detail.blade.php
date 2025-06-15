@@ -138,6 +138,24 @@
                                                     <p>Click to check </p>
                                                 </div>
                                             </div>
+                                        @elseif ($transaction->payment_status == 'rejected')
+                                            <div class="card card-inverse-danger" style="cursor: pointer" id="showPayment"
+                                                data-id="{{ $transaction->billing_number }}">
+                                                <div class="card-body">
+                                                    <p class="mb-4">Payment Status</p>
+                                                    <p class="fs-30 mb-2">{{ ucwords($transaction->payment_status) }}</p>
+                                                    <p>Click to check </p>
+                                                </div>
+                                            </div>
+                                        @elseif ($transaction->payment_status == 'received')
+                                            <div class="card card-inverse-light text-dark" style="cursor: pointer" id="showPayment"
+                                                data-id="{{ $transaction->billing_number }}">
+                                                <div class="card-body">
+                                                    <p class="mb-4">Payment Status</p>
+                                                    <p class="fs-30 mb-2">{{ ucwords($transaction->payment_status) }}</p>
+                                                    <p>Click to check </p>
+                                                </div>
+                                            </div>
                                         @else
                                             <div class="card card-inverse-danger" style="cursor: pointer" id="showPayment"
                                                 data-id="{{ $transaction->billing_number }}">

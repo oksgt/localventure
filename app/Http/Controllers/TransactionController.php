@@ -90,9 +90,21 @@ class TransactionController extends Controller
                     return Carbon::parse($row->created_at)->format('d M Y H:i');
                 })
                 ->editColumn('payment_status', function ($row) {
-                    return $row->payment_status === 'paid'
-                        ? '<div class="badge badge-success">Paid</div>'
-                        : '<div class="badge badge-warning">Pending</div>';
+                    // return $row->payment_status === 'paid'
+                    //     ? '<div class="badge badge-success">Paid</div>'
+                    //     : '<div class="badge badge-warning">Pending</div>';
+
+                    $label = '<div class="badge badge-warning">Pending</div>';
+                    if($row->payment_status == 'received'){
+                        $label = '<div class="badge badge-light">Received</div>';
+                    } else if ($row->payment_status == 'rejected') {
+                        $label = '<div class="badge badge-danger">Pending</div>';
+                    } else if ($row->payment_status == 'paid') {
+                        $label = '<div class="badge badge-success">Paid</div>';
+                    }
+
+                    return $label;
+
                 })
                 ->addColumn('action', function ($row) {
                     return '<a href="' . route('admin.transaction.detail', $row->id) . '" class="btn btn-sm btn-primary">View</a>';

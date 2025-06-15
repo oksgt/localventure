@@ -16,29 +16,32 @@ class BookingEmail extends Mailable
     public $destination;
     public $selectedImage;
     public $result;
+    public $encrypted_id;
 
-    public function __construct($destination, $selectedImage, $result)
+    public function __construct($destination, $selectedImage, $result, $encrypted_id)
     {
         $this->destination = $destination;
         $this->selectedImage = $selectedImage;
         $this->result = $result;
+        $this->encrypted_id = $encrypted_id;
     }
 
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Payment Confirmation',
+            subject: 'Unpaid Invoice',
         );
     }
 
     public function content(): Content
     {
         return new Content(
-            view: 'landing-page.finish-payment',
+            view: 'emails.finish-payment-email',
             with: [
                 'destination' => $this->destination,
                 'selectedImage' => $this->selectedImage,
                 'result' => $this->result,
+                'encrypted_id' => $this->encrypted_id
             ],
         );
     }
