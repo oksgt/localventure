@@ -25,7 +25,9 @@ class UserMappingController extends Controller
                 'destinations.name as destination_name'
             )
             ->join('users', 'users.id', '=', 'user_mapping.user_id')
-            ->join('destinations', 'destinations.id', '=', 'user_mapping.destination_id');
+            ->join('destinations', 'destinations.id', '=', 'user_mapping.destination_id')
+            ->where('destinations.deleted_at', null)
+            ;
 
         return datatables()->of($mappings)
             ->addColumn('action', function ($mapping) {
@@ -74,6 +76,9 @@ class UserMappingController extends Controller
             if (!$userRole) {
                 return response()->json(['success' => false, 'message' => 'User role not found'], 404);
             }
+
+            // Remove mapping by user_id so one user_id only has one mapping
+            $remove_mapping = UserMapping::where('user_id', $request->user_id)->delete();
 
             // Create mapping
             $mapping = UserMapping::create([

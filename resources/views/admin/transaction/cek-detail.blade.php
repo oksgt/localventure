@@ -32,8 +32,8 @@
                             <div class="col-12 col-md-6 mb-3">
                                 <p class="card-title">Detail Transaction : {{ $transaction->billing_number }}</p>
 
-                                <a href="{{ url('/download/ticket/baru/'.$transaction->id) }}" class="btn btn-block btn-primary mb-3">Download Ticket</a>
-                                <a href="{{ url('/download-invoice/'.$transaction->id) }}" class="btn btn-border btn-block btn-outline-primary mb-3">Download Invoice</a>
+                                <a href="{{ url('/download/ticket/baru/'.Crypt::encrypt($transaction->id)) }}" class="btn btn-block btn-primary mb-3">Download Ticket</a>
+                                <a href="{{ url('/download-invoice/'.Crypt::encrypt($transaction->id)) }}" class="btn btn-border btn-block btn-outline-primary mb-3">Download Invoice</a>
 
 
                                 <div class="card card-tale mb-3">

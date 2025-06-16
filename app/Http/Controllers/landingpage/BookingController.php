@@ -583,7 +583,7 @@ class BookingController extends Controller
         }
 
         // dd($confirmation);
-        $encrypted_id = Crypt::encryptString($transaction->id);
+        $encrypted_id = Crypt::encrypt($transaction->id);
 
         return view('landing-page.cek', compact('transaction', 'selectedImage', 'billing', 'destination', 'confirmation', 'img_width', 'encrypted_id'));
     }
@@ -682,7 +682,7 @@ class BookingController extends Controller
         } catch (\Exception $e) {
             DB::rollBack(); // ❌ Rollback on error
             return response()->json([
-                'message' => 'Error processing booking!',
+            'message' => 'Error processing booking!',
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -714,7 +714,7 @@ class BookingController extends Controller
             'title' => $ticketOrder->destination->name,
             'ticketOrderDetails' => $ticketOrderDetails,
             'base64Image' => $base64Image,
-            'destination_image' =>$this->processImage(public_path("storage/destination/" . $ticketOrder->destination->images[0]->filename)),
+            // 'destination_image' => $this->processImage(public_path("storage/destination/" . $ticketOrder->destination->images[0]->filename)),
         ];
 
         $pdf = Pdf::loadView('pdf_template', $data)

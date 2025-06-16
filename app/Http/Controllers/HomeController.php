@@ -18,15 +18,19 @@ class HomeController extends Controller
     {
 
         if (session('role_id') == 1) {
-            $destinations = Destination::all();
+            $destinations = Destination::whereNull('deleted_at')->get();
             return view('admin.home.index', compact('destinations'));
+
         } else if (session('role_id') == 2) {
             $destinations = collect(); // ✅ Default to an empty collection
 
             $userMapping = UserMapping::where('user_id', Auth::id())->first();
 
             if ($userMapping) {
-                $destinations = Destination::where('id', $userMapping->destination_id)->get();
+                $destinations = Destination::where('id', $userMapping->destination_id)
+                    ->where('available', 1)
+                    ->whereNull('deleted_at')
+                    ->get();
             }
 
             // if ($destinations->isEmpty()) {
@@ -40,7 +44,10 @@ class HomeController extends Controller
 
             $destinations = [];
             if($userMapping){
-                $destinations = Destination::where('id', $userMapping->destination_id)->get();
+                $destinations = Destination::where('id', $userMapping->destination_id)
+                ->where('available', 1)
+                ->whereNotNull('deleted_at')
+                ->get();
             }
 
             $user = Auth::user();
@@ -126,8 +133,8 @@ class HomeController extends Controller
     public function ticketPurchase()
     {
         $userMapping = UserMapping::where('user_id', Auth::id())->first();
-
         $destinations = Destination::with('images')->where('id', $userMapping->destination_id)->get();
+
         return view('admin.home.ticket_purchase', compact('destinations'));
     }
 

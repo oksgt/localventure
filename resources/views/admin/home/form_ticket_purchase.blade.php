@@ -93,7 +93,7 @@
                         </div>
 
                         <!-- ✅ Pricing Summary Table -->
-                        <div class="mt-4">
+                        <div class="mt-4 table-responsive">
                             <table class="table table-striped table-hover" id="summaryTable">
                                 <thead class="thead-dark">
                                     <tr>

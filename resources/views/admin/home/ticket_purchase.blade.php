@@ -29,9 +29,23 @@
                 <div class="col-md-6 grid-margin stretch-card">
                     <a href="{{ route('form-ticket-purchase.index', ['destinationId' => $item->id]) }}" class="card tale-bg" style="text-decoration: none; color: inherit;">
                         <div class="card-people mt-auto pt-0">
-                            <img src="{{ asset('storage/destination/' . basename($item->images->first()->image_url)) }}" alt="">
+                            @php
+                                $text_color = 'text-white';
+                            @endphp
+                            @if ($item->images->first() !== null)
+                                <img src="{{ asset('storage/destination/' . basename($item->images->first()->image_url)) }}" alt="">
+                                @php
+                                    $text_color = 'text-white';
+                                @endphp
+                            @else
+                                <img src="{{ asset('assets/image/no-img-square.png') }}" alt="">
+                                @php
+                                    $text_color = 'text-dark';
+                                @endphp
+                            @endif
+
                             <div class="weather-info">
-                                <div class="d-flex flex-row text-white align-items-center">
+                                <div class="d-flex flex-row {{ $text_color }} align-items-center">
                                     <div>
                                         <h2 class="mb-0 font-weight-bold"><i class="icon-map mr-2"></i></h2>
                                     </div>
