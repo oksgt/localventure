@@ -32,7 +32,7 @@
                             <div class="card card-inverse-primary" style="height: 142px; cursor: pointer;"
                                 data-toggle="modal" data-target="#checkInModal">
                                 <div class="card-body d-flex flex-column align-items-center justify-content-center">
-                                    <p class="fs-30 mb-2">Check In</p>
+                                    <p class="fs-30 mb-2">Scan Ticket</p>
                                 </div>
                             </div>
                         </div>
