@@ -131,7 +131,7 @@
                             <button class="btn btn-block btn-primary" id="btn-purchase-tickets">Purchase</button>
                         </div>
                         <div class="mt-4">
-                            <a href="{{ url()->previous() }}" class="btn btn-block btn-light border" >Back</a>
+                            <a href="{{ url('admin') }}" class="btn btn-block btn-light border" >Back to Dashboard</a>
                         </div>
                     </div>
                 </div>
