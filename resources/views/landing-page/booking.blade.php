@@ -87,7 +87,7 @@
 
                     <div class="form-row">
                         <div class="form-holder w-100">
-                            <input type="text" class="form-control pl-85" name="address">
+                            <input type="text" class="form-control pl-85" name="address" autocomplete="off">
                             <span class="placeholder">Address:</span>
                         </div>
                     </div>
@@ -607,7 +607,7 @@
                     renderPurchaseDetails(formData); // ✅ Call function to render purchase details
                     finalFormData = formData; // Store final form data for later use
 
-                    if(formData['bank_name'] == 'none'){
+                    if(formData['bank_name'] == 'none' && formData['selectPaymentId'] == '3'){
                         toastr.error("Error: Please select a bank transfer!", "Error", {
                             timeOut: 3000,
                             progressBar: true
