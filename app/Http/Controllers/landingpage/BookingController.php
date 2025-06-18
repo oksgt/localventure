@@ -695,7 +695,7 @@ class BookingController extends Controller
             ->where('id', $id)->first();
         $filename = 'e-Ticket - ['.$ticketOrder->total_visitor.' visitor] - '.$ticketOrder->destination->name.' - ' .$ticketOrder->billing_number. '.pdf';
 
-        if($ticketOrder->payment_status !== 'paid'){
+        if($ticketOrder->payment_status !== 'paid' && $ticketOrder->payment_status !== 'received') {
             return response()->json(['error' => 'Payment not completed'], 403);
         }
 
