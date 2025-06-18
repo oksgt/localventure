@@ -420,8 +420,10 @@
                     },
                     error: function() {
                         $('#modalContent').html(
-                            '<p class="text-center text-danger">Error loading data. Please try again.</p>'
-                            );
+                            `<tr>
+                            <td colspan="7" class="text-center text-dark">No data available right now. Please try again later</td>
+                            <tr>`
+                        );
                     }
                 });
             });
