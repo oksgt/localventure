@@ -170,7 +170,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-6 mb-4 stretch-card transparent">
-                                        @if ($transaction->payment_status == 'paid')
+                                        @if ($transaction->payment_status == 'paid' || $transaction->payment_status == 'received')
                                             <a class="w-100" href="{{ url('/download/ticket/baru/' .Crypt::encrypt($transaction->id)) }}" style="text-decoration: none; color: inherit;">
                                                 <div class="card card-inverse-warning" style="cursor: pointer" id="showPayment"
                                                     data-id="{{ $transaction->billing_number }}">
