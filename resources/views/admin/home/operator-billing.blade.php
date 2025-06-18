@@ -29,7 +29,7 @@
                 <div class="card-hover-shadow-2x mb-3 card" id="todo-container">
                     <div class="card-header-tab card-header">
                         <div class="card-header-title font-size-lg text-capitalize font-weight-normal"><i
-                                class="fa fa-tasks"></i>&nbsp;Your transactions
+                                class="fa fa-tasks"></i>&nbsp;Your Onsite transactions
                         </div>
                     </div>
                     <ul class=" list-group list-group-flush">
@@ -83,8 +83,7 @@
                                                                 </div>
                                                                 <div class="widget-subheading">
                                                                     {{ \Carbon\Carbon::parse($item->created_at)->format('d/m/Y H:i:s') }}
-                                                                    <div class="badge badge-pill badge-info ml-2">Onsite
-                                                                    </div>
+                                                                    <a href="{{ url('/download/ticket/baru/'.Crypt::encrypt($item->id)) }}" class="btn btn-info btn-sm">Ticket <i class="fa fa-download"></i></a>
                                                                 </div>
                                                             </div>
 
