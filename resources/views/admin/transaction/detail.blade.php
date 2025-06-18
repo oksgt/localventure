@@ -138,6 +138,16 @@
                                                     <p>Click to check </p>
                                                 </div>
                                             </div>
+                                            <a href="{{ url('/download/ticket/baru/' .Crypt::encrypt($transaction->id)) }}" style="text-decoration: none; color: inherit;">
+                                                <div class="card card-inverse-warning" style="cursor: pointer" id="showPayment"
+                                                    data-id="{{ $transaction->billing_number }}">
+                                                    <div class="card-body">
+                                                        <p class="mb-4">File</p>
+                                                        <p class="fs-30 mb-2">Ticket</p>
+                                                        <p>Click to download ticket</p>
+                                                    </div>
+                                                </div>
+                                            </a>
                                         @elseif ($transaction->payment_status == 'rejected')
                                             <div class="card card-inverse-danger" style="cursor: pointer" id="showPayment"
                                                 data-id="{{ $transaction->billing_number }}">
@@ -180,7 +190,6 @@
                                         <thead>
                                             <tr>
                                                 <th>#</th>
-                                                <th>Action</th>
                                                 <th>Ticket Code</th>
                                                 <th>Visit Date</th>
                                                 <th>Guest Type</th>
@@ -192,10 +201,6 @@
                                             @foreach ($transactionDetail as $item)
                                                 <tr></tr>
                                                 <td>{{ $loop->iteration }}</td>
-                                                <td>
-                                                    <a href="#" class="btn btn-sm btn-primary"
-                                                        onclick="openTicketModal('{{ url('/download/ticket/' . $item->ticket_code) }}')">Print</a>
-                                                </td>
                                                 <td>{{ $item->ticket_code }}</td>
                                                 <td>{{ \Carbon\Carbon::parse($item->visit_date)->format('d F Y') }}</td>
                                                 <td>{{ $item->guestType->name }}</td>
