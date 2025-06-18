@@ -394,7 +394,7 @@ class BookingController extends Controller
         ->where('email_type', 'invoice_unpaid')
         ->first();
 
-        $encrypted_id = Crypt::encryptString($ticketOrder->id);
+        $encrypted_id = Crypt::encrypt($ticketOrder->id);
 
         if (!$email_check) {
             $insert = DB::table('order_email')->insert([
