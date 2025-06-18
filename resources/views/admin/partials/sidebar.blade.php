@@ -7,7 +7,7 @@
             </a>
         </li>
 
-        @if (session('role_id') !== 3)
+        @if (session('role_id') == 1 || session('role_id') == 2)
             <li class="nav-item">
                 <a class="nav-link" data-toggle="collapse" href="#master-submenu" aria-expanded="false"
                     aria-controls="master-submenu">
