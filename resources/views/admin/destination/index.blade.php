@@ -193,6 +193,7 @@
                 $('#formDestination').on('shown.bs.modal', function () {
                     initializeMap();
                 });
+                $('#btn-save-destination').attr('data-id','');
             });
 
             $(document).on('click', '.edit-destination', function() {
@@ -288,7 +289,7 @@
                     available: $('#available').val(),
                 };
 
-                let url = id ? "{{ url('/admin/destinations') }}/" + id + "/update" :
+                let url = (id !== '') ? "{{ url('/admin/destinations') }}/" + id + "/update" :
                     "{{ route('admin.destinations.store') }}";
 
                 $('#btn-save-destination').prop('disabled', true).text('Processing...');
