@@ -98,7 +98,7 @@
                                 <thead class="thead-dark">
                                     <tr>
                                         <th>Category</th>
-                                        <th>Quantity</th>
+                                        <th>Qty</th>
                                         <th>Price</th>
                                     </tr>
                                 </thead>
