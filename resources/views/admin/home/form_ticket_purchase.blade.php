@@ -130,6 +130,9 @@
                         <div class="mt-4">
                             <button class="btn btn-block btn-primary" id="btn-purchase-tickets">Purchase</button>
                         </div>
+                        <div class="mt-4">
+                            <a href="{{ url()->previous() }}" class="btn btn-block btn-light border" >Back</a>
+                        </div>
                     </div>
                 </div>
             </div>
