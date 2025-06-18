@@ -138,16 +138,6 @@
                                                     <p>Click to check </p>
                                                 </div>
                                             </div>
-                                            <a href="{{ url('/download/ticket/baru/' .Crypt::encrypt($transaction->id)) }}" style="text-decoration: none; color: inherit;">
-                                                <div class="card card-inverse-warning" style="cursor: pointer" id="showPayment"
-                                                    data-id="{{ $transaction->billing_number }}">
-                                                    <div class="card-body">
-                                                        <p class="mb-4">File</p>
-                                                        <p class="fs-30 mb-2">Ticket</p>
-                                                        <p>Click to download ticket</p>
-                                                    </div>
-                                                </div>
-                                            </a>
                                         @elseif ($transaction->payment_status == 'rejected')
                                             <div class="card card-inverse-danger" style="cursor: pointer" id="showPayment"
                                                 data-id="{{ $transaction->billing_number }}">
@@ -176,8 +166,22 @@
                                                 </div>
                                             </div>
                                         @endif
-
-
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-4 stretch-card transparent">
+                                        @if ($transaction->payment_status == 'paid')
+                                            <a href="{{ url('/download/ticket/baru/' .Crypt::encrypt($transaction->id)) }}" style="text-decoration: none; color: inherit;">
+                                                <div class="card card-inverse-warning" style="cursor: pointer" id="showPayment"
+                                                    data-id="{{ $transaction->billing_number }}">
+                                                    <div class="card-body">
+                                                        <p class="mb-4">File</p>
+                                                        <p class="fs-30 mb-2">Ticket</p>
+                                                        <p>Click to download ticket</p>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
