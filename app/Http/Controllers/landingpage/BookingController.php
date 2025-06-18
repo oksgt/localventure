@@ -239,7 +239,7 @@ class BookingController extends Controller
                 'visitor_origin_description' => $validatedData['formData']['origin'] ?? null,
                 'visitor_email' => $validatedData['formData']['email'] ?? null,
                 'total_visitor' => $validatedData['formData']['anak-anak'] + $validatedData['formData']['dewasa'] + $validatedData['formData']['mancanegara'],
-                'total_price' => $validatedData['formData']['total_price'],
+                'total_price' => 0,
                 'billing_number' => $this->generateInvoiceNumber($formattedDate),
                 'payment_status' => 'pending',
                 'purchasing_type' => 'online',
@@ -259,6 +259,8 @@ class BookingController extends Controller
 
             // ✅ Define Guest Types
             $guestTypes = ['anak-anak', 'dewasa', 'mancanegara'];
+
+            $totalPriceTicketOrder = 0;
 
             foreach ($guestTypes as $guestTypeName) {
                 $qty = $validatedData['formData'][$guestTypeName] ?? 0;
@@ -296,10 +298,16 @@ class BookingController extends Controller
                                 'qty' => 1, // ✅ Always store individual tickets per row
                                 'created_by' => auth()->id(),
                             ]);
+
+                            $totalPriceTicketOrder += $totalPrice;
                         }
                     }
                 }
             }
+
+            DB::table('ticket_orders')->where('id', $ticketOrder->id)->update([
+                'total_price' => $totalPriceTicketOrder,
+            ]);
 
             DB::commit(); // ✅ Confirm transaction
 

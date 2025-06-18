@@ -65,7 +65,9 @@ class HomeController extends Controller
 
         $totalRevenue = 0;
 
-        $destinations = Destination::where('id', $destinationId)->first();
+        $destinations = Destination::where('id', $destinationId)
+        ->whereNull('deleted_at')
+        ->first();
 
         $data = DB::table('ticket_order_details as tod')
             ->select(
@@ -75,6 +77,11 @@ class HomeController extends Controller
             )
             ->join('ticket_orders as to2', 'to2.id', '=', 'tod.order_id')
             ->join('destinations as d', 'to2.destination_id', '=', 'd.id')
+            ->whereNull('d.deleted_at')
+            ->where(function ($q) {
+                $q->where('to2.payment_status', 'paid')
+                ->orWhere('to2.payment_status', 'received');
+            })
             ->whereBetween('tod.visit_date', [$start, $end]);
 
         // Filter by destination_id if provided
@@ -93,13 +100,18 @@ class HomeController extends Controller
             ->join('destinations as d', 'to2.destination_id', '=', 'd.id')
             ->join('guest_types as gt', 'gt.id', '=', 'tod.guest_type_id')
             ->where('to2.destination_id', $destinationId)
+            ->whereNull('d.deleted_at')
+            ->where(function ($q) {
+                $q->where('to2.payment_status', 'paid')
+                ->orWhere('to2.payment_status', 'received');
+            })
             ->whereBetween('tod.visit_date', [$start, $end])
             ->groupBy('tod.guest_type_id', 'name') // Use the alias 'name' here
             ->get();
 
         $result['visitorDetail'] = $dataDetail;
 
-        $data = $data->groupBy('tod.visit_date', 'd.name', 'to2.destination_id')
+        $data = $data->groupBy('d.name', 'to2.destination_id')
             ->orderBy('tod.visit_date')
             ->get();
 
@@ -119,7 +131,10 @@ class HomeController extends Controller
 
         $PurchasingSalesPieChart = DB::table('ticket_orders as to2')
             ->select('to2.destination_id', 'to2.purchasing_type', DB::raw('SUM(to2.total_price) AS total'))
-            ->where('to2.payment_status', 'paid')
+            ->where(function ($q) {
+                $q->where('to2.payment_status', 'paid')
+                ->orWhere('to2.payment_status', 'received');
+            })
             ->whereBetween('to2.visit_date', [$start, $end])
             ->where('to2.destination_id', $destinationId)
             ->groupBy('to2.destination_id', 'to2.purchasing_type') // Include destination_id in GROUP BY
