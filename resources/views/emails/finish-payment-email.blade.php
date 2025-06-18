@@ -26,7 +26,7 @@
     <div class="wrapper">
         <div class="inner" id="capture">
             <div class="image-holder">
-                <img id="selectedImage" src="{{ $selectedImage }}" alt="">
+                {{-- <img id="selectedImage" src="{{ $selectedImage }}" alt=""> --}}
                 <h3>Payment Information</h3>
             </div>
 
