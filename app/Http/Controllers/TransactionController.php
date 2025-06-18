@@ -214,9 +214,18 @@ class TransactionController extends Controller
                     return Carbon::parse($row->created_at)->format('d M Y H:i');
                 })
                 ->editColumn('payment_status', function ($row) {
-                    return $row->payment_status === 'paid'
-                        ? '<div class="badge badge-success">Paid</div>'
-                        : '<div class="badge badge-warning">Pending</div>';
+
+                    if($row->payment_status == "paid"){
+                        $badge = "badge-success";
+                    } else if ($row->payment_status == "pending") {
+                        $badge = "badge-warning";
+                    } else if ($row->payment_status == "received") {
+                        $badge = "badge-success";
+                    } else {
+                        $badge = "badge-danger";
+                    }
+
+                    return '<div class="badge ' . $badge . '">' . ucwords($row->payment_status) . '</div>';
                 })
                 ->addColumn('action', function ($row) {
                     return '<a href="' . route('admin.transaction-onsite.detail', $row->id) . '" class="btn btn-sm btn-primary">View</a>';
