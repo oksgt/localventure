@@ -47,7 +47,9 @@
             <div class="site-navigation">
                 {{-- <a href="index.html" class="logo m-0">LocalVenture <span class="text-primary">.</span></a> --}}
                 <div>
-                    <img src="{{ asset('storage/assets/image/logo-2.png') }}" alt="localVenture" style="width: 170px">
+                        <a href="{{ url('/') }}">
+                            <img src="{{ asset('storage/assets/image/logo-2.png') }}" alt="localVenture" style="width: 170px">
+                    </a>
                 </div>
 
                 {{-- <ul class="js-clone-nav d-none d-lg-inline-block text-left site-menu float-right">
