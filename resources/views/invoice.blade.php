@@ -138,9 +138,9 @@
                             </td>
 
                             <td>
-                                Oka Sigit<br />
-                                081-123-4567<br />
-                                oka.sigit@gmail.com
+                                {{ $customer_name }}<br />
+                                {{ $customer_email }}<br />
+                                {{ $customer_phone }}
                             </td>
                         </tr>
                     </table>
