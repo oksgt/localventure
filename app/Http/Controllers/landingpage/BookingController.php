@@ -717,6 +717,7 @@ class BookingController extends Controller
         $base64Image = $this->processImage($imagePath);
 
         $base64ImageQRIS = null;
+        $bank_info = null;
 
         if ($ticketOrder->paymentType->payment_type_name == 'QRIS') {
             $qris = DB::table('payment_type')
@@ -727,7 +728,12 @@ class BookingController extends Controller
 
             $imagePath = public_path('storage/' . $qris->payment_image);
             $base64ImageQRIS = $this->processImage($imagePath);
+        } else {
+            $bank_= DB::table('bank_accounts')->where('id', $ticketOrder->bank_id )->first();
+            $bank_info = $bank_->bank_name . ' - ' . $bank_->account_number . ' a.n. ' . $bank_->account_name;
         }
+
+        $data['bank_info'] = $bank_info;
 
         $qrcodeBase64 = base64_encode(QrCode::format('png')->size(200)->generate($ticketOrder->billing_number));
 
