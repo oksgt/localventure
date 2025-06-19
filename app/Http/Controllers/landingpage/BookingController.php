@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Validator;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Illuminate\Support\Str;
 
@@ -189,6 +190,224 @@ class BookingController extends Controller
             'message' => "Day type updated successfully!",
             'day_type' => $dayType
         ]);
+    }
+
+    public function getFinishPayment(Request $request)
+    {
+        $simulatedPayloads = [
+        [
+            "formData" => [
+                "selectDestinationId" => 10,
+                "date" => "04 - June - 2025",
+                "people_count" => 4,
+                "name" => "Yusuf Ramadhan",
+                "address" => "Jl. Cendrawasih No. 88, Banyumas",
+                "provinceSearch" => "35",
+                "regencySearch" => "3522",
+                "districtSearch" => "352215",
+                "phone" => "081234567811",
+                "origin" => "lorem ipsum",
+                "email" => "yusuf.ramadhan@mail.com",
+                "anak-anak" => 1,
+                "dewasa" => 2,
+                "mancanegara" => 1,
+                "selectPaymentId" => 1,
+                "total_price" => 185000,
+                "bankSelection" => 1
+            ]
+        ],
+        [
+            "formData" => [
+                "selectDestinationId" => 11,
+                "date" => "05 - June - 2025",
+                "people_count" => 6,
+                "name" => "Dina Mariani",
+                "address" => "Perum Wijaya Kusuma, Sokaraja",
+                "provinceSearch" => "35",
+                "regencySearch" => "3522",
+                "districtSearch" => "352215",
+                "phone" => "082344556677",
+                "origin" => "sed ut perspiciatis",
+                "email" => "dina.mariani@mail.com",
+                "anak-anak" => 2,
+                "dewasa" => 3,
+                "mancanegara" => 1,
+                "selectPaymentId" => 3,
+                "total_price" => 290000,
+                "bankSelection" => 1
+            ]
+        ],
+        [
+            "formData" => [
+                "selectDestinationId" => 10,
+                "date" => "07 - June - 2025",
+                "people_count" => 2,
+                "name" => "Galih Nugroho",
+                "address" => "Jl. Manggis No. 6, Purwokerto Barat",
+                "provinceSearch" => "35",
+                "regencySearch" => "3522",
+                "districtSearch" => "352215",
+                "phone" => "085566778899",
+                "origin" => "voluptatem accusantium",
+                "email" => "galih.n@mail.com",
+                "anak-anak" => 1,
+                "dewasa" => 1,
+                "mancanegara" => 0,
+                "selectPaymentId" => 1,
+                "total_price" => 90000,
+                "bankSelection" => 1
+            ]
+        ],
+        [
+            "formData" => [
+                "selectDestinationId" => 11,
+                "date" => "10 - June - 2025",
+                "people_count" => 8,
+                "name" => "Maya Kartika",
+                "address" => "Jl. Sawo Kembar No. 15, Karanglewas",
+                "provinceSearch" => "35",
+                "regencySearch" => "3522",
+                "districtSearch" => "352215",
+                "phone" => "089911223344",
+                "origin" => "doloremque laudantium",
+                "email" => "maya.kartika@mail.com",
+                "anak-anak" => 2,
+                "dewasa" => 5,
+                "mancanegara" => 1,
+                "selectPaymentId" => 3,
+                "total_price" => 360000,
+                "bankSelection" => 1
+            ]
+        ],
+        [
+            "formData" => [
+                "selectDestinationId" => 10,
+                "date" => "12 - June - 2025",
+                "people_count" => 3,
+                "name" => "Rahmat Fajar",
+                "address" => "Jl. Anggrek Raya No. 10, Kedungwuluh",
+                "provinceSearch" => "35",
+                "regencySearch" => "3522",
+                "districtSearch" => "352215",
+                "phone" => "087766554433",
+                "origin" => "totam rem aperiam",
+                "email" => "rahmat.fajar@mail.com",
+                "anak-anak" => 0,
+                "dewasa" => 2,
+                "mancanegara" => 1,
+                "selectPaymentId" => 3,
+                "total_price" => 150000,
+                "bankSelection" => 1
+            ]
+        ],
+        [
+            "formData" => [
+                "selectDestinationId" => 11,
+                "date" => "14 - June - 2025",
+                "people_count" => 5,
+                "name" => "Anisa Prameswari",
+                "address" => "Villa Kusuma Indah Blok C3, Banyumas",
+                "provinceSearch" => "35",
+                "regencySearch" => "3522",
+                "districtSearch" => "352215",
+                "phone" => "081776655443",
+                "origin" => "eaque ipsa quae",
+                "email" => "anisa.pw@mail.com",
+                "anak-anak" => 1,
+                "dewasa" => 3,
+                "mancanegara" => 1,
+                "selectPaymentId" => 1,
+                "total_price" => 220000,
+                "bankSelection" => 1
+            ]
+        ],
+        [
+            "formData" => [
+                "selectDestinationId" => 10,
+                "date" => "16 - June - 2025",
+                "people_count" => 7,
+                "name" => "Rizka Handayani",
+                "address" => "Jl. Durian No. 3, Kembaran",
+                "provinceSearch" => "35",
+                "regencySearch" => "3522",
+                "districtSearch" => "352215",
+                "phone" => "082198877665",
+                "origin" => "veritatis et quasi",
+                "email" => "rizka.handayani@mail.com",
+                "anak-anak" => 2,
+                "dewasa" => 4,
+                "mancanegara" => 1,
+                "selectPaymentId" => 3,
+                "total_price" => 310000,
+                "bankSelection" => 1
+            ]
+        ],
+        [
+            "formData" => [
+                "selectDestinationId" => 11,
+                "date" => "19 - June - 2025",
+                "people_count" => 6,
+                "name" => "Fajar Prakoso",
+                "address" => "Jl. Apel Manis No. 24, Purwokerto Selatan",
+                "provinceSearch" => "35",
+                "regencySearch" => "3522",
+                "districtSearch" => "352215",
+                "phone" => "089922556633",
+                "origin" => "architecto beatae vitae",
+                "email" => "fajar.p@mail.com",
+                "anak-anak" => 1,
+                "dewasa" => 4,
+                "mancanegara" => 1,
+            "selectPaymentId" => 1,
+            "total_price" => 265000,
+            "bankSelection" => 1
+        ]
+    ],
+    [
+        "formData" => [
+            "selectDestinationId" => 10,
+            "date" => "21 - June - 2025",
+            "people_count" => 2,
+            "name" => "Wulan Anggraeni",
+            "address" => "Jl. Jambu No. 19, Patikraja",
+            "provinceSearch" => "35",
+            "regencySearch" => "3522",
+            "districtSearch" => "352215",
+            "phone" => "082187654321",
+            "origin" => "nemo enim ipsam",
+            "email" => "wulan.ang@mail.com",
+            "anak-anak" => 0,
+            "dewasa" => 2,
+            "mancanegara" => 0,
+            "selectPaymentId" => 3,
+            "total_price" => 90000,
+            "bankSelection" => 1
+        ]
+    ]
+    ];
+
+        $results = [];
+
+        foreach ($simulatedPayloads as $index => $payload) {
+            // Simulate a request object
+            $simulatedRequest = new Request($payload);
+
+            // Call your original POST-like logic
+            $response = $this->finishPayment($simulatedRequest);
+
+            // Collect the results (optional)
+            $results[] = [
+                'index' => $index + 1,
+                'status' => $response->getStatusCode(),
+                'data' => $response->getData(),
+            ];
+        }
+
+        return response()->json([
+            'message' => 'Simulation batch executed!',
+            'results' => $results,
+        ]);
+
     }
 
     public function finishPayment(Request $request)

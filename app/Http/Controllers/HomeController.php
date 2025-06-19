@@ -111,7 +111,7 @@ class HomeController extends Controller
 
         $result['visitorDetail'] = $dataDetail;
 
-        $data = $data->groupBy('d.name', 'to2.destination_id')
+        $data = $data->groupBy('tod.visit_date', 'to2.destination_id')
             ->orderBy('tod.visit_date')
             ->get();
 

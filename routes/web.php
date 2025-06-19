@@ -41,6 +41,8 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
     //->withoutMiddleware([VerifyCsrfToken::class]) // ✅ Disables CSRF for this route
     ->name('booking.finishPayment');
 
+    // Route::get('/get-finish-payment', [BookingController::class, 'getFinishPayment']);
+
     Route::get('/ticket/pay', [BookingController::class, 'finishPaymentPage'])->name('booking.finish-payment-page');
 
     Route::get('/download-invoice/{id}', [BookingController::class, 'downloadInvoice'])->name('invoice');
@@ -49,6 +51,8 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 
     Route::get('/cek/{billing?}', [BookingController::class, 'cek'])->name('cek');
     Route::post('/payment-confirmation/store', [PaymentConfirmationController::class, 'store'])->name('payment.store');
+
+    // Route::get('/payment-confirmation-auto', [PaymentConfirmationController::class, 'autoConfirmPayments']);
 
     Route::get('/download/ticket/baru/{id}', [BookingController::class, 'downloadTicketBaru']);
     Route::post('/ticket/check-in', [BookingController::class, 'updateCheckIn'])->name('ticket.updateCheckIn');

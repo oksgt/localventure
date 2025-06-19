@@ -11,9 +11,66 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Str;
 
 class PaymentConfirmationController extends Controller
 {
+
+    public function autoConfirmPayments()
+    {
+        // Simulate image upload path (make sure this image exists for test purposes)
+        $dummyImagePath = storage_path('app/public/bukti_bayar/3uWzEBvySWXiQSZPnkhKPjHpuJK2EJr579zJwAmJ.jpg'); // Must be JPG ≤ 5MB
+
+        if (!file_exists($dummyImagePath)) {
+            return response()->json(['message' => 'Dummy image for upload not found.'], 404);
+        }
+
+        $banks = ['BCA', 'Mandiri', 'BRI', 'BNI', 'BTN', 'CIMB Niaga', 'Danamon', 'Permata', 'Panin', 'Bank Jateng'];
+
+        $orders = DB::table('ticket_orders')
+            ->where('id', '>=', 92)
+            ->select('id', 'billing_number', 'total_price', 'visitor_name')
+            ->get();
+
+        $results = [];
+
+        foreach ($orders as $order) {
+            // Simulate a POST request payload
+            $request = new \Illuminate\Http\Request();
+            $request->replace([
+                'ticket_order_id' => $order->id,
+                'billing_number' => $order->billing_number,
+                'transfer_amount' => $order->total_price,
+                'bank_name' => $banks[array_rand($banks)],
+                'account_name' => $order->visitor_name,
+                'account_number' => (String) mt_rand(1000000000, 9999999999), // 10-digit fake bank account
+            ]);
+
+            // Attach a simulated UploadedFile instance
+            $request->files->set('image', new UploadedFile(
+                $dummyImagePath,
+                'bukti.jpg',
+                'image/jpeg',
+                null,
+                true
+            ));
+
+            // Call your original store method
+            $response = $this->store($request);
+            $results[] = [
+                'ticket_order_id' => $order->id,
+                'status' => $response->getStatusCode(),
+                'message' => $response->getContent()
+            ];
+        }
+
+        return response()->json([
+            'message' => 'Simulasi penyimpanan otomatis selesai!',
+            'results' => $results
+        ]);
+    }
+
     public function store(Request $request)
     {
         // ✅ Validate request with custom Bahasa Indonesia error messages
@@ -72,7 +129,6 @@ class PaymentConfirmationController extends Controller
 
             return response()->json(['message' => 'Payment confirmation failed. Please try again.'], 500);
         }
-
     }
 
     public function show(Request $request)

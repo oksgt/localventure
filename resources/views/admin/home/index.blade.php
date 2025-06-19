@@ -269,7 +269,7 @@
                                         label: 'Visitor Count',
                                         data: qtyData,
                                         borderColor: 'rgba(75, 192, 192, 1)',
-                                        borderWidth: 1,
+                                        borderWidth: 5,
                                         fill: false,
                                         tension: 0.4
                                     }]
@@ -305,8 +305,7 @@
                                 },
                             });
 
-                            const dataPurchasingSalesType = response.PurchasingSalesPieChart
-                            .data; // Adjusted to access the visitorCount
+                            const dataPurchasingSalesType = response.PurchasingSalesPieChart.data; // Adjusted to access the visitorCount
 
                             const labelsPCS = dataPurchasingSalesType.map(item => item.purchasing_type);
                             const qtyDataPCS = dataPurchasingSalesType.map(item => item.total);
@@ -323,8 +322,8 @@
                                         label: 'Total Purchase Amount',
                                         data: qtyDataPCS,
                                         backgroundColor: [
-                                            'rgb(75 73 172)',
-                                            'rgb(255 193 0)'
+                                            'rgb(255 193 0)',
+                                            'rgb(75 73 172)'
                                         ],
                                         hoverOffset: 4
                                     }]
@@ -349,6 +348,7 @@
                             response.PurchasingSalesPieChart.data.forEach(item => {
                                 const salesType = item.purchasing_type.charAt(0).toUpperCase() +
                                     item.purchasing_type.slice(1);
+                                console.log('salesType:', salesType);
                                 const color = salesType === 'Online' ? '#4b49ac' :
                                 '#FFC100'; // Different colors for types
 
