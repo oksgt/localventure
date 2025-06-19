@@ -190,7 +190,7 @@
                 <tr class="details">
                     <td>Bank BCA 1234567890 a.n. PT. Wisata Kalianget</td>
 
-                    <td>$385.00</td>
+                    <td>Rp {{ $total_price }}</td>
                 </tr>
             @endif
 
