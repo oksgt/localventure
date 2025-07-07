@@ -139,7 +139,7 @@
         {{-- <script src="{{ asset('admin-page') }}/vendors/nimiq-qr-scanner/qr-scanner-worker.min.js"></script> --}}
         {{-- <script src="{{ asset('landing-page') }}/js/instascan_.min.js"></script> --}}
         <script>
-            QrScanner.WORKER_PATH = '{{ asset('admin-page') }}/vendors/nimiq-qr-scanner/qr-scanner-worker.min.js';
+            // QrScanner.WORKER_PATH = '{{ asset('admin-page') }}/vendors/nimiq-qr-scanner/qr-scanner-worker.min.js';
 
             const videoElem = document.getElementById('qr-video');
             const resultElem = document.getElementById('qr-result');
