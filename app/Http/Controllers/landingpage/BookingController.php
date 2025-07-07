@@ -965,6 +965,8 @@ class BookingController extends Controller
 
             $updatedRows = DB::table('ticket_order_details')
                 ->where('ticket_code', $request->ticket_code)
+                ->whereNull('check_in_at')
+                ->whereNull('check_in_by')
                 ->update([
                     'check_in_at' => now(),
                     'check_in_by' => Auth::id(),
@@ -980,9 +982,13 @@ class BookingController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['message' => 'Error updating check-in!', 'error' => $e->getMessage()], 500);
+            return response()->json([
+                'message' => 'Error updating check-in!',
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
+
 
 
 }
