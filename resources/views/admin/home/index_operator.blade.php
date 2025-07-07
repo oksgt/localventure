@@ -155,9 +155,9 @@
             });
 
             startBtn.addEventListener('click', () => {
-                scanner.start();
-                resultElem.textContent = 'Scanning...';
-                resultElem.classList.replace('alert-success', 'alert-secondary');
+                // scanner.start();
+                // resultElem.textContent = 'Scanning...';
+                // resultElem.classList.replace('alert-success', 'alert-secondary');
             });
 
             stopBtn.addEventListener('click', () => {
@@ -235,6 +235,9 @@
                     // }).catch(function(e) {
                     //     console.error(e);
                     // });
+                    scanner.start();
+                    resultElem.textContent = 'Scanning...';
+                    resultElem.classList.replace('alert-success', 'alert-secondary');
                 });
 
                 $('#qrModal').on('hidden.bs.modal', function() {
