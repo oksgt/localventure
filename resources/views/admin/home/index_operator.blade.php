@@ -235,9 +235,6 @@
                     // }).catch(function(e) {
                     //     console.error(e);
                     // });
-                    scanner.start();
-                    resultElem.textContent = 'Scanning...';
-                    resultElem.classList.replace('alert-success', 'alert-secondary');
                 });
 
                 $('#qrModal').on('hidden.bs.modal', function() {
@@ -254,6 +251,9 @@
                     // }).catch(function(e) {
                     //     console.error(e);
                     // });
+                    scanner.start();
+                    resultElem.textContent = 'Scanning...';
+                    resultElem.classList.replace('alert-success', 'alert-secondary');
                 });
 
                 $('#checkInModal').on('hidden.bs.modal', function() {
