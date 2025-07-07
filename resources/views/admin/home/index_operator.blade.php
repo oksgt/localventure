@@ -95,7 +95,7 @@
                         </button>
                     </div>
                     <div class="modal-body text-center p-0">
-                        <video id="qr-video" style="width: 100%;"></video>
+                        {{-- <video id="qr-video" style="width: 100%;"></video> --}}
                         <p class="mt-3"><strong>Scanned Code:</strong> <span id="qr-result">None</span></p>
                     </div>
                 </div>
