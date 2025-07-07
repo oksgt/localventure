@@ -175,6 +175,7 @@
         </div>
     </div>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="{{ asset('admin-page') }}/vendors/js/vendor.bundle.base.js"></script>
     <script src="{{ asset('admin-page') }}/vendors/chart.js/Chart.min.js"></script>
     <script src="{{ asset('admin-page') }}/vendors/datatables.net/jquery.dataTables.js"></script>

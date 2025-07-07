@@ -107,7 +107,7 @@
             <div class="modal-dialog modal-lg h-100" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="checkInModalLabel">Check In - Scan QR Code</h5>
+                        <h5 class="modal-title" id="checkInModalLabel">Check In - Scan Ticket</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -116,56 +116,19 @@
                         {{-- <video id="checkin-video" style="width: 100%;"></video> --}}
                         <video id="qr-video" muted playsinline></video>
 
-                        <div class="mt-3 d-flex justify-content-between">
-                            <button id="start-btn" class="btn btn-success">Start Scanning</button>
-                            <button id="stop-btn" class="btn btn-danger">Stop Scanning</button>
-                        </div>
-
                         <div class="mt-4">
                             <h5>Scanned Result:</h5>
                             <div id="qr-result" class="alert alert-secondary result-box">No result yet.</div>
                         </div>
-
-                        <p class="mt-3"><strong>Scanned Ticket Code:</strong> <span id="qr-result">None</span></p>
                     </div>
                 </div>
             </div>
         </div>
     @endsection
 
-    @push('scripts')
+    @push('scripts')\
         <script src="{{ asset('admin-page') }}/vendors/select2/select2.min.js"></script>
         <script src="{{ asset('admin-page') }}/vendors/nimiq-qr-scanner/qr-scanner.umd.min.js"></script>
-        {{-- <script src="{{ asset('admin-page') }}/vendors/nimiq-qr-scanner/qr-scanner-worker.min.js"></script> --}}
-        {{-- <script src="{{ asset('landing-page') }}/js/instascan_.min.js"></script> --}}
-        <script>
-            // QrScanner.WORKER_PATH = '{{ asset('admin-page') }}/vendors/nimiq-qr-scanner/qr-scanner-worker.min.js';
-
-            // const videoElem = document.getElementById('qr-video');
-            // const resultElem = document.getElementById('qr-result');
-            // const startBtn = document.getElementById('start-btn');
-            // const stopBtn = document.getElementById('stop-btn');
-
-            // const scanner = new QrScanner(videoElem, result => {
-            //     resultElem.textContent = result;
-            //     resultElem.classList.replace('alert-secondary', 'alert-success');
-            // }, {
-            //     highlightScanRegion: true,
-            //     highlightCodeOutline: true
-            // });
-
-            // startBtn.addEventListener('click', () => {
-            //     // scanner.start();
-            //     // resultElem.textContent = 'Scanning...';
-            //     // resultElem.classList.replace('alert-success', 'alert-secondary');
-            // });
-
-            // stopBtn.addEventListener('click', () => {
-            //     scanner.stop();
-            //     resultElem.textContent = 'Scanner stopped.';
-            //     resultElem.classList.replace('alert-success', 'alert-secondary');
-            // });
-        </script>
 
         <script>
             function playBeep() {
@@ -190,66 +153,19 @@
 
                 const videoElem = document.getElementById('qr-video');
                 const resultElem = document.getElementById('qr-result');
-                const startBtn = document.getElementById('start-btn');
-                const stopBtn = document.getElementById('stop-btn');
 
                 const scanner = new QrScanner(videoElem, result => {
                     console.log('Scanned:', result.data);
-                    resultElem.textContent = result.data;
-                    resultElem.classList.replace('alert-secondary', 'alert-success');
+                    // resultElem.html = 'result.data';
+                    $('#qr-result')
+                    .removeClass('alert-secondary')
+                    .addClass('alert-success')
+                    .text(result.data);
+
                 }, {
                     highlightScanRegion: true,
                     highlightCodeOutline: true
                 });
-
-                startBtn.addEventListener('click', () => {
-                    // scanner.start();
-                    // resultElem.textContent = 'Scanning...';
-                    // resultElem.classList.replace('alert-success', 'alert-secondary');
-                });
-
-                stopBtn.addEventListener('click', () => {
-                    scanner.stop();
-                    resultElem.textContent = 'Scanner stopped.';
-                    resultElem.classList.replace('alert-success', 'alert-secondary');
-                });
-
-                // var scanner = new Instascan.Scanner({
-                //     video: document.getElementById('qr-video')
-                // });
-                // var checkInscanner = new Instascan.Scanner({
-                //     video: document.getElementById('checkin-video')
-                // });
-
-                // scanner.addListener('scan', function(content) {
-                //     window.location.href = "{{ url('/admin/online-transaction/scan/') }}/" + encodeURIComponent(content);
-                // });
-
-                // checkInscanner.addListener('scan', function(content) {
-                //     var ticketCode = $(this).data('ticket-code');
-
-                //     $.ajax({
-                //         url: "{{ route('ticket.updateCheckIn') }}",
-                //         type: "POST",
-                //         data: {
-                //             ticket_code: content,
-                //             _token: "{{ csrf_token() }}"
-                //         },
-                //         success: function(response) {
-                //             console.log('Ticket Checked In');
-                //             playBeep();
-                //         },
-                //         error: function(xhr) {
-                //             Swal.fire({
-                //                 title: "Error!",
-                //                 text: xhr.responseJSON.message,
-                //                 icon: "error",
-                //                 confirmButtonText: "OK"
-                //             });
-                //         }
-                //     });
-
-                // });
 
                 $('#qrModal').on('shown.bs.modal', function() {
                     // Instascan.Camera.getCameras().then(function(cameras) {
