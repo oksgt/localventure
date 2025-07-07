@@ -186,6 +186,7 @@
 
                 $('#qrModal').on('shown.bs.modal', function() {
                     Instascan.Camera.getCameras().then(function(cameras) {
+                        alert(cameras);
                         if (cameras.length > 0) {
                             scanner.start(cameras[1]);
                         } else {
