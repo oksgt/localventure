@@ -141,30 +141,30 @@
         <script>
             // QrScanner.WORKER_PATH = '{{ asset('admin-page') }}/vendors/nimiq-qr-scanner/qr-scanner-worker.min.js';
 
-            const videoElem = document.getElementById('qr-video');
-            const resultElem = document.getElementById('qr-result');
-            const startBtn = document.getElementById('start-btn');
-            const stopBtn = document.getElementById('stop-btn');
+            // const videoElem = document.getElementById('qr-video');
+            // const resultElem = document.getElementById('qr-result');
+            // const startBtn = document.getElementById('start-btn');
+            // const stopBtn = document.getElementById('stop-btn');
 
-            const scanner = new QrScanner(videoElem, result => {
-                resultElem.textContent = result;
-                resultElem.classList.replace('alert-secondary', 'alert-success');
-            }, {
-                highlightScanRegion: true,
-                highlightCodeOutline: true
-            });
+            // const scanner = new QrScanner(videoElem, result => {
+            //     resultElem.textContent = result;
+            //     resultElem.classList.replace('alert-secondary', 'alert-success');
+            // }, {
+            //     highlightScanRegion: true,
+            //     highlightCodeOutline: true
+            // });
 
-            startBtn.addEventListener('click', () => {
-                // scanner.start();
-                // resultElem.textContent = 'Scanning...';
-                // resultElem.classList.replace('alert-success', 'alert-secondary');
-            });
+            // startBtn.addEventListener('click', () => {
+            //     // scanner.start();
+            //     // resultElem.textContent = 'Scanning...';
+            //     // resultElem.classList.replace('alert-success', 'alert-secondary');
+            // });
 
-            stopBtn.addEventListener('click', () => {
-                scanner.stop();
-                resultElem.textContent = 'Scanner stopped.';
-                resultElem.classList.replace('alert-success', 'alert-secondary');
-            });
+            // stopBtn.addEventListener('click', () => {
+            //     scanner.stop();
+            //     resultElem.textContent = 'Scanner stopped.';
+            //     resultElem.classList.replace('alert-success', 'alert-secondary');
+            // });
         </script>
 
         <script>
@@ -187,6 +187,32 @@
             }
 
             $(document).ready(function() {
+
+                const videoElem = document.getElementById('qr-video');
+                const resultElem = document.getElementById('qr-result');
+                const startBtn = document.getElementById('start-btn');
+                const stopBtn = document.getElementById('stop-btn');
+
+                const scanner = new QrScanner(videoElem, result => {
+                    resultElem.textContent = result;
+                    resultElem.classList.replace('alert-secondary', 'alert-success');
+                }, {
+                    highlightScanRegion: true,
+                    highlightCodeOutline: true
+                });
+
+                startBtn.addEventListener('click', () => {
+                    // scanner.start();
+                    // resultElem.textContent = 'Scanning...';
+                    // resultElem.classList.replace('alert-success', 'alert-secondary');
+                });
+
+                stopBtn.addEventListener('click', () => {
+                    scanner.stop();
+                    resultElem.textContent = 'Scanner stopped.';
+                    resultElem.classList.replace('alert-success', 'alert-secondary');
+                });
+
                 // var scanner = new Instascan.Scanner({
                 //     video: document.getElementById('qr-video')
                 // });
