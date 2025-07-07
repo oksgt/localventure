@@ -96,7 +96,7 @@
                     </div>
                     <div class="modal-body text-center p-0">
                         {{-- <video id="qr-video" style="width: 100%;"></video> --}}
-                        <p class="mt-3"><strong>Scanned Code:</strong> <span id="qr-result">None</span></p>
+                        {{-- <p class="mt-3"><strong>Scanned Code:</strong> <span id="qr-result">None</span></p> --}}
                     </div>
                 </div>
             </div>
@@ -116,9 +116,12 @@
                         {{-- <video id="checkin-video" style="width: 100%;"></video> --}}
                         <video id="qr-video" muted playsinline></video>
 
-                        <div class="mt-4">
+                        <div class="mt-2">
+                            <button id="scan-again-btn" class="btn btn-primary mb-3 d-none">Scan Again</button>
                             <h5>Scanned Result:</h5>
-                            <div id="qr-result" class="alert alert-secondary result-box">No result yet.</div>
+                            <div id="qr-result" class="alert alert-secondary result-box">
+                                No result yet
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -154,18 +157,95 @@
                 const videoElem = document.getElementById('qr-video');
                 const resultElem = document.getElementById('qr-result');
 
-                const scanner = new QrScanner(videoElem, result => {
-                    console.log('Scanned:', result.data);
-                    // resultElem.html = 'result.data';
-                    $('#qr-result')
-                    .removeClass('alert-secondary')
-                    .addClass('alert-success')
-                    .text(result.data);
+                let hasScanned = false;
 
+                const scanner = new QrScanner(videoElem, result => {
+                    if (hasScanned) return;
+
+                    hasScanned = true;
+                    const ticketCode = result.data;
+                    console.log('Scanned:', ticketCode);
+                    playBeep();
+
+                    $('#qr-result')
+                        .removeClass('alert-secondary')
+                        .addClass('alert-info')
+                        .text('Checking ticket...');
+
+                    // 🔁 Send AJAX POST to Laravel
+                    $.ajax({
+                        url: '{{ route('ticket.updateCheckIn') }}',
+                        method: 'POST',
+                        data: {
+                            ticket_code: ticketCode,
+                            _token: '{{ csrf_token() }}'
+                        },
+                        success: function (response) {
+
+                            $('#qr-result')
+                                .removeClass('alert-info')
+                                .addClass('alert-success')
+                                .text(response.message);
+
+                            Swal.fire({
+                                icon: 'success',
+                                title: '✅ Check-In Successful',
+                                text: response.message,
+                                timer: 3000,
+                                showConfirmButton: false
+                            });
+
+                            $('#scan-again-btn').trigger('click');
+                        },
+                        error: function (xhr) {
+                            let message = 'Unknown error occurred.';
+                            let icon = 'error';
+                            let title = '❌ Error';
+
+                            if (xhr.status === 404) {
+                                message = 'Ticket not found.';
+                                title = '🔍 Not Found';
+                            } else if (xhr.status === 409) {
+                                message = xhr.responseJSON.message;
+                                title = '⚠️ Already Checked In';
+                            } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                                message = xhr.responseJSON.message;
+                            }
+
+                            $('#qr-result')
+                                .removeClass('alert-info')
+                                .addClass('alert-danger')
+                                .text(message);
+
+                            Swal.fire({
+                                icon: icon,
+                                title: title,
+                                text: message,
+                                timer: 4000,
+                                showConfirmButton: false
+                            });
+
+                            $('#scan-again-btn').trigger('click');
+                        }
+                    });
+
+                    $('#scan-again-btn').removeClass('d-none');
                 }, {
                     highlightScanRegion: true,
                     highlightCodeOutline: true
                 });
+
+
+
+                $('#scan-again-btn').on('click', function () {
+                    hasScanned = false;
+                    $('#qr-result')
+                        .removeClass('alert-success alert-danger')
+                        .addClass('alert-secondary')
+                        .text('Scanning...');
+                    $(this).addClass('d-none');
+                });
+
 
                 $('#qrModal').on('shown.bs.modal', function() {
                     // Instascan.Camera.getCameras().then(function(cameras) {

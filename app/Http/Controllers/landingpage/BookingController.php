@@ -963,10 +963,25 @@ class BookingController extends Controller
         try {
             DB::beginTransaction();
 
-            $updatedRows = DB::table('ticket_order_details')
+            // 🔍 Step 1: Find the ticket by code
+            $ticket = DB::table('ticket_order_details')
                 ->where('ticket_code', $request->ticket_code)
-                ->whereNull('check_in_at')
-                ->whereNull('check_in_by')
+                ->first();
+
+            if (!$ticket) {
+                DB::rollBack();
+                return response()->json(['message' => 'Ticket not found.'], 404);
+            }
+
+            // 🚫 Step 2: Check if already checked in
+            if ($ticket->check_in_at || $ticket->check_in_by) {
+                DB::rollBack();
+                return response()->json(['message' => 'Ticket already checked in at '. \Carbon\Carbon::parse($ticket->check_in_at)->format('d-m-Y H:i:s')], 409);
+            }
+
+            // ✅ Step 3: Update check-in
+            DB::table('ticket_order_details')
+                ->where('id', $ticket->id)
                 ->update([
                     'check_in_at' => now(),
                     'check_in_by' => Auth::id(),
@@ -974,11 +989,9 @@ class BookingController extends Controller
 
             DB::commit();
 
-            if ($updatedRows > 0) {
-                return response()->json(['message' => 'Check-in updated successfully!'], 200);
-            } else {
-                return response()->json(['message' => 'Ticket not found or already checked in!'], 404);
-            }
+            return response()->json([
+                'message' => 'Check-in updated successfully at ' . now()->format('d-m-Y H:i:s')
+            ], 200);
 
         } catch (\Exception $e) {
             DB::rollBack();
@@ -988,6 +1001,7 @@ class BookingController extends Controller
             ], 500);
         }
     }
+
 
 
 
