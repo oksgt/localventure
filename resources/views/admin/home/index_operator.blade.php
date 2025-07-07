@@ -194,6 +194,7 @@
                 const stopBtn = document.getElementById('stop-btn');
 
                 const scanner = new QrScanner(videoElem, result => {
+                    console.log('Scanned:', result);
                     resultElem.textContent = result;
                     resultElem.classList.replace('alert-secondary', 'alert-success');
                 }, {
