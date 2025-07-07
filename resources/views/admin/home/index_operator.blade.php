@@ -143,8 +143,6 @@
                 }, 200); // ✅ Beep duration (200ms)
             }
 
-
-
             $(document).ready(function() {
                 var scanner = new Instascan.Scanner({
                     video: document.getElementById('qr-video')
