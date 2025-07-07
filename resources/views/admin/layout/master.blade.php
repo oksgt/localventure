@@ -148,6 +148,17 @@
             background-color: #fff;
         }
     </style>
+    <style>
+        #qr-video {
+        width: 100%;
+        border-radius: 0.5rem;
+        border: 2px solid #dee2e6;
+        }
+        .result-box {
+        font-family: monospace;
+        word-break: break-all;
+        }
+    </style>
 </head>
 
 <body>
